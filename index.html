@@ -487,6 +487,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 table[data-cf=cob] .qtools .ibtn,table[data-cf=cob] .qtools .ck{width:40px !important;min-width:40px !important;height:40px !important;min-height:40px !important;border-radius:11px}table[data-cf=cob] .qtools .ck input{width:22px;height:22px}table[data-cf=cob] .qtools .ibtn svg{width:21px;height:21px}table[data-cf=cob] .qicos .ibtn{min-width:40px;height:40px;border-radius:11px}.icoparc{position:relative;display:inline-flex}.icoparc b{position:absolute;right:-7px;bottom:-6px;font-size:10px;line-height:1;background:#FFF4DB;color:#8A5A00;border:1px solid #F1D9A8;border-radius:6px;padding:1px 3px}.qicos [data-a=qParcial]{color:#1E6B45;border-color:#BFE3CF;background:#E9F7EF}
 .fuente{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.fuente button{border:0;background:transparent;padding:0 10px;min-height:34px;font:inherit;font-weight:700;color:var(--ink,#1B2230);cursor:pointer}.fuente button+button{border-left:1px solid var(--line)}.fuente button.on{background:var(--brand);color:#fff}.fuente .f1{font-size:12px}.fuente .f2{font-size:14px}.fuente .f3{font-size:16px}.fuente .f4{font-size:18px}
 .rggrp{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}.rghead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:var(--brand-soft);flex-wrap:wrap}.rgit{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line);flex-wrap:wrap}.rgbtns{flex-wrap:wrap;gap:6px}.rgfecha{position:relative;cursor:pointer}.rgfecha input{position:absolute;inset:0;opacity:0;cursor:pointer}.rgpop{max-height:60vh;overflow:auto}.rgbell .cnt{background:#E5484D;color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:4px}.rgch2 input{margin:0 4px 0 0}
+.rgfchip{display:inline-flex;align-items:center;gap:6px}.rgfchip button{border:0;background:rgba(255,255,255,.25);color:inherit;border-radius:50%;width:20px;height:20px;line-height:1;cursor:pointer;font-size:14px;padding:0}#rgFecNueva{min-height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit}
 .refnota{margin:-6px 0 12px;font-size:12.5px}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
@@ -828,7 +829,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v153</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v154</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3544,14 +3545,17 @@ function rgTocaHoy(r){
   if(r.estado !== 'activa') return false;
   if(r.hasta && r.hasta > t) return false;
   if(r.frec === 'siempre') return true;
+  if(r.frec === 'fechas') return !!rgFechaActiva(r);
   if(r.frec === 'una') return !!r.fecha && t >= r.fecha;
   if(r.frec === 'semanal') return d.getDay() === +r.dow;
   if(r.frec === 'mensual'){ var ult = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); return d.getDate() === Math.min(+r.dom || 1, ult); }
   return false;
 }
+function rgFechaActiva(r){ var t = hoy(); return (r.fechas || []).filter(function(f){ return f <= t; }).sort().pop() || ''; }
 function rgItems(r){
+  var sfx = r.frec === 'fechas' ? '|' + rgFechaActiva(r) : '';
   var t = hoy(), out = [], gOk = function(g){ return !(r.gabs || []).length || r.gabs.indexOf(g || '') !== -1; }, cOk = function(c){ return !r.concepto || (c && c.concepto) === r.concepto; };
-  var vis = function(k){ if((r.res || {})[k]) return false; var po = (r.pos || {})[k]; return !po || po <= t; };
+  var vis = function(k){ k = k + sfx; if((r.res || {})[k]) return false; var po = (r.pos || {})[k]; return !po || po <= t; };
   if(r.tipo === 'vencidas' || r.tipo === 'pendmes'){
     S.cuotas.forEach(function(q){ var c = comp(q.compId); if(!c || c.estatus === 'por confirmar' || q.pausada || falta(q) <= 0) return; var e = estadoQ(q);
       if(r.tipo === 'vencidas' && e !== 'vencida') return; if(r.tipo === 'pendmes' && q.venc.slice(0, 7) !== t.slice(0, 7)) return;
@@ -3572,6 +3576,7 @@ function rgItems(r){
   } else if(r.tipo === 'nota'){
     var kk = 'nota|' + t; if(vis(kk) && !(r.res || {})['nota|' + (r.fecha || '')]) out.push({k: kk, txt: r.nota || r.nombre, sub: '', g: ''});
   }
+  if(sfx) out.forEach(function(o){ o.k = o.k + sfx; });
   return out;
 }
 function rgPendientes(){
@@ -3621,13 +3626,14 @@ function icsRegla(r){
   var rr = r.frec === 'semanal' ? 'RRULE:FREQ=WEEKLY;BYDAY=' + dias[+r.dow || 0] : r.frec === 'mensual' ? 'RRULE:FREQ=MONTHLY;BYMONTHDAY=' + (r.dom || 1) : r.frec === 'siempre' ? 'RRULE:FREQ=DAILY' : '';
   return ['BEGIN:VEVENT', 'UID:' + r.id + '@bait-lapletot', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z', 'DTSTART:' + ymd + 'T090000', 'DTEND:' + ymd + 'T091500', rr, 'SUMMARY:' + icsTxt('Bait Lapletot · ' + r.nombre), 'DESCRIPTION:' + icsTxt((dn ? dn + ' · ' : '') + (r.nota || '') + ((r.gabs || []).length ? ' · Gabai: ' + r.gabs.join(', ') : '')), 'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsTxt(r.nombre), 'TRIGGER:-PT0M', 'END:VALARM', 'END:VEVENT'].filter(Boolean).join('\r\n');
 }
+function icsReglaFechas(r){ if(r.frec !== 'fechas') return [icsRegla(r)]; return (r.fechas || []).filter(function(f){ return f >= hoy(); }).map(function(f, i){ return icsRegla(Object.assign({}, r, {id: r.id + '-' + i, frec: 'una', fecha: f})); }); }
 function icsDescargar(lista, nombre){
-  var txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Bait Lapletot//Recordatorios//ES', 'CALSCALE:GREGORIAN', 'X-WR-TIMEZONE:America/Mexico_City'].concat(lista.map(icsRegla)).concat(['END:VCALENDAR']).join('\r\n');
+  var txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Bait Lapletot//Recordatorios//ES', 'CALSCALE:GREGORIAN', 'X-WR-TIMEZONE:America/Mexico_City'].concat([].concat.apply([], lista.map(icsReglaFechas))).concat(['END:VCALENDAR']).join('\r\n');
   guardar(nombre + '.ics', new TextEncoder().encode(txt)); toast('Ábrelo en tu iPhone o Android para agregarlo al calendario con alarma');
 }
 function vRecordat(){
   var R = misReglas(), L = rgPendientes(), ed = ui.rgEd;
-  var fila = function(r){ var tp = (RG_TIPOS.find(function(x){ return x[0] === r.tipo; }) || ['', ''])[1], fr = r.frec === 'siempre' ? 'Diario (mientras haya)' : r.frec === 'una' ? 'El ' + fFecha(r.fecha || hoy()) : r.frec === 'semanal' ? 'Cada ' + DIAS_SEM[+r.dow || 0].toLowerCase() : 'El día ' + (r.dom || 1) + ' de cada mes';
+  var fila = function(r){ var tp = (RG_TIPOS.find(function(x){ return x[0] === r.tipo; }) || ['', ''])[1], fr = r.frec === 'fechas' ? (function(){ var fu = (r.fechas || []).filter(function(f){ return f >= hoy(); }).sort(); return (r.fechas || []).length + ' fecha' + ((r.fechas || []).length === 1 ? '' : 's') + (fu.length ? ' · próxima ' + fFecha(fu[0]) : ' · ya pasaron todas'); })() : r.frec === 'siempre' ? 'Diario (mientras haya)' : r.frec === 'una' ? 'El ' + fFecha(r.fecha || hoy()) : r.frec === 'semanal' ? 'Cada ' + DIAS_SEM[+r.dow || 0].toLowerCase() : 'El día ' + (r.dom || 1) + ' de cada mes';
     var n = r.estado === 'activa' ? rgItems(r).length : 0, st = r.estado === 'activa' ? ['Activa', 't-ok'] : r.estado === 'pausa' ? ['Stand by', 't-warn'] : ['Hecha', 't-mute'];
     return '<tr><td data-l="Regla"><b>' + esc(r.nombre) + '</b>' + (r.nota ? '<div class="sub">' + esc(r.nota) + '</div>' : '') + '</td><td data-l="Qué revisa">' + esc(tp) + (r.tipo === 'sinpago' ? ' (' + (r.dias || 30) + ' días)' : '') + '</td><td data-l="Gabai">' + ((r.gabs || []).length ? r.gabs.map(function(g){ return '<span dir="auto">' + esc(g) + '</span>'; }).join(', ') : 'Todos') + (r.concepto ? '<div class="sub">' + esc(r.concepto) + '</div>' : '') + (r.cobrador ? '<div class="sub">Cobrador: ' + esc((S.usuarios.find(function(u){ return u.id === r.cobrador; }) || {nombre: ''}).nombre) + '</div>' : '') + '</td><td data-l="Cuándo">' + esc(fr) + (r.hasta && r.hasta > hoy() ? '<div class="sub">Pospuesta al ' + fFecha(r.hasta) + '</div>' : '') + '</td><td data-l="Estado"><span class="pill ' + st[1] + '">' + st[0] + '</span>' + (n ? ' <b>' + n + '</b>' : '') + '</td>' +
       '<td data-l="Acciones"><div class="acts nowrap"><button type="button" class="btn ghost sm" data-a="rgIcs" data-id="' + r.id + '">📅 A mi calendario</button><button type="button" class="btn ghost sm" data-a="rgEdit" data-id="' + r.id + '">Editar</button>' + (r.estado === 'activa' ? '<button type="button" class="btn ghost sm" data-a="rgPausa" data-id="' + r.id + '">⏸ Stand by</button>' : '<button type="button" class="btn ghost sm" data-a="rgActivar" data-id="' + r.id + '">▶ Activar</button>') + bDel('data-a="rgDel" data-id="' + r.id + '"') + '</div></td></tr>'; };
@@ -3636,7 +3642,7 @@ function vRecordat(){
     '<section class="panel"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Mis reglas (' + R.length + ')</h2>' + (R.filter(function(r){ return r.estado === 'activa'; }).length ? '<button type="button" class="btn ghost sm" data-a="rgIcsTodas">📅 Mandar todas a mi calendario (iPhone / Android)</button>' : '') + '</div>' + (R.length ? '<div class="tw cards"><table class="cobt"><thead><tr><th>Regla</th><th>Qué revisa</th><th>Gabai</th><th>Cuándo avisa</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>' + R.map(fila).join('') + '</tbody></table></div>' : '<div class="empty">Todavía no tienes reglas. Crea una con “＋ Nueva regla”.</div>') + '</section></div>';
 }
 function rgForm(id){
-  var r = id === 'nueva' ? {tipo: 'donador', frec: 'una', fecha: addDias(hoy(), 1), dow: 1, dom: 1, gabs: [], dias: 30} : reglas().find(function(z){ return z.id === id; }); if(!r) return '';
+  var r = id === 'nueva' ? {tipo: 'donador', frec: 'fechas', fechas: [], fecha: addDias(hoy(), 1), dow: 1, dom: 1, gabs: [], dias: 30} : reglas().find(function(z){ return z.id === id; }); if(!r) return '';
   var cons = (S.conceptos || []).filter(function(k){ return S.compromisos.some(function(c){ return c.concepto === k; }); });
   return '<section class="panel rgform" id="rgForm"><h2>' + (id === 'nueva' ? 'Nueva regla' : 'Editar regla') + '</h2><div class="form">' +
     '<label class="f full">Nombre *<input id="rgNom" maxlength="80" value="' + esc(r.nombre || '') + '" placeholder="Ej. Revisar vencidas de Rafa"></label>' +
@@ -3646,23 +3652,26 @@ function rgForm(id){
     '<label class="f" id="rgCobW"' + (r.tipo === 'autorizar' ? '' : ' hidden') + '>Cobrador<select id="rgCob"><option value="">Todos</option>' + S.usuarios.filter(function(u){ return u.rol !== 'Dirección'; }).map(function(u){ return '<option value="' + u.id + '"' + (u.id === r.cobrador ? ' selected' : '') + '>' + esc(u.nombre) + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Concepto<select id="rgCon"><option value="">Todos</option>' + cons.map(function(k){ return '<option' + (k === r.concepto ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label>' +
     '<div class="f full rggabw"' + (r.tipo === 'donador' || r.tipo === 'nota' ? ' hidden' : '') + '><span>Gabai (marca uno o varios; ninguno = todos)</span><div class="chips">' + (S.gabaim || []).map(function(g){ return '<label class="chip rgch2"><input type="checkbox" data-rggab="' + esc(g) + '"' + ((r.gabs || []).indexOf(g) !== -1 ? ' checked' : '') + '> <span dir="auto">' + esc(g) + '</span></label>'; }).join('') + '</div></div>' +
-    '<label class="f">¿Cuándo te aviso?<select id="rgFrec">' + [['semanal', 'Cada semana'], ['mensual', 'Cada mes'], ['una', 'Una sola vez (en una fecha)'], ['siempre', 'Diario, mientras haya pendientes']].map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === r.frec ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">¿Cuándo te aviso?<select id="rgFrec">' + [['fechas', 'En las fechas que yo elija (calendario)'], ['semanal', 'Cada semana'], ['mensual', 'Cada mes'], ['una', 'Una sola vez (en una fecha)'], ['siempre', 'Diario, mientras haya pendientes']].map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === r.frec ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
     '<label class="f" id="rgDowW"' + (r.frec === 'semanal' ? '' : ' hidden') + '>Día de la semana<select id="rgDow">' + DIAS_SEM.map(function(n, i){ return '<option value="' + i + '"' + (+r.dow === i ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></label>' +
     '<label class="f" id="rgDomW"' + (r.frec === 'mensual' ? '' : ' hidden') + '>Día del mes<input id="rgDom" inputmode="numeric" value="' + (r.dom || 1) + '"></label>' +
     '<label class="f" id="rgFecW"' + (r.frec === 'una' ? '' : ' hidden') + '>Fecha<input id="rgFec" type="date" value="' + esc(r.fecha || addDias(hoy(), 1)) + '"></label>' +
+    (function(){ if(ui.rgFechasPara !== (r.id || 'nueva')){ ui.rgFechasPara = r.id || 'nueva'; ui.rgFechas = (r.fechas || []).slice(); } return ''; })() +
+    '<div class="f full rgfechasw" id="rgFechasW"' + (r.frec === 'fechas' ? '' : ' hidden') + '><span>Fechas en que te recuerdo</span><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><input id="rgFecNueva" type="date" value="' + addDias(hoy(), 1) + '" min="' + hoy() + '" aria-label="Elegir fecha"><button type="button" class="btn ghost" data-a="rgFecAdd">＋ Agregar fecha</button></div><div class="chips" id="rgFecList" style="margin-top:8px">' + rgFechasChips() + '</div></div>' +
     '<label class="f full">Nota (lo que tienes que hacer)<input id="rgNota" maxlength="200" value="' + esc(r.nota || '') + '" placeholder="Ej. Llamar a Rafa para el corte"></label>' +
-    '</div><div class="err" id="rgErr" hidden></div><div class="row" style="gap:8px"><button type="button" class="btn primary" data-a="rgGuardar" data-id="' + (r.id || 'nueva') + '">Guardar regla</button><button type="button" class="btn ghost" data-a="rgCancelar">Cancelar</button></div></section>';
+    '</div><div class="err" id="rgErr" hidden></div><div class="row" style="gap:8px"><button type="button" class="btn primary" data-a="rgGuardar" data-id="' + (r.id || 'nueva') + '">✔ Aplicar</button><button type="button" class="btn ghost" data-a="rgCancelar">Cancelar</button></div></section>';
 }
+function rgFechasChips(){ var L = (ui.rgFechas || []).slice().sort(); return L.length ? L.map(function(f){ return '<span class="chip on rgfchip">📅 ' + fFecha(f) + ' (' + DIAS_SEM[new Date(f + 'T12:00:00').getDay()].slice(0, 3) + ')<button type="button" data-a="rgFecDel" data-f="' + f + '" aria-label="Quitar fecha">×</button></span>'; }).join('') : '<span class="sub">Todavía no agregas fechas. Elige una en el calendario y pica “＋ Agregar fecha”; puedes agregar todas las que quieras.</span>'; }
 function rgGuardar(id){
   var nom = $('rgNom').value.trim(), err = $('rgErr'); if(!nom){ err.textContent = 'Ponle un nombre a la regla.'; err.hidden = false; return; }
   var r = id === 'nueva' ? {id: nid('rg'), uid: user().id, estado: 'activa', creada: hoy(), res: {}, pos: {}} : reglas().find(function(z){ return z.id === id; });
   if($('rgTipo').value === 'donador' && !$('rgDon').value){ err.textContent = 'Elige el donador.'; err.hidden = false; return; }
   r.nombre = nom; r.tipo = $('rgTipo').value; r.donId = r.tipo === 'donador' ? $('rgDon').value : ''; r.dias = +($('rgDias').value || 30); r.cobrador = r.tipo === 'autorizar' ? $('rgCob').value : ''; r.concepto = $('rgCon').value;
   r.gabs = Array.prototype.map.call(document.querySelectorAll('[data-rggab]:checked'), function(x){ return x.getAttribute('data-rggab'); });
-  r.frec = $('rgFrec').value; r.dow = +$('rgDow').value; r.dom = Math.max(1, Math.min(31, +$('rgDom').value || 1)); r.fecha = $('rgFec').value; r.nota = $('rgNota').value.trim();
+  r.frec = $('rgFrec').value; if(r.frec === 'fechas'){ var pendF = $('rgFecNueva') && $('rgFecNueva').value; r.fechas = (ui.rgFechas || []).slice().sort(); if(!r.fechas.length && pendF) r.fechas = [pendF]; if(!r.fechas.length){ err.textContent = 'Agrega al menos una fecha con “＋ Agregar fecha”.'; err.hidden = false; return; } } r.dow = +$('rgDow').value; r.dom = Math.max(1, Math.min(31, +$('rgDom').value || 1)); r.fecha = $('rgFec').value; r.nota = $('rgNota').value.trim();
   if(r.estado === 'hecha') r.estado = 'activa';
   if(id === 'nueva') reglas().push(r);
-  log((id === 'nueva' ? 'Creó' : 'Editó') + ' la regla "' + nom + '"'); ui.rgEd = null; save(); render(); toast('Regla guardada');
+  log((id === 'nueva' ? 'Creó' : 'Editó') + ' la regla "' + nom + '"'); ui.rgEd = null; ui.rgFechasPara = null; save(); render(); toast('Regla aplicada');
 }
 /* ================= Avisos ================= */
 function vAvisos(){
@@ -5167,7 +5176,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'fuente'){ try{ localStorage.setItem('bl-zoom', b.getAttribute('data-z')); }catch(e){} fuenteAplicar(); }
   else if(a === 'rgNueva'){ ui.rgEd = 'nueva'; render(); var fm = $('rgForm'); if(fm) fm.scrollIntoView({behavior: 'smooth'}); }
   else if(a === 'rgEdit'){ ui.rgEd = id; render(); var fm2 = $('rgForm'); if(fm2) fm2.scrollIntoView({behavior: 'smooth'}); }
-  else if(a === 'rgCancelar'){ ui.rgEd = null; render(); }
+  else if(a === 'rgCancelar'){ ui.rgEd = null; ui.rgFechasPara = null; render(); }
+  else if(a === 'rgFecAdd'){ var fv = $('rgFecNueva').value; if(!fv){ toast('Elige una fecha'); return; } ui.rgFechas = ui.rgFechas || []; if(ui.rgFechas.indexOf(fv) === -1) ui.rgFechas.push(fv); $('rgFecList').innerHTML = rgFechasChips(); var nx = new Date(fv + 'T12:00:00'); nx.setDate(nx.getDate() + 7); $('rgFecNueva').value = nx.getFullYear() + '-' + pad(nx.getMonth() + 1) + '-' + pad(nx.getDate()); }
+  else if(a === 'rgFecDel'){ ui.rgFechas = (ui.rgFechas || []).filter(function(x){ return x !== b.getAttribute('data-f'); }); $('rgFecList').innerHTML = rgFechasChips(); }
   else if(a === 'rgGuardar') rgGuardar(id);
   else if(a === 'rgPausa'){ var rp = reglas().find(function(z){ return z.id === id; }); if(rp){ rp.estado = 'pausa'; save(); log('Puso en stand by la regla "' + rp.nombre + '"'); } if(!$('modal').hidden){ closeModal(); rgPopup(true); } render(); rgCampana(); toast('Regla en stand by: no te avisará hasta que la actives'); }
   else if(a === 'rgActivar'){ var ra = reglas().find(function(z){ return z.id === id; }); if(ra){ ra.estado = 'activa'; ra.hasta = ''; save(); } render(); rgCampana(); toast('Regla activa'); }
@@ -5544,7 +5555,7 @@ document.addEventListener('change', function(ev){
   else if(t.getAttribute && t.getAttribute('data-rgfecha') && t.value){ rgAccion(t.getAttribute('data-r'), t.getAttribute('data-k'), 'pos', t.value); var fl2 = t.closest('.rgit'); if(fl2) fl2.remove(); toast('Te lo recuerdo el ' + fFecha(t.value)); rgCampana(); if(ui.view === 'recordat' && $('modal').hidden) render(); }
   else if(t.id === 'rgTipo'){ $('rgDonW').hidden = t.value !== 'donador'; var gw = document.querySelector('.rggabw'); if(gw) gw.hidden = t.value === 'donador' || t.value === 'nota'; $('rgDiasW').hidden = t.value !== 'sinpago'; $('rgCobW').hidden = t.value !== 'autorizar'; }
   else if(t.id === 'rgDon'){ var nm = $('rgNom'); if(nm && !nm.value && t.value){ var dd = don(t.value); if(dd) nm.value = 'Recordar a ' + dd.nombre; } }
-  else if(t.id === 'rgFrec'){ $('rgDowW').hidden = t.value !== 'semanal'; $('rgDomW').hidden = t.value !== 'mensual'; $('rgFecW').hidden = t.value !== 'una'; }
+  else if(t.id === 'rgFrec'){ $('rgDowW').hidden = t.value !== 'semanal'; $('rgDomW').hidden = t.value !== 'mensual'; $('rgFecW').hidden = t.value !== 'una'; $('rgFechasW').hidden = t.value !== 'fechas'; }
   else if(t.id === 'cobCon'){ ui.cob.con = t.value; if(ui.cf) delete ui.cf.cob; render(); }
   else if(t.id === 'recEstilo'){ S.cfg = S.cfg || {}; S.cfg.recEstilo = t.value; save(); toast('Estilo de recibo guardado'); }
   else if(t.id === 'portalSel'){ ui.portal.d = t.value; render(); }
