@@ -828,7 +828,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v152</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v153</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1520,7 +1520,7 @@ function abrirModOc(gid){
 }
 function modOcSet(id, vis){ var u = user(); if(!u) return; S.cfg = S.cfg || {}; var k = 'navOc_' + u.id, oc = (S.cfg[k] || []).slice(), i = oc.indexOf(id); if(vis && i !== -1) oc.splice(i, 1); if(!vis && i === -1) oc.push(id); S.cfg[k] = oc; save(); renderNav(); }
 function renderNav(){
-  var pend = porEnviar().filter(function(x){ return !x.omitir; }).length;
+  var pend = porEnviar().filter(function(x){ return !x.omitir && (x.tipo === 'venc' || x.tipo === 'varias'); }).length;
   var ocM = navOc(), todas = vistasOrden().concat(VIEWS.filter(function(v){ return v[0] === 'portal'; })).filter(function(v){ return puede(v[0]) && ocM.indexOf(v[0]) === -1; });
   var boton = function(v){
     var ti = vistasOrden().indexOf(v), dr = ti !== -1 && !esDonante() ? ' draggable="true" data-drag="tabs" data-drop="tabs" data-axis="y" data-k="' + ti + '"' : '';
@@ -3666,16 +3666,21 @@ function rgGuardar(id){
 }
 /* ================= Avisos ================= */
 function vAvisos(){
-  var lista = porEnviar(), env = lista.filter(function(x){ return !x.omitir; }), om = lista.filter(function(x){ return x.omitir; });
+  ui.avf = ui.avf || 'deben';
+  var grupo = function(x){ return x.tipo === 'venc' || x.tipo === 'varias' ? 'deben' : x.tipo === 'pre' ? 'pre' : 'renov'; };
+  var todos = porEnviar(), cnt = {deben: 0, pre: 0, renov: 0, todos: 0}; todos.forEach(function(x){ if(x.omitir) return; cnt[grupo(x)]++; cnt.todos++; });
+  var lista = todos.filter(function(x){ return ui.avf === 'todos' || grupo(x) === ui.avf; }), env = lista.filter(function(x){ return !x.omitir; }), om = lista.filter(function(x){ return x.omitir; });
   var av = S.avisos.slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
   function card(x, k){
     var d = don(x.c.donanteId), m = mensaje(x.tipo, x.c, x.qs), tel = telDigits(d.tel), wa = x.canales.indexOf('whatsapp') !== -1;
     return '<div class="avrow"><span class="pill ' + (x.tipo === 'pre' ? 't-info' : x.tipo === 'renov' ? 't-ok' : 't-warn') + '">' + PLANT[x.tipo] + '</span>' +
-      '<div class="avname"><b>' + esc(d.nombre) + '</b><span class="sub">' + esc(x.por) + (x.omitir ? ' · No sale: ' + esc(x.omitir) : '') + '</span></div>' +
+      '<div class="avname"><b>' + esc(d.nombre) + '</b><span class="sub">' + (x.tipo === 'pre' ? '✓ Al corriente · ' : '') + esc(x.por) + (x.omitir ? ' · No sale: ' + esc(x.omitir) : '') + '</span></div>' +
       '<details class="avmsg"><summary>Ver mensaje</summary><div class="msg' + (m.idioma === 'he' ? ' he' : '') + '">' + esc(m.texto) + '</div></details>' +
       (x.omitir ? '' : '<div class="acts nowrap">' + (wa && tel ? '<button type="button" class="btn primary sm" data-a="enviarWa" data-k="' + k + '">WhatsApp</button>' : '') + '<button type="button" class="btn ghost sm" data-a="enviarAuto" data-k="' + k + '">' + (wa && tel ? 'Otro' : 'Enviar') + '</button></div>') + '</div>';
   }
-  return '<div style="display:grid;gap:18px"><section class="panel"><h2>Por enviar hoy (' + env.length + ')</h2><div class="sub">Si ya pagó, no sale nada. Máximo 2 recordatorios por cuota. Días ' + S.cfg.d1 + ' y ' + S.cfg.d2 + ' después de vencer (ajustables en Configuración).</div>' +
+  var chipsAv = '<div class="chips rgch" style="margin:8px 0 4px">' + [['deben', '🔴 Deben (vencidas)'], ['pre', '🟡 Antes de vencer (van al corriente)'], ['renov', '🔵 Renovación'], ['todos', 'Todos']].map(function(o){ return '<button type="button" class="chip' + (ui.avf === o[0] ? ' on' : '') + '" data-a="avF" data-f="' + o[0] + '">' + o[1] + ' <b>' + cnt[o[0]] + '</b></button>'; }).join('') + '</div>';
+  var expl = ui.avf === 'pre' ? '<div class="note">Estos donadores <b>no deben nada</b>: es el aviso amable de que su próxima cuota vence pronto (hasta 3 días antes). Se puede apagar en Configuración.</div>' : ui.avf === 'deben' ? '<div class="sub">Solo donadores con cuotas vencidas sin pagar. Si ya pagó, desaparece solo. Máximo 2 recordatorios por cuota (días ' + S.cfg.d1 + ' y ' + S.cfg.d2 + ' después de vencer).</div>' : '';
+  return '<div style="display:grid;gap:18px"><section class="panel"><h2>Por enviar hoy (' + env.length + ')</h2>' + chipsAv + expl +
     (env.length ? '<div class="avlist">' + lista.map(function(x, k){ return x.omitir ? '' : card(x, k); }).join('') + '</div>' : '<div class="empty">No hay recordatorios pendientes para hoy.</div>') +
     (om.length ? '<details><summary class="sub" style="cursor:pointer">' + om.length + ' que no salen hoy y por qué</summary><div class="avlist">' + lista.map(function(x, k){ return x.omitir ? card(x, k) : ''; }).join('') + '</div></details>' : '') + '</section>' +
   '<section class="panel"><h2>Avisos enviados</h2>' + (av.length ? '<div class="tw cards"><table><thead><tr><th>Fecha</th><th>Canal</th><th>Para</th><th>Plantilla</th><th>Estado</th></tr></thead><tbody>' +
@@ -5174,6 +5179,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'rgBell'){ rgPopup(true); }
   else if(a === 'rgIcs'){ var ri2 = reglas().find(function(z){ return z.id === id; }); if(ri2) icsDescargar([ri2], 'Recordatorio ' + ri2.nombre); }
   else if(a === 'rgIcsTodas'){ icsDescargar(misReglas().filter(function(r){ return r.estado === 'activa'; }), 'Recordatorios Bait Lapletot'); }
+  else if(a === 'avF'){ ui.avf = b.getAttribute('data-f'); render(); }
   else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'gabOrd'){ ev.preventDefault(); abrirGabOrd(); }
