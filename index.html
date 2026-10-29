@@ -813,7 +813,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v129</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v130</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3604,8 +3604,8 @@ async function reciboPdf(pid, wa){
   var url = png ? URL.createObjectURL(png) : '';
   openModal(head('Enviar recibo por WhatsApp', esc(d.nombre) + ' · ' + esc(p.recibo || '')) +
     (url ? '<div class="recprev"><img src="' + url + '" alt="Vista previa del recibo"></div>' : '') +
-    (puedeFile ? '<button type="button" class="btn sm recwa recbig" data-a="recShare">📤 Compartir el PDF (elige WhatsApp)</button>' : '') +
-    (!tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recCopiaWa">📋 Copiar recibo y abrir WhatsApp</button><div class="sub" style="text-align:center">En el chat de WhatsApp presiona <b>⌘ V</b> (o Ctrl V) para pegar el recibo y luego Enviar.</div>' : '') +
+    (puedeFile && tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recShare">📤 Compartir el PDF (elige WhatsApp)</button>' : '') +
+    (!tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recCopiaWa">Abrir WhatsApp con el recibo</button><div class="sub" style="text-align:center;margin-top:6px">Se abre WhatsApp con el mensaje y el recibo ya copiado: en el chat solo presiona <b>⌘ V</b> (pegar) y <b>Enviar</b>.</div>' : '') +
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="recBajar">⬇ Descargar PDF</button><button type="button" class="btn ghost" data-a="close">Cerrar</button></div>');
 }
 var REC_WA = null;
