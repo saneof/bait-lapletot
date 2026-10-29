@@ -818,7 +818,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v137</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v138</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -943,28 +943,39 @@ var ROPA_NUEVOS = [
   ['Jack Skaba', 'רפה - יצחק עבוד', '2026-03-26', 48000, null], ['Eduardo Zaga', 'כרטיסי- רפה', '2026-09-29', 35000, 0], ['Brian Tulstanu', 'יחידים', '2026-09-29', 35000, 0], ['Leon Rabinovitz', 'יחידים', '2026-09-29', 35000, 0],
   ['Salomon Romano Metta', 'יחידים', '2026-09-29', 35000, 0], ['David Cherem Ades', 'שלומה נחמד', '2026-09-29', 35000, 12], ['Beto Galante', 'כרטיסי- רפה', '2026-09-29', 35000, 0], ['Mony/Eduardo Zaga', 'כרטיסי- רפה', '2026-09-29', 35000, 0],
   ['Isaac Credi', 'כרטיס- יצחק עבוד', '2026-09-29', 35000, 0], ['Isaac Eskenazi', 'כרטיס- יצחק עבוד', '2026-09-29', 35000, 0], ['Jose Chacalo Hilu', 'שלומה נחמד', '2026-09-29', 70000, 12], ['Moy Romano', 'כרטיסי- רפה', '2026-09-29', 50000, 0],
-  ['Manuel Saba Ades', 'כרטיסי- רפה', '2026-09-29', 180000, 0], ['Moy Betech', 'שלומה נחמד', '2026-10-14', 35000, null]
+  ['Manuel Saba Ades', 'כרטיסי- רפה', '2026-09-29', 180000, 0], ['Moy Betech', 'שלומה נחמד', '2026-10-14', 35000, null],
+  ['Moy Betech', 'שלומה נחמד', '2026-02-18', 1240000, 12, 'MXN'], ['Zury Esses', 'רפה - יצחק עבוד', '2026-03-11', 3600000, 10, 'MXN'], ['Beto Shamosh', 'שלומה נחמד', '2026-03-10', 5000000, 12, 'MXN'],
+  ['Abraham Chayo', 'שלומה נחמד', '2026-03-10', 370000, 15, 'MXN'], ['Adolfo Masliah', 'רפה - יצחק עבוד', '2026-03-19', 3500000, 0, 'MXN'], ['Sion Cherem', 'שלומה נחמד', '2026-09-22', 600000, 12, 'MXN'],
+  ['Daniel Cain', 'שלומה נחמד', '2026-09-22', 605000, 12, 'MXN'], ['Eduardo Cain', 'שלומה נחמד', '2026-09-22', 605000, 10, 'MXN', ['Eduardo', 'Cain']], ['Abraham Chayo', 'שלומה נחמד', '2026-09-22', 860000, 15, 'MXN'],
+  ['Antonio Dichi', 'שלומה נחמד', '2026-09-22', 620000, 12, 'MXN'], ['Esteralla Achar', 'רפה - יצחק עבוד', '2026-09-29', 680000, 0, 'MXN'], ['Alfonso Cassab', 'שלומה נחמד', '2026-09-29', 620000, 12, 'MXN']
 ];
+function fixAdopcionNina(){
+  if(!S || !S.compromisos) return; S.fixes = S.fixes || {}; if(S.fixes.adopN1) return; S.fixes.adopN1 = true;
+  S.conceptos = S.conceptos || []; if(S.conceptos.indexOf('Adopcion Niña') === -1) S.conceptos.unshift('Adopcion Niña');
+  S.compromisos.forEach(function(c){ if(c.origen === 'importado' && c.concepto === 'Mensualidad') c.concepto = 'Adopcion Niña'; });
+}
 function aplicarRopa(){
   if(!S || !S.donativos) return; S.fixes = S.fixes || {}; var hechos = 0;
   ['Ropa Pesaj', 'Ropa Rosh Hashana'].forEach(function(k){ S.conceptos = S.conceptos || []; if(S.conceptos.indexOf(k) === -1) S.conceptos.push(k); });
   ROPA_NUEVOS.forEach(function(x){
     var key = 'ropa|' + x[0] + '|' + x[2] + '|' + x[3]; if(S.fixes[key]) return;
-    var d = S.donantes.find(function(z){ return z.nombre === x[0]; }); if(!d) return; S.fixes[key] = true;
+    var d = S.donantes.find(function(z){ return z.nombre === x[0]; });
+    if(!d && x[6]){ d = {id: nid('d'), nom: x[6][0], ape: x[6][1], nombre: x[0], hebreo: '', tel: '', correo: '', idioma: 'es', dir: '', notas: 'Agregado con la importación de Ropa', noEnviar: false}; S.donantes.push(d); }
+    if(!d) return; S.fixes[key] = true; var mon = x[5] || 'USD';
     var mes = +x[2].slice(5, 7), con = mes <= 4 ? 'Ropa Pesaj' : 'Ropa Rosh Hashana';
     if(S.compromisos.some(function(c){ return c.donanteId === d.id && c.concepto === con && S.donativos.some(function(p){ return p.compId === c.id && p.fecha === x[2] && p.montoC === x[3]; }); })) return;
     var base = S.compromisos.find(function(c){ return c.donanteId === d.id && c.anio === 2026; }) || {};
-    var pct = x[4] != null ? x[4] : (base.comisionPct || 0), cj = cajaUsd(x[1]);
-    var c = crearCompromiso({donanteId: d.id, anio: 2026, modalidad: 'Pago directo', mesIni: mes, anualC: x[3], cuotaC: x[3], moneda: 'USD', monPago: 'USD', forma: 'Efectivo', caja: cj, gabai: x[1], emisor: cj === 'NY' ? 'Bait Lapletot USA' : (base.emisor || (S.emisores || [''])[0]), concepto: con, comisionPct: pct, descripcion: 'Ropa (USD) · importado del Excel'});
+    var pct = x[4] != null ? x[4] : (base.comisionPct || 0), cj = mon === 'MXN' ? 'MXN' : cajaUsd(x[1]);
+    var c = crearCompromiso({donanteId: d.id, anio: 2026, modalidad: 'Pago directo', mesIni: mes, anualC: x[3], cuotaC: x[3], moneda: mon, monPago: mon, forma: 'Efectivo', caja: cj, gabai: x[1], emisor: cj === 'NY' ? 'Bait Lapletot USA' : (mon === 'MXN' ? 'Bait Lapletot México' : (base.emisor || (S.emisores || [''])[0])), concepto: con, comisionPct: pct, descripcion: 'Ropa (' + mon + ') · importado del Excel'});
     c.origen = 'importado'; c.estatus = 'activo'; c.fechaInicio = x[2];
     var q = S.cuotas.find(function(z){ return z.compId === c.id; });
-    registrarDonativo(c, {fecha: x[2], montoC: x[3], moneda: 'USD', montoCompC: x[3], forma: 'Efectivo', caja: cj, plan: q ? [{q: q, ap: x[3]}] : [], obs: 'Ropa USD'});
+    registrarDonativo(c, {fecha: x[2], montoC: x[3], moneda: mon, montoCompC: x[3], forma: 'Efectivo', caja: cj, plan: q ? [{q: q, ap: x[3]}] : [], obs: 'Ropa ' + mon});
     hechos++;
   });
   if(hechos) save();
   return hechos;
 }
-function aplicarIngresosNuevos(){ recEstiloFix(); aplicarRopa();
+function aplicarIngresosNuevos(){ recEstiloFix(); fixAdopcionNina(); aplicarRopa();
   if(!S || !S.donativos) return; S.fixes = S.fixes || {}; var hechos = 0;
   INGRESOS_NUEVOS.forEach(function(x){
     var k = 'ing|' + x.n + '|' + x.f + '|' + x.mx + '|' + x.usd; if(S.fixes[k]) return; S.fixes[k] = true;
