@@ -475,7 +475,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .portalenc{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:2px solid #C9A24A}.portalenc img{height:54px;width:auto;flex-shrink:0;padding-right:16px;border-right:1px solid var(--line)}.portalenc .ptit{font-size:19px;font-weight:700;color:var(--brand)}
 .recprev{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#EEF2F7;text-align:center}.recprev img{width:100%;max-width:420px;display:block;margin:0 auto}.recbig{width:100%;min-height:46px;font-size:15px;justify-content:center;margin-top:10px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
-.gmlist{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 10px}.gmrow{display:flex !important;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line)}.gmrow:last-child{border-bottom:0}.gmmes{width:96px;font-weight:600}.gmgab{flex:1}.gmes{font-size:10.5px;padding:1px 6px}
+.gmlist{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 10px}.gmrow{display:flex !important;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line)}.gmrow:last-child{border-bottom:0}.gmmes{width:96px;font-weight:600}.gmpct{width:150px}.gmhead{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;cursor:default}.gmgab{flex:1;text-align:left}.gmes{font-size:10.5px;padding:1px 6px}
 .semaf{display:inline-flex;gap:2px;padding:2px 3px;border-radius:7px;background:#1B2230;margin-right:7px;vertical-align:middle}.semaf i{width:7px;height:7px;border-radius:50%;background:#3a4252}.s-r i:nth-child(1){background:#E5484D;box-shadow:0 0 5px #E5484D}.s-a i:nth-child(2){background:#F5B83D;box-shadow:0 0 5px #F5B83D}.s-v i:nth-child(3){background:#30A46C;box-shadow:0 0 5px #30A46C}.s-g i{background:#5b6472}.prec .name{display:flex;align-items:center;flex-wrap:wrap;gap:4px}.pend-r{background:var(--bad-soft);border-radius:10px;padding-left:8px;padding-right:8px}.pend-a{background:var(--warn-soft);border-radius:10px;padding-left:8px;padding-right:8px}.semleg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:8px}
 .t-ok{background:var(--ok-soft);color:var(--ok)}.t-warn{background:var(--warn-soft);color:var(--warn)}.t-bad{background:var(--bad-soft);color:var(--bad)}
 .t-info{background:var(--brand-soft);color:var(--ink)}.t-mute{background:var(--mute-soft);color:var(--muted)}
@@ -813,7 +813,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v125</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v126</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1073,7 +1073,7 @@ function registrarDonativo1(c, o){
   S.recibo = (S.recibo || 0) + 1;
   var rec = 'R-' + String(S.recibo).padStart(4, '0');
   var cubre = o.plan.map(function(p){ p.q.aplicadoC += p.ap; return {qid: p.q.id, num: p.q.num, mes: p.q.mes, ap: p.ap}; });
-  var dv = {id: nid('p'), compId: c.id, gabai: o.plan && o.plan[0] && o.plan[0].q ? gabQ(o.plan[0].q, c) : (c.gabai || ''), comPct: c.comisionPct || 0, tc: o.moneda !== c.moneda ? (o.tc || S.cfg.tc) : null, fecha: o.fecha, montoC: o.montoC, moneda: o.moneda, montoCompC: o.montoCompC, forma: o.forma, caja: o.caja || (o.moneda === c.moneda ? c.caja : cajaDef(o.moneda)), cubre: cubre, obs: o.obs || '', recibo: rec};
+  var dv = {id: nid('p'), compId: c.id, gabai: o.plan && o.plan[0] && o.plan[0].q ? gabQ(o.plan[0].q, c) : (c.gabai || ''), comPct: o.plan && o.plan[0] && o.plan[0].q ? comQ(o.plan[0].q, c) : (c.comisionPct || 0), tc: o.moneda !== c.moneda ? (o.tc || S.cfg.tc) : null, fecha: o.fecha, montoC: o.montoC, moneda: o.moneda, montoCompC: o.montoCompC, forma: o.forma, caja: o.caja || (o.moneda === c.moneda ? c.caja : cajaDef(o.moneda)), cubre: cubre, obs: o.obs || '', recibo: rec};
   S.donativos.push(dv);
   return dv;
 }
@@ -3377,13 +3377,13 @@ function vCompDetalle(c){
   return '<div><button type="button" class="back" data-a="compBack">← Seguimientos</button></div>' +
   '<section class="panel"><div class="row" style="justify-content:space-between"><div><h2 style="font-size:22px">' + esc(d.nombre) + '</h2><div class="sub">Compromiso ' + c.anio + ' · ' + (es === 'por confirmar' ? 'Por confirmar (alta por link)' : es === 'activo' ? 'Activo' : es === 'renovado' ? 'Renovado' : 'Terminado') + ' · <span class="pill ' + ed[1] + '">' + ed[0] + '</span> <small>(solo interno)</small></div></div>' +
     '<div class="acts">' + (es === 'por confirmar' ? '<button type="button" class="btn primary" data-a="confirmar" data-id="' + c.id + '">Confirmar compromiso</button>' :
-      '<button type="button" class="btn primary" data-a="pago" data-id="' + c.id + '">Registrar pago</button><button type="button" class="btn ghost" data-a="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn ghost" data-a="ajustar" data-id="' + c.id + '">Ajustar</button><button type="button" class="btn ghost" data-a="gabMes" data-id="' + c.id + '">Gabai por mes</button>') +
+      '<button type="button" class="btn primary" data-a="pago" data-id="' + c.id + '">Registrar pago</button><button type="button" class="btn ghost" data-a="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn ghost" data-a="ajustar" data-id="' + c.id + '">Ajustar</button><button type="button" class="btn ghost" data-a="gabMes" data-id="' + c.id + '">Gabai / % por mes</button>') +
       '<button type="button" class="btn ghost" data-a="estadoCuenta" data-id="' + c.id + '">Estado de cuenta</button>' +
       (porRenovar(c) ? '<button type="button" class="btn ghost" data-a="renovar" data-id="' + c.id + '">Renovar ' + (c.anio + 1) + '</button>' : '') + '</div></div>' +
     '<div class="info">' +
       '<div><span>Monto anual</span><b>' + money(c.anualC, c.moneda) + '</b></div><div><span>Cuota mensual</span><b>' + money(c.cuotaC, c.moneda) + '</b></div>' +
       '<div><span>Cuotas</span><b>' + c.n + ' (' + (c.n === 1 ? Mes(c.mesIni) : rangoComp(c)) + ')</b></div><div><span>Vence</span><b>Día ' + c.dia + (c.periodo === 'Trimestral' ? ' cada 3 meses' : c.periodo === 'Bimestral' ? ' cada 2 meses' : ' de cada mes') + '</b></div>' +
-      '<div><span>Asignado (gabai)</span><b>' + gabTxt(c.gabai) + (cuotasDe(c.id).some(function(q){ return q.gabai != null && q.gabai !== (c.gabai || ''); }) ? ' <span class="pill t-warn">con meses cambiados</span>' : '') + ' <button type="button" class="back" data-a="gabMes" data-id="' + c.id + '">Corregir por mes</button></b></div>' +
+      '<div><span>Asignado (gabai)</span><b>' + gabTxt(c.gabai) + (cuotasDe(c.id).some(function(q){ return q.gabai != null && q.gabai !== (c.gabai || ''); }) ? ' <span class="pill t-warn">con meses cambiados</span>' : '') + ' <button type="button" class="back" data-a="gabMes" data-id="' + c.id + '">Cambiar por mes</button></b></div>' +
       '<div><span>Concepto</span><b>' + esc(c.concepto || '—') + '</b></div><div><span>Modalidad</span><b>' + esc(c.modalidad || 'Recurrente') + '</b></div>' + (c.descripcion ? '<div><span>Descripción</span><b>' + esc(c.descripcion) + '</b></div>' : '') + '<div><span>Dado</span><b>' + money(dado, c.moneda) + '</b></div><div><span>Falta</span><b>' + money(Math.max(0, c.anualC - dado), c.moneda) + '</b></div>' +
     '</div><div><button type="button" class="btn ghost sm" data-a="editDon" data-id="' + d.id + '">Editar datos del donante</button></div></section>' +
   tablaCuotas(c, qs) +
@@ -3946,33 +3946,46 @@ function catNuevoOk(cat, selId){
 
 /* --- ajustar --- */
 /* --- Corregir gabai solo en algunos meses --- */
+function comQ(q, c){ if(q && q.comPct != null) return q.comPct; c = c || comp(q.compId); return c ? (c.comisionPct || 0) : 0; }
 function abrirGabMes(cid){
   var c = comp(cid), qs = cuotasDe(cid).slice().sort(function(a, b){ return (a.venc || '').localeCompare(b.venc || '') || a.num - b.num; });
-  openModal(head('Corregir gabai por mes', esc(don(c.donanteId).nombre) + ' · ' + c.anio + ' · gabai del compromiso: ' + (c.gabai ? '<span dir="auto">' + esc(c.gabai) + '</span>' : 'sin asignar')) +
-    '<div class="sub">Marca solo los meses que quieres cambiar. Los demás se quedan como están. Los pagos de esos meses también cambian de gabai (comisiones y contabilidad).</div>' +
+  openModal(head('Gabai y comisión por mes', esc(don(c.donanteId).nombre) + ' · ' + c.anio + ' · normal: ' + (c.gabai ? '<span dir="auto">' + esc(c.gabai) + '</span>' : 'sin gabai') + ' · ' + (c.comisionPct || 0) + '%') +
+    '<div class="sub">1) Marca solo los meses que cambian. 2) Elige el gabai y/o el % de comisión. Los demás meses se quedan como están. Los pagos de esos meses también se actualizan (comisiones y contabilidad).</div>' +
     '<div class="row" style="gap:8px;margin:8px 0"><button type="button" class="btn ghost sm" data-a="gmTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="gmNinguno">Quitar todos</button></div>' +
-    '<div class="gmlist">' + qs.map(function(q){ var g = gabQ(q, c), dif = q.gabai != null && q.gabai !== (c.gabai || ''); return '<label class="ck gmrow"><input type="checkbox" data-gmq="' + q.id + '"><span class="gmmes">' + Mes(q.mes) + '</span><span class="gmgab" dir="auto">' + (g ? esc(g) : '<span class="sub">Sin gabai</span>') + '</span>' + (dif ? '<span class="pill t-warn">cambiado</span>' : '') + '<span class="pill ' + EST[estadoQ(q)][1] + '">' + EST[estadoQ(q)][0] + '</span></label>'; }).join('') + '</div>' +
-    '<div class="form" style="margin-top:10px"><label class="f">Nuevo gabai para los meses marcados<select id="gmGab">' + optsGabai(c.gabai || '', false) + '</select></label></div>' +
+    '<div class="gmlist"><div class="gmrow gmhead"><span style="width:18px"></span><span class="gmmes">Mes</span><span class="gmgab">Gabai</span><span class="gmpct">% com.</span><span>Estado</span></div>' + qs.map(function(q){ var g = gabQ(q, c), pc = comQ(q, c), dg = q.gabai != null && q.gabai !== (c.gabai || ''), dp = q.comPct != null && q.comPct !== (c.comisionPct || 0); return '<label class="ck gmrow"><input type="checkbox" data-gmq="' + q.id + '"><span class="gmmes">' + Mes(q.mes) + '</span><span class="gmgab" dir="auto">' + (g ? esc(g) : '<span class="sub">Sin gabai</span>') + (dg ? ' <span class="pill t-warn">cambiado</span>' : '') + '</span><span class="gmpct">' + (pc ? pc + '%' : '<span class="pill t-mute">sin comisión</span>') + (dp && pc ? ' <span class="pill t-warn">cambiado</span>' : '') + '</span><span class="pill ' + EST[estadoQ(q)][1] + '">' + EST[estadoQ(q)][0] + '</span></label>'; }).join('') + '</div>' +
+    '<div class="form" style="margin-top:10px"><label class="f">Gabai para los meses marcados<select id="gmGab"><option value="__nc">— No cambiar —</option>' + optsGabai('__x', false) + '</select></label>' +
+      '<label class="f">% de comisión para los meses marcados<span class="row" style="gap:6px"><input id="gmPct" inputmode="decimal" placeholder="No cambiar" style="flex:1"><button type="button" class="btn ghost sm" data-a="gmSinCom">Sin comisión</button><button type="button" class="btn ghost sm" data-a="gmPctNormal">Normal (' + (c.comisionPct || 0) + '%)</button></span></label></div>' +
     '<div class="err" id="gmErr" hidden></div>' +
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="gmSave" data-id="' + cid + '">Guardar cambio</button></div>');
 }
 function gabMesSave(cid){
-  var c = comp(cid), ng = $('gmGab').value, sel = [];
+  var c = comp(cid), ng = $('gmGab').value, pv = String($('gmPct').value).trim().replace('%', '').replace(',', '.'), sel = [], err = $('gmErr');
   document.querySelectorAll('[data-gmq]').forEach(function(x){ if(x.checked) sel.push(x.getAttribute('data-gmq')); });
-  if(!sel.length){ var e = $('gmErr'); e.textContent = 'Marca al menos un mes.'; e.hidden = false; return; }
+  if(!sel.length){ err.textContent = 'Marca al menos un mes.'; err.hidden = false; return; }
+  var camG = ng !== '__nc', camP = pv !== '', np2 = camP ? parseFloat(pv) : null;
+  if(camP && (isNaN(np2) || np2 < 0 || np2 > 100)){ err.textContent = 'Escribe un % entre 0 y 100.'; err.hidden = false; return; }
+  if(!camG && !camP){ err.textContent = 'Elige un gabai o un % de comisión para cambiar.'; err.hidden = false; return; }
   var meses = [], np = 0;
-  sel.forEach(function(id){ var q = S.cuotas.find(function(z){ return z.id === id; }); if(!q) return; if(ng === (c.gabai || '')) delete q.gabai; else q.gabai = ng; meses.push(Mes(q.mes)); });
-  S.donativos.forEach(function(p){ if(p.compId !== c.id || !(p.cubre || []).some(function(y){ return sel.indexOf(y.qid) !== -1; })) return; var g2 = gabPago({cubre: p.cubre}, c); if(p.gabai !== g2){ p.gabai = g2; np++; } });
-  c.ajustes = c.ajustes || []; c.ajustes.push({fecha: hoy(), usuario: user().nombre, desc: 'Gabai de ' + meses.join(', ') + ' cambiado a ' + (ng || 'sin gabai') + (np ? ' (' + np + ' pago' + (np === 1 ? '' : 's') + ' actualizado' + (np === 1 ? '' : 's') + ')' : '')});
-  log('Cambió el gabai de ' + meses.join(', ') + ' de ' + don(c.donanteId).nombre + ' a ' + (ng || 'sin gabai'));
-  closeModal(); render(); toast('Gabai actualizado en ' + meses.length + ' mes' + (meses.length === 1 ? '' : 'es'));
+  sel.forEach(function(id){ var q = S.cuotas.find(function(z){ return z.id === id; }); if(!q) return;
+    if(camG){ if(ng === (c.gabai || '')) delete q.gabai; else q.gabai = ng; }
+    if(camP){ if(np2 === (c.comisionPct || 0)) delete q.comPct; else q.comPct = np2; }
+    meses.push(Mes(q.mes)); });
+  S.donativos.forEach(function(p){ if(p.compId !== c.id || !(p.cubre || []).some(function(y){ return sel.indexOf(y.qid) !== -1; })) return; var t = false;
+    var q0 = S.cuotas.find(function(z){ return z.id === p.cubre[0].qid; });
+    if(camG){ var g2 = gabPago({cubre: p.cubre}, c); if(p.gabai !== g2){ p.gabai = g2; t = true; } }
+    if(camP && q0){ var p2 = comQ(q0, c); if(p.comPct !== p2){ p.comPct = p2; t = true; } }
+    if(t) np++; });
+  var que = (camG ? 'gabai a ' + (ng || 'sin gabai') : '') + (camG && camP ? ' y ' : '') + (camP ? 'comisión a ' + np2 + '%' : '');
+  c.ajustes = c.ajustes || []; c.ajustes.push({fecha: hoy(), usuario: user().nombre, desc: 'Cambió ' + que + ' en ' + meses.join(', ') + (np ? ' (' + np + ' pago' + (np === 1 ? '' : 's') + ' actualizado' + (np === 1 ? '' : 's') + ')' : '')});
+  log('Cambió ' + que + ' en ' + meses.join(', ') + ' de ' + don(c.donanteId).nombre);
+  closeModal(); render(); toast('Listo: ' + meses.length + ' mes' + (meses.length === 1 ? '' : 'es') + ' actualizado' + (meses.length === 1 ? '' : 's'));
 }
 function abrirAjuste(cid){
   var c = comp(cid), qs = cuotasDe(cid), abiertas = qs.filter(function(q){ return q.aplicadoC === 0; });
   openModal(head('Ajustar compromiso', esc(don(c.donanteId).nombre) + ' · ' + c.anio) +
     '<div class="note" style="background:var(--brand-soft);color:var(--ink)">Para subir o bajar la cuota a partir de un mes usa el botón <b>Editar</b>.</div>' +
     '<div><div class="sub" style="margin-bottom:6px">Meses en pausa (solo cuotas sin pagos)</div>' + (abiertas.length ? abiertas.map(function(q){ return '<label class="ck"><input type="checkbox" data-ajq="' + q.id + '"' + (q.pausada ? ' checked' : '') + '>' + Mes(q.mes) + ' · ' + money(q.montoC, c.moneda) + '</label>'; }).join('') : '<div class="sub">No hay cuotas sin pagos.</div>') + '</div>' +
-    '<div class="sub" style="margin-top:4px">¿Solo algunos meses? <button type="button" class="back" data-a="gabMes" data-id="' + cid + '">Corregir gabai por mes</button></div><div class="form"><label class="f">Gabai (todo el compromiso)<select id="ajGab">' + optsGabai(c.gabai || '', false) + '</select></label><label class="f">Porcentaje comisión<input id="ajCom" inputmode="decimal" value="' + (c.comisionPct || 0) + '"></label><label class="f">Concepto<select id="ajCon">' + (S.conceptos || []).concat(S.conceptos.indexOf(c.concepto) === -1 && c.concepto ? [c.concepto] : []).map(function(x){ return '<option' + (x === c.concepto ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></label></div>' +
+    '<div class="sub" style="margin-top:4px">¿Solo algunos meses? <button type="button" class="back" data-a="gabMes" data-id="' + cid + '">Cambiar gabai o % por mes</button></div><div class="form"><label class="f">Gabai (todo el compromiso)<select id="ajGab">' + optsGabai(c.gabai || '', false) + '</select></label><label class="f">Porcentaje comisión<input id="ajCom" inputmode="decimal" value="' + (c.comisionPct || 0) + '"></label><label class="f">Concepto<select id="ajCon">' + (S.conceptos || []).concat(S.conceptos.indexOf(c.concepto) === -1 && c.concepto ? [c.concepto] : []).map(function(x){ return '<option' + (x === c.concepto ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></label></div>' +
     '<label class="f">Motivo *<input id="ajMot" maxlength="200" placeholder="Ej. el donante pidió bajar su cuota"></label>' +
     '<div class="err" id="ajErr" hidden></div>' +
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="ajSave" data-id="' + cid + '">Guardar ajuste</button></div>');
@@ -4833,6 +4846,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'ajustar') abrirAjuste(id);
   else if(a === 'gabMes'){ closeModal(); abrirGabMes(id); }
   else if(a === 'gmSave') gabMesSave(id);
+  else if(a === 'gmSinCom'){ $('gmPct').value = '0'; }
+  else if(a === 'gmPctNormal'){ var cg = comp(document.querySelector('[data-a=gmSave]').getAttribute('data-id')); $('gmPct').value = String(cg.comisionPct || 0); }
   else if(a === 'gmTodos' || a === 'gmNinguno'){ document.querySelectorAll('[data-gmq]').forEach(function(x){ x.checked = a === 'gmTodos'; }); }
   else if(a === 'editar') abrirEditar(id);
   else if(a === 'edMes'){ ED.desde = +b.getAttribute('data-m'); document.querySelectorAll('[data-a=edMes]').forEach(function(x){ x.classList.toggle('on', x === b); }); edPrev(); }
