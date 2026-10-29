@@ -475,6 +475,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .portalenc{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:2px solid #C9A24A}.portalenc img{height:54px;width:auto;flex-shrink:0;padding-right:16px;border-right:1px solid var(--line)}.portalenc .ptit{font-size:19px;font-weight:700;color:var(--brand)}
 .recprev{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#EEF2F7;text-align:center}.recprev img{width:100%;max-width:420px;display:block;margin:0 auto}.recbig{width:100%;min-height:46px;font-size:15px;justify-content:center;margin-top:10px}
 #qlook{position:fixed;inset:0;z-index:9999;background:rgba(15,23,35,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;animation:qlIn .14s ease-out}@keyframes qlIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}#qlook .qlbar{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#fff;font-size:13px;width:min(816px,calc(100vw - 40px))}#qlook .qlacts{display:flex;gap:6px}#qlook .qlacts .btn.ghost{background:#fff}#qlook .qlhoja{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}#qlook .qlin{width:816px;transform-origin:0 0}
+.gmform{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel2,#F8FAFC)}.gmform summary{cursor:pointer}.gmtab{display:flex;flex-direction:column;gap:4px;margin:10px 0 6px}.gmtr{display:grid;grid-template-columns:140px minmax(0,1fr) 140px;gap:8px;align-items:center}.gmtr select,.gmtr input{min-height:36px}.gmth{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.gmdif{background:#FFF4DB;border-radius:8px;padding:2px 4px}@media (max-width:760px){.gmtr{grid-template-columns:90px minmax(0,1fr) 90px}}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
 .gmlist{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 10px}.gmrow{display:flex !important;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line)}.gmrow:last-child{border-bottom:0}.gmmes{width:96px;font-weight:600}.gmpct{width:150px}.gmhead{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;cursor:default}.gmgab{flex:1;text-align:left}.gmes{font-size:10.5px;padding:1px 6px}
@@ -815,7 +816,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v132</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v133</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2049,6 +2050,26 @@ function vNuevoComp(){
     '<div class="err" id="ccErr" hidden></div>' +
     '<div class="row"><button type="button" class="btn primary" data-a="ccSave">Crear compromiso</button><button type="button" class="btn ghost" data-a="ccLimpiar">Limpiar</button></div></section>' + listaComps();
 }
+function gmForm(c, qs){
+  var hay = qs.some(function(q){ return q.gabai != null || q.comPct != null; });
+  var ord = qs.slice().sort(function(a, b){ return a.num - b.num; });
+  return '<details class="full gmform"' + (hay ? ' open' : '') + '><summary><b>Gabai y % de comisión por mes</b> <span class="sub">— solo si algún mes es de otro gabai o lleva otro %</span>' + (hay ? ' <span class="pill t-warn">hay meses cambiados</span>' : '') + '</summary>' +
+    '<div class="gmtab"><div class="gmtr gmth"><span>Mes</span><span>Gabai de ese mes</span><span>% comisión</span></div>' + ord.map(function(q){
+      var g = q.gabai != null ? q.gabai : '__', pc = q.comPct != null ? String(q.comPct) : '';
+      return '<div class="gmtr' + (q.gabai != null || q.comPct != null ? ' gmdif' : '') + '"><span class="gmmes">' + Mes(q.mes) + (q.aplicadoC > 0 ? ' <b style="color:var(--ok)">✓</b>' : '') + '</span><select data-gmg="' + q.id + '"><option value="__"' + (g === '__' ? ' selected' : '') + '>Igual que el compromiso</option>' + (S.gabaim || []).map(function(x){ return '<option value="' + esc(x) + '"' + (x === g ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select><input data-gmp="' + q.id + '" inputmode="decimal" placeholder="Igual (' + (c.comisionPct || 0) + '%)" value="' + esc(pc) + '"></div>';
+    }).join('') + '</div><div class="sub">Deja "Igual que el compromiso" en los meses que no cambian. Escribe 0 si un mes no lleva comisión.</div></details>';
+}
+function gmFormSave(c){
+  var cambios = [], tocadas = [];
+  document.querySelectorAll('[data-gmg]').forEach(function(sel){ var q = S.cuotas.find(function(z){ return z.id === sel.getAttribute('data-gmg'); }); if(!q) return; var v = sel.value, antes = q.gabai;
+    if(v === '__' || v === (c.gabai || '')) delete q.gabai; else q.gabai = v; if(antes !== q.gabai){ cambios.push(Mes(q.mes) + ': gabai ' + (q.gabai != null ? q.gabai : 'igual')); tocadas.push(q.id); } });
+  document.querySelectorAll('[data-gmp]').forEach(function(inp){ var q = S.cuotas.find(function(z){ return z.id === inp.getAttribute('data-gmp'); }); if(!q) return; var t = String(inp.value).trim().replace('%', '').replace(',', '.'), antes = q.comPct;
+    if(t === '' || isNaN(parseFloat(t))) delete q.comPct; else { var n = Math.max(0, Math.min(100, parseFloat(t))); if(n === (c.comisionPct || 0)) delete q.comPct; else q.comPct = n; }
+    if(antes !== q.comPct){ cambios.push(Mes(q.mes) + ': ' + (q.comPct != null ? q.comPct + '%' : '% igual')); if(tocadas.indexOf(q.id) === -1) tocadas.push(q.id); } });
+  if(tocadas.length) S.donativos.forEach(function(p){ if(p.compId !== c.id || !(p.cubre || []).some(function(y){ return tocadas.indexOf(y.qid) !== -1; })) return; var q0 = S.cuotas.find(function(z){ return z.id === p.cubre[0].qid; }); p.gabai = gabPago({cubre: p.cubre}, c); if(q0) p.comPct = comQ(q0, c); });
+  if(cambios.length){ c.ajustes = c.ajustes || []; c.ajustes.push({fecha: hoy(), usuario: user().nombre, desc: 'Por mes → ' + cambios.join(' · ')}); }
+  return cambios.length;
+}
 function abrirCompEd(cid){
   var c = comp(cid); if(!c) return; var d = don(c.donanteId) || {nombre: ''}, qs = cuotasDe(cid);
   if(c.concepto && (S.conceptos || []).indexOf(c.concepto) === -1) S.conceptos.push(c.concepto);
@@ -2057,6 +2078,7 @@ function abrirCompEd(cid){
   openModal(head('Corregir compromiso', esc(d.nombre) + ' · ' + c.anio) +
     '<div class="form">' + formComp('ce') +
       '<label class="f">Caja<select id="ceCaja">' + CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === c.caja ? ' selected' : '') + '>' + esc(k.nombre) + '</option>'; }).join('') + '</select></label>' +
+      gmForm(c, qs) +
       '<label class="ck full"><input type="checkbox" id="cePagos" checked> Aplicar los cambios también a los pagos ya registrados</label></div>' +
     '<div class="err" id="ceErr" hidden></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="ceSave" data-id="' + c.id + '">Guardar cambios</button></div>');
   $('dlg').classList.add('wide');
@@ -2099,6 +2121,7 @@ function ceSave(cid){
       if(c.caja !== antes.caja && caja(c.caja).mon === p.moneda){ p.caja = c.caja; t = true; }
       if(t) np++; });
     if(np) cambios.push(np + ' pagos actualizados'); }
+  var nmes = gmFormSave(c); if(nmes) cambios.push(nmes + ' cambio' + (nmes === 1 ? '' : 's') + ' por mes');
   reasig.forEach(function(p){ desaplicar(p); });
   for(var mm = 1; mm <= 12; mm++){ (function(m){
     var q = S.cuotas.find(function(z){ return z.compId === c.id && z.mes === m; }), v = plan[m] > 0 ? plan[m] : 0;
@@ -3393,7 +3416,7 @@ function vCompDetalle(c){
   return '<div><button type="button" class="back" data-a="compBack">← Seguimientos</button></div>' +
   '<section class="panel"><div class="row" style="justify-content:space-between"><div><h2 style="font-size:22px">' + esc(d.nombre) + '</h2><div class="sub">Compromiso ' + c.anio + ' · ' + (es === 'por confirmar' ? 'Por confirmar (alta por link)' : es === 'activo' ? 'Activo' : es === 'renovado' ? 'Renovado' : 'Terminado') + ' · <span class="pill ' + ed[1] + '">' + ed[0] + '</span> <small>(solo interno)</small></div></div>' +
     '<div class="acts">' + (es === 'por confirmar' ? '<button type="button" class="btn primary" data-a="confirmar" data-id="' + c.id + '">Confirmar compromiso</button>' :
-      '<button type="button" class="btn primary" data-a="pago" data-id="' + c.id + '">Registrar pago</button><button type="button" class="btn ghost" data-a="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn ghost" data-a="ajustar" data-id="' + c.id + '">Ajustar</button><button type="button" class="btn ghost" data-a="gabMes" data-id="' + c.id + '">Gabai / % por mes</button>') +
+      '<button type="button" class="btn primary" data-a="pago" data-id="' + c.id + '">Registrar pago</button><button type="button" class="btn ghost" data-a="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn ghost" data-a="ajustar" data-id="' + c.id + '">Ajustar</button><button type="button" class="btn ghost" data-a="compEd" data-id="' + c.id + '">Corregir (gabai por mes)</button>') +
       '<button type="button" class="btn ghost" data-a="estadoCuenta" data-id="' + c.id + '">Estado de cuenta</button>' +
       (porRenovar(c) ? '<button type="button" class="btn ghost" data-a="renovar" data-id="' + c.id + '">Renovar ' + (c.anio + 1) + '</button>' : '') + '</div></div>' +
     '<div class="info">' +
