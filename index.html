@@ -816,7 +816,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v133</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v134</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3513,7 +3513,16 @@ function reciboHtml(p, est){
     '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:14px">Recibo generado automáticamente el ' + fFecha(hoy()) + ' · Folio ' + esc(p.recibo || '') + '</div></div>';
 }
 /* --- Estado de cuenta (formato A) y recibo con el mismo formato --- */
-function edoSem(k){ return '<span style="display:inline-flex;gap:2px;padding:2px 3px;border-radius:7px;background:#1B2230;margin-right:7px;vertical-align:middle">' + [0, 1, 2].map(function(i){ return '<i style="width:7px;height:7px;border-radius:50%;display:inline-block;background:' + ((k === 'r' && i === 0) ? '#E5484D' : (k === 'a' && i === 1) ? '#F5B83D' : (k === 'v' && i === 2) ? '#30A46C' : '#3a4252') + '"></i>'; }).join('') + '</span>'; }
+var SEM_IMG = {};
+function semImg(k){
+  if(SEM_IMG[k]) return SEM_IMG[k];
+  try{ var cv = document.createElement('canvas'), z = 4; cv.width = 34 * z; cv.height = 14 * z; var x = cv.getContext('2d'); x.scale(z, z);
+    x.fillStyle = '#1B2230'; var r = 7; x.beginPath(); x.moveTo(r, 0); x.lineTo(34 - r, 0); x.arc(34 - r, 7, 7, -Math.PI / 2, Math.PI / 2); x.lineTo(r, 14); x.arc(r, 7, 7, Math.PI / 2, Math.PI * 1.5); x.fill();
+    [0, 1, 2].forEach(function(n){ x.fillStyle = (k === 'r' && n === 0) ? '#E5484D' : (k === 'a' && n === 1) ? '#F5B83D' : (k === 'v' && n === 2) ? '#30A46C' : '#4A5263'; x.beginPath(); x.arc(8 + n * 9, 7, 3.6, 0, Math.PI * 2); x.fill(); });
+    SEM_IMG[k] = cv.toDataURL('image/png'); }catch(e){ SEM_IMG[k] = ''; }
+  return SEM_IMG[k];
+}
+function edoSem(k){ var u = semImg(k); return u ? '<img src="' + u + '" alt="" style="width:34px;height:14px;vertical-align:middle;margin-right:7px">' : ''; }
 function edoEnc(titulo, sub, derecha){ var lg = logoSrc(); return '<div style="display:flex;align-items:center;gap:18px;padding-bottom:12px;border-bottom:2.5px solid #C9A24A">' + (lg ? '<img src="' + lg + '" style="height:58px">' : '') + '<div style="flex:1;border-left:1px solid #E3E6EB;padding-left:16px"><div style="font-size:21px;font-weight:700;color:#12324F">' + titulo + '</div><div style="color:#5B6472;font-size:12px;margin-top:3px">' + sub + '</div></div><div style="text-align:right;font-size:11px;color:#5B6472">' + derecha + '</div></div>'; }
 function edoKpis(arr){ return '<div style="display:flex;gap:12px;margin:16px 0">' + arr.map(function(k){ return '<div style="flex:1;border:1px solid #E3E6EB;border-radius:10px;padding:10px 14px"><div style="font-size:11px;color:#5B6472;text-transform:uppercase;letter-spacing:.05em">' + k[0] + '</div><div style="font-size:18px;font-weight:700;color:' + (k[2] || '#12324F') + '">' + k[1] + '</div></div>'; }).join('') + '</div>'; }
 var EDO_TH = 'padding:9px 10px;background:#12324F;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.05em;text-align:left', EDO_TD = 'padding:9px 8px;border-bottom:1px solid #E3E6EB;font-size:12.5px;white-space:nowrap';
