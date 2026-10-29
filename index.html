@@ -482,6 +482,8 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .nghw{position:relative}nav.side .menu .nghw{position:relative;display:block}nav.side .menu button.ngeye{position:absolute !important;right:30px;top:10px;width:24px !important;min-height:24px !important;height:24px;margin:0 !important;border:0;border-radius:7px !important;background:transparent;color:rgba(255,255,255,.45);display:inline-flex;flex-direction:row;align-items:center;justify-content:center;cursor:pointer;padding:0 !important;z-index:2;gap:0}nav.side .menu button.ngeye:hover{background:rgba(255,255,255,.14);color:#fff}.modocg{margin:6px 0 10px;padding:8px 10px;border-radius:10px}.modocsel{background:var(--brand-soft)}.modocr{display:flex !important;align-items:center;gap:8px;padding:5px 0}.modocr .mico{display:inline-flex;width:22px;opacity:.7}
 .wahelp{margin-top:12px;font-size:13px;color:var(--muted)}.wahelp summary{cursor:pointer;color:var(--brand);font-weight:600}.wahelp ol{margin:8px 0 0 18px;padding:0;display:grid;gap:4px}
 .chip.chpend:not(.on){border-color:#F3C1BC;color:#B42318}.chip.chliq:not(.on){border-color:#BFE3CF;color:#1E6B45}
+.qtools .qpay{color:#1E6B45;border-color:#BFE3CF;background:#E9F7EF}.qtools .qpay:hover{background:#D3F0DF}.qtools .qpok{color:#30A46C;background:transparent;border-color:transparent;cursor:default}.qicos{gap:4px !important;justify-content:flex-end}.qicos .ibtn{width:auto;min-width:32px;height:32px;padding:0 7px;gap:4px;display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--brand)}.qicos .qil{font-size:11.5px;font-weight:600;display:none}.qicos .qhay{color:#B7791F;border-color:#F1D9A8;background:#FFF8E6}.cobpick{margin-bottom:8px}.cobpr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:3px 0}.cobpa{display:inline-flex;gap:4px}.cobpa .ibtn{width:26px;height:26px;min-height:26px}
+.cobcon{min-height:38px;min-width:240px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit;background:#fff}
 .refnota{margin:-6px 0 12px;font-size:12.5px}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
@@ -823,7 +825,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v149</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v150</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1948,6 +1950,36 @@ function pagosDeCuota(q){
   } }); });
   return out.sort(function(a, b){ return a.fecha.localeCompare(b.fecha); });
 }
+var ICO_PAGO = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>';
+var ICO_OK = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>';
+var ICO_PARCIAL = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>';
+var ICO_CAMPANA = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 20a2 2 0 0 1-3.4 0"/></svg>';
+var ICO_NOTA = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12h8M8 16h5"/></svg>';
+var ICO_RELOJ = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+var COB_COLS = {
+  donante: ['Donante', '', function(X){ var d = X.d; return '<td data-l="Donante" data-noi18n><button type="button" class="back" data-a="openComp" data-id="' + X.c.id + '"><b' + (LANG === 'he' && d.hebreo ? ' dir="rtl" lang="he">' + esc(d.hebreo) : '>' + esc(d.nombre)) + '</b></button></td>'; }],
+  gabai: ['Gabai', '', function(X){ return '<td data-l="Gabai">' + gabTxt(gabQ(X.q, X.c)) + (X.q.gabai != null && X.q.gabai !== (X.c.gabai || '') ? ' <span class="pill t-warn gmes">mes</span>' : '') + '</td>'; }],
+  concepto: ['Concepto', '', function(X){ return '<td data-l="Concepto">' + esc(X.c.concepto || '—') + '</td>'; }],
+  mes: ['Mes', '', function(X){ return '<td data-l="Mes" class="nowrap">' + Mes(X.q.mes) + ' ' + X.c.anio + '</td>'; }],
+  alerta: ['Alerta', '', function(X){ return '<td data-l="Alerta">' + pillQ(X.q) + '</td>'; }],
+  monto: ['Monto recibido', 'n', function(X){ return '<td class="n" data-l="Monto recibido">' + qLineas(X.q, function(p){ return '<b>' + money(p.monto, p.moneda) + '</b>'; }) + '</td>'; }],
+  ref: ['Referencia USD', 'n', function(X){ return '<td class="n" data-l="Referencia USD">' + qLineas(X.q, function(p){ return money(p.ref, 'USD'); }) + '</td>'; }],
+  paga: ['Paga en', '', function(X){ return '<td data-l="Paga en">' + X.pl.mon + '</td>'; }],
+  forma: ['Forma', '', function(X){ return '<td data-l="Forma">' + esc(X.pl.forma) + '</td>'; }],
+  caja: ['Caja', '', function(X){ return '<td data-l="Caja">' + cajaPill(X.pl.caja) + '</td>'; }],
+  acciones: ['Acciones', '', function(X){ var q = X.q; return '<td data-l="Acciones"><div class="acts nowrap qicos">' +
+    (X.abierta ? '<button type="button" class="ibtn" data-a="qParcial" data-id="' + q.id + '" aria-label="Pago parcial">' + ICO_PARCIAL + '<span class="qil">Parcial</span></button>' : '') +
+    (X.abierta && X.e !== 'conciliar' ? '<button type="button" class="ibtn" data-a="qRecord" data-id="' + q.id + '" aria-label="Mandar recordatorio">' + ICO_CAMPANA + '<span class="qil">Recordar</span></button>' : '') +
+    '<button type="button" class="ibtn' + (q.nota ? ' qhay' : '') + '" data-a="qNota" data-id="' + q.id + '" aria-label="Nota">' + ICO_NOTA + '<span class="qil">Nota</span></button><button type="button" class="ibtn" data-a="qLuego" data-id="' + q.id + '" aria-label="Recordarme después">' + ICO_RELOJ + '<span class="qil">Después</span></button></div></td>'; }]
+};
+var COB_DEF = ['donante', 'gabai', 'mes', 'alerta', 'monto', 'ref', 'paga', 'forma', 'caja', 'concepto', 'acciones'], COB_EXTRA = [];
+function cobColsCfg(){ var c = (S.cfg && S.cfg.cobCols) || {}; var orden = (c.orden || COB_DEF.concat(COB_EXTRA)).filter(function(k){ return COB_COLS[k]; }); COB_DEF.concat(COB_EXTRA).forEach(function(k){ if(orden.indexOf(k) === -1) orden.push(k); }); var oc = c.oc || []; return {orden: orden, oc: oc}; }
+function cobColsVis(){ var c = cobColsCfg(); return c.orden.filter(function(k){ return c.oc.indexOf(k) === -1; }); }
+function cobColPicker(){ var c = cobColsCfg(), vis = cobColsVis();
+  return '<details class="colpick cobpick"' + (ui.cobPickOpen ? ' open' : '') + '><summary class="btn ghost sm">☰ Columnas (' + vis.length + '/' + c.orden.length + ')</summary><div class="colmenu"><div class="sub" style="margin-bottom:6px">Marca las que quieres ver y acomódalas con las flechas.</div>' +
+    c.orden.map(function(k, i){ return '<div class="cobpr"><label class="ck"><input type="checkbox" data-cobcol="' + k + '"' + (c.oc.indexOf(k) === -1 ? ' checked' : '') + '>' + COB_COLS[k][0] + '</label><span class="cobpa"><button type="button" class="ibtn" data-a="cobColMov" data-k="' + k + '" data-d="-1" aria-label="Subir"' + (i ? '' : ' disabled') + '>↑</button><button type="button" class="ibtn" data-a="cobColMov" data-k="' + k + '" data-d="1" aria-label="Bajar"' + (i < c.orden.length - 1 ? '' : ' disabled') + '>↓</button></span></div>'; }).join('') +
+    '<div class="row" style="gap:6px;margin-top:8px"><button type="button" class="btn ghost sm" data-a="cobColReset">Restablecer</button></div></div></details>'; }
+function cobColGuardar(c){ S.cfg = S.cfg || {}; S.cfg.cobCols = {orden: c.orden, oc: c.oc}; if(S.cfg['anch_cob']) delete S.cfg['anch_cob']; if(ui.cf) delete ui.cf.cob; save(); ui.cobPickOpen = true; render(); ui.cobPickOpen = false; }
 function colsOcultas(){ return (S.cfg && S.cfg.colsQ) || []; }
 var ICO_EDIT = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 function qLineas(q, f){ var ps = pagosDeCuota(q).filter(function(p){ return p.ref > 0; }); return ps.length ? ps.map(function(p){ return '<div class="ln">' + f(p) + '</div>'; }).join('') : '—'; }
@@ -2781,6 +2813,7 @@ function cobFiltradas(conDia){
   if(f.caja !== 'todos') qs = qs.filter(function(q){ return planVista(q).caja === f.caja; });
   if((f.cajas || []).length) qs = qs.filter(function(q){ return f.cajas.indexOf(planVista(q).caja) !== -1; });
   if((f.mons || []).length) qs = qs.filter(function(q){ return f.mons.indexOf(planVista(q).mon) !== -1; });
+  if(f.con) qs = qs.filter(function(q){ var c = comp(q.compId); return (c && c.concepto || '') === f.con; });
   if(f.edo && f.edo !== 'todas' && !conDia2Skip) qs = qs.filter(function(q){ return cobEdoGrupo(q) === f.edo; });
   if(conDia && f.dia !== 'todos') qs = qs.filter(function(q){ return +q.venc.slice(8, 10) === +f.dia; });
   return qs.sort(function(a, b){ return a.venc.localeCompare(b.venc) || don(comp(a.compId).donanteId).nombre.localeCompare(don(comp(b.compId).donanteId).nombre, 'es'); });
@@ -2910,26 +2943,19 @@ function vCobranza(){
     '<label class="f">Buscar donante<input id="cobQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre"></label></div>' +
     '<div class="rgf"><div class="sub">Estado</div><div class="chips rgch">' + (function(){ var ce = cobEdoConteo(), ed = f.edo || 'todas'; return [['todas', 'Todas'], ['pend', 'Pendientes y vencidas'], ['liq', 'Liquidadas']].map(function(o){ return '<button type="button" class="chip' + (ed === o[0] ? ' on' : '') + (o[0] === 'pend' ? ' chpend' : o[0] === 'liq' ? ' chliq' : '') + '" data-a="cobEdo" data-e="' + o[0] + '" aria-pressed="' + (ed === o[0]) + '">' + o[1] + ' <b>' + ce[o[0]] + '</b></button>'; }).join(''); })() + '</div>' +
     '<div class="sub">Moneda</div><div class="chips rgch"><button type="button" class="chip' + (!(f.mons || []).length ? ' on' : '') + '" data-a="cobMonAll">Todas</button>' + ['MXN', 'USD'].map(function(m){ var on = (f.mons || []).indexOf(m) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobMon" data-m="' + m + '" aria-pressed="' + on + '">' + m + '</button>'; }).join('') + '</div>' +
-      '<div class="sub">Caja</div><div class="chips rgch"><button type="button" class="chip' + (!(f.cajas || []).length ? ' on' : '') + '" data-a="cobCjAll">Todas</button>' + CAJAS.map(function(k){ var on = (f.cajas || []).indexOf(k.id) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobCj" data-c="' + k.id + '" aria-pressed="' + on + '">' + esc(k.nombre) + '</button>'; }).join('') + '</div></div>' +
+      '<div class="sub">Caja</div><div class="chips rgch"><button type="button" class="chip' + (!(f.cajas || []).length ? ' on' : '') + '" data-a="cobCjAll">Todas</button>' + CAJAS.map(function(k){ var on = (f.cajas || []).indexOf(k.id) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobCj" data-c="' + k.id + '" aria-pressed="' + on + '">' + esc(k.nombre) + '</button>'; }).join('') + '</div>' +
+      '<div class="sub">Concepto</div><div><select id="cobCon" class="cobcon" aria-label="Filtrar por concepto"><option value="">Todos los conceptos</option>' + (function(){ var usados = {}; S.compromisos.forEach(function(c){ if(c.concepto) usados[c.concepto] = 1; }); var l = (S.conceptos || []).filter(function(k){ return usados[k]; }); Object.keys(usados).forEach(function(k){ if(l.indexOf(k) === -1) l.push(k); }); return l.map(function(k){ return '<option' + (f.con === k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join(''); })() + '</select></div></div>' +
     '<div><div class="sub" style="margin-bottom:8px">Día de vencimiento</div><div class="chips"><button type="button" class="chip' + (f.dia === 'todos' ? ' on' : '') + '" data-a="cobDia" data-d="todos">Todos <b>' + base.length + '</b></button>' +
       Object.keys(porDia).sort(function(a, b){ return a - b; }).map(function(d){ return '<button type="button" class="chip' + (String(f.dia) === d ? ' on' : '') + '" data-a="cobDia" data-d="' + d + '">Día ' + d + ' <b>' + porDia[d] + '</b></button>'; }).join('') + '</div></div>' +
     '<div class="kpis"><div class="kpi"><span>Total del filtro</span><strong>' + totTxt(tot) + '</strong><small>' + qs.length + ' cuotas</small></div><div class="kpi"><span>Falta cobrar</span><strong>' + totTxt(tf) + '</strong><small>sin contar pausadas</small></div></div>' +
     (conc ? '<div class="row note"><span>Hay ' + conc + ' cargo(s) recurrente(s) ya vencidos por conciliar.</span><button type="button" class="btn ghost sm" data-a="conciliar">Conciliar cargos recurrentes</button></div>' : '') +
     (f.rap ? vBloque() : qs.length ? '<div class="row qselbar" id="qSelBar"' + (Object.keys(ui.cob.sel || {}).length ? '' : ' hidden') + '><b id="qSelN">' + Object.keys(ui.cob.sel || {}).length + ' seleccionadas</b><button type="button" class="btn ghost sm del" data-a="qDelSel">Eliminar seleccionadas</button><button type="button" class="btn ghost sm" data-a="qSelNone">Quitar selección</button></div>' +
-      tbBar('cob') +
-      '<div class="tw cards"><table class="cobt" data-cf="cob"><thead><tr><th class="qselth"><label class="ck"><input type="checkbox" id="qSelAll" aria-label="Seleccionar todas las visibles"></label></th><th>Donante</th><th>Gabai</th><th>Mes</th><th>Alerta</th><th class="n">Monto recibido</th><th class="n">Referencia USD</th><th>Paga en</th><th>Forma</th><th>Caja</th><th class="n">Avisos</th><th>Nota</th><th>Acciones</th></tr></thead><tbody>' +
+      cobColPicker() + tbBar('cob') +
+      '<div class="tw cards"><table class="cobt" data-cf="cob"><thead><tr><th class="qselth"><label class="ck"><input type="checkbox" id="qSelAll" aria-label="Seleccionar todas las visibles"></label></th>' + cobColsVis().map(function(k){ return '<th' + (COB_COLS[k][1] ? ' class="' + COB_COLS[k][1] + '"' : '') + '>' + COB_COLS[k][0] + '</th>'; }).join('') + '</tr></thead><tbody>' +
       qs.map(function(q){
-        var c = comp(q.compId), d = don(c.donanteId), e = estadoQ(q), abierta = falta(q) > 0 && !q.pausada, pl = planVista(q);
-        return '<tr' + ((ui.cob.sel || {})[q.id] ? ' class="selrow"' : '') + '><td><div class="qtools"><label class="ck"><input type="checkbox" data-qsel="' + q.id + '"' + ((ui.cob.sel || {})[q.id] ? ' checked' : '') + ' aria-label="Seleccionar ' + esc(d.nombre) + ' ' + Mes(q.mes) + '"></label><button type="button" class="ibtn qed" data-a="qEdit" data-id="' + q.id + '" title="Corregir" aria-label="Corregir ' + esc(d.nombre) + ' ' + Mes(q.mes) + '">' + ICO_EDIT + '</button>' + bDel('data-a="qDel" data-id="' + q.id + '"') + '</div></td><td data-l="Donante" data-noi18n><button type="button" class="back" data-a="openComp" data-id="' + c.id + '"><b' + (LANG === 'he' && d.hebreo ? ' dir="rtl" lang="he">' + esc(d.hebreo) : '>' + esc(d.nombre)) + '</b></button></td>' +
-          '<td data-l="Gabai">' + gabTxt(gabQ(q, c)) + (q.gabai != null && q.gabai !== (c.gabai || '') ? ' <span class="pill t-warn gmes" title="Gabai cambiado solo en este mes">mes</span>' : '') + '</td><td data-l="Mes" class="nowrap">' + Mes(q.mes) + ' ' + c.anio + '</td><td data-l="Alerta">' + pillQ(q) + '</td>' +
-          '<td class="n" data-l="Monto recibido">' + qLineas(q, function(p){ return '<b>' + money(p.monto, p.moneda) + '</b>'; }) + '</td><td class="n" data-l="Referencia USD">' + qLineas(q, function(p){ return money(p.ref, 'USD'); }) + '</td>' +
-          '<td data-l="Paga en">' + pl.mon + '</td><td data-l="Forma">' + esc(pl.forma) + '</td><td data-l="Caja">' + cajaPill(pl.caja) + '</td>' +
-          '<td class="n" data-l="Avisos">' + cuentaRecs(q) + '/2</td><td data-l="Nota">' + (q.nota ? esc(q.nota) : '—') + '</td>' +
-          '<td data-l="Acciones"><div class="acts nowrap">' +
-            (abierta ? '<button type="button" class="btn ok sm" data-a="qPagada" data-id="' + q.id + '">Pagada</button><button type="button" class="btn ghost sm" data-a="qParcial" data-id="' + q.id + '">Parcial</button>' : '') +
-            (abierta && e !== 'conciliar' ? '<button type="button" class="btn ghost sm" data-a="qRecord" data-id="' + q.id + '" title="Mandar recordatorio">Recordar</button>' : '') +
-            '<button type="button" class="btn ghost sm" data-a="qNota" data-id="' + q.id + '">Nota</button><button type="button" class="btn ghost sm" data-a="qLuego" data-id="' + q.id + '" title="Recordarme después">Después</button>' +
-          '</div></td></tr>';
+        var c = comp(q.compId), d = don(c.donanteId), e = estadoQ(q), abierta = falta(q) > 0 && !q.pausada, pl = planVista(q), X = {q: q, c: c, d: d, e: e, abierta: abierta, pl: pl};
+        return '<tr' + ((ui.cob.sel || {})[q.id] ? ' class="selrow"' : '') + '><td><div class="qtools"><label class="ck"><input type="checkbox" data-qsel="' + q.id + '"' + ((ui.cob.sel || {})[q.id] ? ' checked' : '') + ' aria-label="Seleccionar ' + esc(d.nombre) + ' ' + Mes(q.mes) + '"></label>' + (abierta ? '<button type="button" class="ibtn qpay" data-a="qPagada" data-id="' + q.id + '" aria-label="Registrar pago de ' + esc(d.nombre) + ' ' + Mes(q.mes) + '">' + ICO_PAGO + '</button>' : '<span class="ibtn qpay qpok" aria-label="Pagada">' + ICO_OK + '</span>') + '<button type="button" class="ibtn qed" data-a="qEdit" data-id="' + q.id + '" aria-label="Corregir ' + esc(d.nombre) + ' ' + Mes(q.mes) + '">' + ICO_EDIT + '</button>' + bDel('data-a="qDel" data-id="' + q.id + '"') + '</div></td>' +
+          cobColsVis().map(function(k){ return COB_COLS[k][2](X); }).join('') + '</tr>';
       }).join('') + '</tbody></table></div>' : '<div class="empty">No hay cuotas con este filtro.</div>') +
   '</section>' + (requiereAprob() ? misEnviados() : '');
 }
@@ -4270,15 +4296,15 @@ async function cobExcel(){
   toast('Preparando Excel…');
   try{ await cargarJs('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', function(){ return !!window.ExcelJS; }); }catch(e){ toast('No se pudo preparar el Excel. Revisa tu conexión.'); return; }
   var wb = new ExcelJS.Workbook(), ws = wb.addWorksheet('Cobranza', {views: [{state: 'frozen', ySplit: 4}], pageSetup: {orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0}});
-  var H = ['Donante', 'Gabai', 'Mes', 'Alerta', 'Monto recibido', 'Moneda', 'Referencia USD', 'Paga en', 'Forma', 'Caja', 'Avisos', 'Nota'];
-  var W = [26, 20, 16, 26, 17, 9, 16, 9, 18, 19, 8, 30];
+  var H = ['Donante', 'Gabai', 'Mes', 'Alerta', 'Monto recibido', 'Moneda', 'Referencia USD', 'Paga en', 'Forma', 'Caja'];
+  var W = [26, 20, 16, 26, 17, 9, 16, 9, 18, 19];
   ws.columns = W.map(function(w){ return {width: w}; });
   xlsEnc(wb, ws, 'Cobranza', cobMesTxt() + ' · ' + filas.length + ' cuotas', H.length);
   var hr = ws.getRow(4); hr.values = H; hr.height = 22;
   hr.eachCell(function(cl){ cl.font = {bold: true, color: {argb: 'FFFFFFFF'}}; cl.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF12324F'}}; cl.alignment = {vertical: 'middle', horizontal: 'center', wrapText: true}; cl.border = {bottom: {style: 'thin', color: {argb: 'FF12324F'}}}; });
   var fill = function(k){ return {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF' + EXP_COL[k][1]}}; }, col = function(k){ return {argb: 'FF' + EXP_COL[k][0]}; };
   filas.forEach(function(f, i){
-    var r = ws.addRow([f.nombre, f.gabai, f.mes, f.alerta, f.rec != null ? f.rec : (f.recTxt === '—' ? null : f.recTxt), f.recMon, f.ref, f.paga, f.forma, f.cajaN, f.avisos, f.nota]);
+    var r = ws.addRow([f.nombre, f.gabai, f.mes, f.alerta, f.rec != null ? f.rec : (f.recTxt === '—' ? null : f.recTxt), f.recMon, f.ref, f.paga, f.forma, f.cajaN]);
     r.eachCell({includeEmpty: true}, function(cl, k){ cl.alignment = {vertical: 'middle', wrapText: k === 4 || k === 12}; cl.border = {bottom: {style: 'hair', color: {argb: 'FFE3E6EB'}}}; if(i % 2) cl.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FFF8F9FB'}}; });
     r.getCell(1).font = {bold: true, color: {argb: 'FF1F4E79'}};
     r.getCell(2).alignment = {horizontal: 'right', vertical: 'middle'};
@@ -4286,7 +4312,7 @@ async function cobExcel(){
     var m = r.getCell(5); m.font = {bold: true}; m.alignment = {horizontal: 'right', vertical: 'middle'}; if(f.rec != null) m.numFmt = '"$"#,##0.00';
     var u = r.getCell(7); u.numFmt = '"$"#,##0.00'; u.alignment = {horizontal: 'right', vertical: 'middle'};
     var cj = r.getCell(10); cj.fill = fill(f.caja); cj.font = {bold: true, color: col(f.caja)}; cj.alignment = {horizontal: 'center', vertical: 'middle'};
-    r.getCell(6).alignment = r.getCell(8).alignment = r.getCell(11).alignment = {horizontal: 'center', vertical: 'middle'};
+    r.getCell(6).alignment = r.getCell(8).alignment = {horizontal: 'center', vertical: 'middle'};
   });
   var n1 = 5, n2 = 4 + filas.length;
   ws.autoFilter = {from: {row: 4, column: 1}, to: {row: n2, column: H.length}};
@@ -4304,7 +4330,7 @@ async function cobPdf(orient){
   toast('Preparando PDF…');
   try{ await cargarJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', function(){ return !!window.html2canvas; }); }catch(e){ toast('No se pudo preparar el PDF. Revisa tu conexión.'); return; }
   var land = orient === 'h', PW = land ? 1056 : 816, PH = land ? 816 : 1056, M = 36;
-  var cols = land ? [['nombre', 'Donante'], ['gabai', 'Gabai'], ['mes', 'Mes'], ['alerta', 'Alerta'], ['rec', 'Monto recibido'], ['ref', 'Referencia USD'], ['paga', 'Paga en'], ['forma', 'Forma'], ['caja', 'Caja'], ['avisos', 'Avisos'], ['nota', 'Nota']]
+  var cols = land ? [['nombre', 'Donante'], ['gabai', 'Gabai'], ['mes', 'Mes'], ['alerta', 'Alerta'], ['rec', 'Monto recibido'], ['ref', 'Referencia USD'], ['paga', 'Paga en'], ['forma', 'Forma'], ['caja', 'Caja']]
     : [['nombre', 'Donante'], ['gabai', 'Gabai'], ['mes', 'Mes'], ['alerta', 'Alerta'], ['rec', 'Monto recibido'], ['ref', 'Ref. USD'], ['forma', 'Forma'], ['caja', 'Caja']];
   var pill = function(t, k){ return '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-weight:600;font-size:10px;white-space:nowrap;background:#' + EXP_COL[k][1] + ';color:#' + EXP_COL[k][0] + '">' + esc(t) + '</span>'; };
   var celda = function(f, k){
@@ -4990,6 +5016,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'cobCjAll'){ ui.cob.cajas = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobCj'){ var ck = ui.cob.cajas = ui.cob.cajas || [], kv = b.getAttribute('data-c'), ki = ck.indexOf(kv); if(ki === -1) ck.push(kv); else ck.splice(ki, 1); if(ck.length === CAJAS.length) ui.cob.cajas = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMonAll'){ ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
+  else if(a === 'cobColMov'){ var cc = cobColsCfg(), ck2 = b.getAttribute('data-k'), ci2 = cc.orden.indexOf(ck2), cj2 = ci2 + (+b.getAttribute('data-d')); if(cj2 >= 0 && cj2 < cc.orden.length){ cc.orden.splice(ci2, 1); cc.orden.splice(cj2, 0, ck2); cobColGuardar(cc); } }
+  else if(a === 'cobColReset'){ cobColGuardar({orden: COB_DEF.concat(COB_EXTRA), oc: COB_EXTRA.slice()}); }
   else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'gabOrd'){ ev.preventDefault(); abrirGabOrd(); }
@@ -5279,6 +5307,7 @@ document.addEventListener('change', function(ev){
   if(t.hasAttribute && t.hasAttribute('data-perm')){ var pp = t.getAttribute('data-perm').split('|'); permSet(pp[0], pp[1], t.checked); var pun = S.usuarios.find(function(x){ return x.id === pp[0]; }); log((t.checked ? 'Dio' : 'Quitó') + ' acceso a ' + pp[1] + ' a ' + pun.nombre); save(); renderNav(); toast('Permiso guardado'); return; }
   if(t.hasAttribute && t.hasAttribute('data-rol')){ var rk = +t.getAttribute('data-rol'), ru = S.usuarios[rk]; if(ru.rol === 'Dirección' && t.value !== 'Dirección' && S.usuarios.filter(function(x){ return x.rol === 'Dirección'; }).length <= 1){ t.value = 'Dirección'; toast('Debe quedar al menos un usuario de Dirección.'); return; } log('Cambió el rol de ' + ru.nombre + ' de ' + ru.rol + ' a ' + t.value); ru.rol = t.value; render(); toast('Rol actualizado'); return; }
   if(t.hasAttribute && t.hasAttribute('data-colc')){ var cc = t.getAttribute('data-colc'), occ = contOcultas().filter(function(x){ return x !== cc; }); if(!t.checked) occ.push(cc); if(occ.length >= CONT_COLS.length){ t.checked = true; return; } S.cfg.contOcultas = occ; render(); var cp2 = document.querySelector('.ccp'); if(cp2) cp2.open = true; return; }
+  if(t.hasAttribute && t.hasAttribute('data-cobcol')){ var cc3 = cobColsCfg(), kk = t.getAttribute('data-cobcol'); cc3.oc = cc3.oc.filter(function(x){ return x !== kk; }); if(!t.checked) cc3.oc.push(kk); if(cc3.orden.length - cc3.oc.length < 1){ t.checked = true; return; } cobColGuardar(cc3); return; }
   if(t.hasAttribute && t.hasAttribute('data-colq')){ var ck = t.getAttribute('data-colq'), oc = (S.cfg.colsQ || []).filter(function(x){ return x !== ck; }); if(!t.checked) oc.push(ck); if(oc.length >= COLS_Q.length){ t.checked = true; return; } S.cfg.colsQ = oc; render(); var dp = document.querySelector('.colpick'); if(dp) dp.open = true; return; }
   if(t.hasAttribute && (t.hasAttribute('data-ci') || t.hasAttribute('data-gbn') || t.hasAttribute('data-usr'))){
     var sel = t.hasAttribute('data-ci') ? '[data-a=catRen][data-cat="' + t.getAttribute('data-cate') + '"][data-k="' + t.getAttribute('data-ci') + '"]' : t.hasAttribute('data-gbn') ? '[data-a=gbSave][data-k="' + t.getAttribute('data-gbn') + '"]' : '[data-a=usrRen][data-k="' + t.getAttribute('data-usr') + '"]';
@@ -5350,6 +5379,7 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'pmCaja'){ var pk = caja(t.value); $('pmMon').value = pk.mon; $('pmNY').hidden = !pk.externa; pmPrev(); }
   else if(t.id === 'userSel' || t.id === 'userSel2'){ S.user = +t.value; cerrarMas(); render(); }
   else if(t.getAttribute && t.getAttribute('data-modoc')){ modOcSet(t.getAttribute('data-modoc'), t.checked); }
+  else if(t.id === 'cobCon'){ ui.cob.con = t.value; if(ui.cf) delete ui.cf.cob; render(); }
   else if(t.id === 'recEstilo'){ S.cfg = S.cfg || {}; S.cfg.recEstilo = t.value; save(); toast('Estilo de recibo guardado'); }
   else if(t.id === 'portalSel'){ ui.portal.d = t.value; render(); }
   else if(t.name === 'pmModo'){ PM.modo = t.value; $('pmElegir').hidden = PM.modo !== 'elegir'; pmPrev(); }
