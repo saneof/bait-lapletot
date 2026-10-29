@@ -466,6 +466,8 @@ table[data-cf] thead tr:first-child th{position:relative}table.anchfix td,table.
 .apg h2{font-size:18px}
 .bkfill{font-size:12px;white-space:nowrap}.bklock{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;background:var(--hover);border:1px dashed var(--line);font-weight:600;white-space:nowrap;color:var(--ink)}
 table[data-cf=aprRep] tr.off td{opacity:.45}
+table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:700;font-size:14px;padding:10px 12px}.repfecha{position:relative;display:inline-flex;align-items:center;gap:6px}.repfecha input{border:0;background:transparent;font:inherit;font-size:13px;width:130px}
+
 .avlist{display:flex;flex-direction:column}.avrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line)}.avrow:last-child{border-bottom:0}.avname{display:flex;flex-direction:column;min-width:0}.avname b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.avname .sub{font-size:12.5px}.avmsg summary{cursor:pointer;font-size:12.5px;color:var(--brand);white-space:nowrap}.avmsg[open]{grid-column:1/-1;order:9}.avmsg .msg{margin-top:6px}.avrow .pill{font-size:11.5px}
 @media (max-width:760px){.avrow{grid-template-columns:minmax(0,1fr) auto}.avrow .pill{grid-column:1/-1;justify-self:start}.avmsg{grid-column:1/-1}}
 .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:500;white-space:nowrap}
@@ -806,7 +808,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v116</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v117</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1379,7 +1381,7 @@ function abrirMas(){
     '<div class="sblock row" style="gap:8px"><button type="button" class="btn ghost" data-a="sugAbrir" style="flex:1">💡 Sugerencias</button><button type="button" class="btn ghost btnpr" data-a="pruebaOn" style="flex:1">🧪 Prueba</button></div>' +
     '<div class="sblock"><div class="sub">Idioma</div><div class="langs" data-noi18n><button type="button" data-a="lang" data-l="es"' + (LANG === 'es' ? ' aria-pressed="true"' : '') + '>Español</button><button type="button" data-a="lang" data-l="en"' + (LANG === 'en' ? ' aria-pressed="true"' : '') + '>English</button><button type="button" data-a="lang" data-l="he" lang="he"' + (LANG === 'he' ? ' aria-pressed="true"' : '') + '>עברית</button></div></div>' +
     '<div class="sblock"><div class="wname"><i class="av">' + esc(iniciales(user().nombre)) + '</i><span><b>' + esc(user().nombre) + '</b><small>' + esc(user().rol) + '</small></span></div><div class="row"><button type="button" class="btn ghost" data-a="pwMia">Cambiar mi contraseña</button><button type="button" class="btn danger" data-a="salir">Cerrar sesión</button></div></div>' +
-    (user().rol === 'Dirección' && !S.real ? '<div class="sblock"><button type="button" class="back" data-a="reset">Restablecer datos de ejemplo</button></div>' : '') + '<div class="sub" data-noi18n>Versión 116 · 28/10/2026 · datos ' + esc(String(S.datosVer || '').replace('ingresos26-mxusd-', 'Excel v')) + '</div>';
+    (user().rol === 'Dirección' && !S.real ? '<div class="sblock"><button type="button" class="back" data-a="reset">Restablecer datos de ejemplo</button></div>' : '') + '<div class="sub" data-noi18n>Versión 117 · 28/10/2026 · datos ' + esc(String(S.datosVer || '').replace('ingresos26-mxusd-', 'Excel v')) + '</div>';
   $('sheet').hidden = false; i18n($('sheet'));
 }
 function cerrarMas(){ $('sheet').hidden = true; }
@@ -3957,7 +3959,7 @@ function tbDatos(k){
   var t = tl[0];
   var ths = t.tHead.rows[0].cells, cols = [];
   Array.prototype.forEach.call(ths, function(th, i){ var l = th.textContent.trim(); if(l && !/^(Acciones|Actions|פעולות)$/i.test(l) && !th.querySelector('input[type=checkbox]')) cols.push({i: i, l: l, n: th.classList.contains('n')}); });
-  var trs = []; Array.prototype.forEach.call(tl, function(tb){ Array.prototype.forEach.call(tb.tBodies[0].rows, function(r){ if(!r.hidden && !r.hasAttribute('data-excl') && r.cells.length >= ths.length - 1) trs.push(r); }); });
+  var trs = [], seps = {}, sepP = null; Array.prototype.forEach.call(tl, function(tb){ Array.prototype.forEach.call(tb.tBodies[0].rows, function(r){ if(r.hidden) return; if(r.hasAttribute('data-sep')){ sepP = r.getAttribute('data-sep'); return; } if(!r.hasAttribute('data-excl') && r.cells.length >= ths.length - 1){ if(sepP){ seps[trs.length] = sepP; sepP = null; } trs.push(r); } }); });
   var soloBotones = function(td){ if(!td) return true; var tx = (td.textContent || '').trim(), bt = Array.prototype.map.call(td.querySelectorAll('button'), function(x){ return (x.textContent || '').trim(); }).join(''); return td.querySelector('button') && !td.querySelector('select,input:not([type=checkbox])') && tx.replace(/\s+/g, '') === bt.replace(/\s+/g, '') && (tx.length <= 2 || /^(Eliminar|Editar|Borrar|Ver|Abrir|Quitar|Corregir|Detalle|Pagar|Nota)$/i.test(tx)); };
   cols = cols.filter(function(c){ return !trs.length || !trs.every(function(r){ return soloBotones(r.cells[c.i]); }); });
   var filas = trs.map(function(r){
@@ -3976,7 +3978,7 @@ function tbDatos(k){
   });
   var sec = t.closest('section'), h2 = sec && sec.querySelector('h2'), h1 = document.querySelector('main h1, .ptitle h1, h1');
   var titulo = (tl.length > 1 && /^apr/.test(k) ? 'Autorizaciones' : '') || t.getAttribute('data-tt') || (h2 && h2.textContent.trim()) || (h1 && h1.textContent.trim()) || 'Reporte';
-  return {cols: cols, filas: filas, titulo: titulo};
+  return {cols: cols, filas: filas, titulo: titulo, seps: seps};
 }
 async function tbExcel(k){
   if(k === 'cob') return cobExcel();
@@ -3992,6 +3994,7 @@ async function tbExcel(k){
   hr.eachCell(function(cl){ cl.font = {bold: true, color: {argb: 'FFFFFFFF'}}; cl.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF12324F'}}; cl.alignment = {vertical: 'middle', horizontal: 'center', wrapText: true}; });
   var mons = D.cols.map(function(){ return {}; });
   D.filas.forEach(function(f, i){
+    if(D.seps && D.seps[i]){ var sr = ws.addRow([D.seps[i]]); ws.mergeCells(sr.number, 1, sr.number, nC); var sc = sr.getCell(1); sc.font = {bold: true, color: {argb: 'FF12324F'}, size: 12}; sc.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FFE8EEF5'}}; sc.alignment = {vertical: 'middle'}; sr.height = 22; }
     var r = ws.addRow(f.map(function(o){ return o.num != null ? o.num : (o.t || null); }));
     f.forEach(function(o, j){
       var cl = r.getCell(j + 1); cl.alignment = {vertical: 'middle', wrapText: o.t.indexOf('\n') !== -1, horizontal: o.num != null ? 'right' : undefined}; cl.border = {bottom: {style: 'hair', color: {argb: 'FFE3E6EB'}}};
@@ -4014,9 +4017,9 @@ async function tbExcel(k){
   var buf = await wb.xlsx.writeBuffer();
   guardar(D.titulo + ' ' + hoy() + '.xlsx', new Uint8Array(buf));
 }
-async function tbPdf(k, orient, compartir){
+async function tbPdf(k, orient, compartir, extra){
   if(k === 'cob') return cobPdf(orient);
-  var D = tbDatos(k); if(!D || !D.filas.length){ toast('No hay filas para exportar.'); return; }
+  var D = tbDatos(k); if(!D || !D.filas.length){ toast('No hay filas para exportar.'); return; } if(extra) D.titulo += ' · ' + extra;
   var J = window.jspdf && window.jspdf.jsPDF; if(!J){ toast('No se pudo preparar el PDF. Recarga la página.'); return; }
   toast('Preparando PDF…');
   try{ await cargarJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', function(){ return !!window.html2canvas; }); }catch(e){ toast('No se pudo preparar el PDF. Revisa tu conexión.'); return; }
@@ -4030,6 +4033,8 @@ async function tbPdf(k, orient, compartir){
     box.appendChild(pg); return pg; };
   var pags = [], n = 1, pg = nueva(n), tb = pg.querySelector('tbody'), lim = PH - M - 22;
   D.filas.forEach(function(f, i){
+    if(D.seps && D.seps[i]){ var str = document.createElement('tr'); str.innerHTML = '<td colspan="' + D.cols.length + '" style="padding:9px 7px 6px;border:0;font-weight:700;font-size:' + (fs + 1) + 'px;color:#12324F;background:#E8EEF5">' + esc(D.seps[i]) + '</td>'; tb.appendChild(str);
+      if(pg.querySelector('table').getBoundingClientRect().bottom - pg.getBoundingClientRect().top > lim && tb.rows.length > 1){ tb.removeChild(str); pags.push(pg); n++; pg = nueva(n); tb = pg.querySelector('tbody'); tb.appendChild(str); } }
     var tr = document.createElement('tr'); if(i % 2) tr.style.background = '#F8F9FB';
     tr.innerHTML = f.map(function(o, j){ return '<td style="' + tdS + (o.num != null ? 'text-align:right;white-space:nowrap;' : '') + '">' + celda(o) + '</td>'; }).join('');
     tb.appendChild(tr);
@@ -4047,7 +4052,7 @@ async function tbPdf(k, orient, compartir){
   }catch(e){ box.remove(); toast('No se pudo generar el PDF.'); return; }
   box.remove();
   var pdfNom = D.titulo + ' ' + hoy() + (land ? ' horizontal' : ' vertical') + '.pdf', pdfBuf = doc.output('arraybuffer');
-  if(compartir){ try{ var fl = new File([pdfBuf], pdfNom, {type: 'application/pdf'}); if(navigator.canShare && navigator.canShare({files: [fl]})){ await navigator.share({files: [fl], title: D.titulo, text: compartir}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
+  if(compartir){ try{ var fl = new File([pdfBuf], pdfNom, {type: 'application/pdf'}); var tactil = window.matchMedia && window.matchMedia('(pointer:coarse)').matches; if(tactil && navigator.canShare && navigator.canShare({files: [fl]})){ await navigator.share({files: [fl], title: D.titulo, text: compartir}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
     guardar(pdfNom, pdfBuf); var wu = 'https://wa.me/?text=' + encodeURIComponent(compartir), wv = null; try{ wv = window.open(wu, '_blank'); if(wv) wv.opener = null; }catch(e){} toast('PDF descargado: adjúntalo en WhatsApp'); return; }
   guardar(pdfNom, pdfBuf);
 }
@@ -4374,7 +4379,7 @@ function misEnviados(){
   return '<section class="panel"><h2>Mis cobros entregados</h2><div class="list">' + l.map(function(x){ return '<div class="item"><div class="grow"><div class="name">' + esc(x.donante) + ' · ' + Mes(x.mes) + ' ' + x.anio + '</div><div class="sub">' + money(x.monto, x.mon) + ' · ' + esc(fFecha(x.fecha)) + '</div></div><span class="pill ' + (x.estado === 'aprobado' ? 't-ok' : x.estado === 'rechazado' ? 't-bad' : 't-warn') + '">' + (x.estado === 'aprobado' ? 'Autorizado' : x.estado === 'rechazado' ? 'Rechazado' : 'Por autorizar') + '</span></div>'; }).join('') + '</div></section>';
 }
 /* ===== Reporte de cobros autorizados (por día) ===== */
-function aprRepState(){ ui.apr = ui.apr || {sel: {}}; var r = ui.apr.r = ui.apr.r || {anio: String(anioAct()), mes: 'todo', gab: 'todos', q: '', mons: [], cajas: [], dias: [], concepto: '', cobrador: '', base: 'aut', excl: {}}; return r; }
+function aprRepState(){ ui.apr = ui.apr || {sel: {}}; var r = ui.apr.r = ui.apr.r || {anio: String(anioAct()), mes: 'todo', gabs: [], q: '', mons: [], cajas: [], dias: [], concepto: '', cobrador: '', base: 'aut', agr: 'concepto', excl: {}}; if(!r.gabs) r.gabs = []; if(!r.agr) r.agr = 'concepto'; return r; }
 function aprRepFecha(x, base){ if(base === 'pago') return x.fecha || ''; var d = new Date(x.aprobado || ''); return isNaN(d) ? '' : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
 function aprRepFilas(){
   var r = aprRepState();
@@ -4382,7 +4387,7 @@ function aprRepFilas(){
   var f1 = base.filter(function(o){
     if(o.f.slice(0, 4) !== r.anio) return false;
     if(r.mes !== 'todo' && +o.f.slice(5, 7) !== +r.mes) return false;
-    if(r.gab !== 'todos' && (o.x.gabai || '') !== r.gab) return false;
+    if(r.gabs.length && r.gabs.indexOf(o.x.gabai || '') === -1) return false;
     if(r.q && (o.x.donante || '').toLowerCase().indexOf(r.q.toLowerCase()) === -1) return false;
     if(r.mons.length && r.mons.indexOf(o.x.mon) === -1) return false;
     if(r.cajas.length && r.cajas.indexOf(o.cajaId) === -1) return false;
@@ -4391,7 +4396,8 @@ function aprRepFilas(){
     return true;
   });
   var dias = {}; f1.forEach(function(o){ dias[o.f] = (dias[o.f] || 0) + 1; });
-  var filas = f1.filter(function(o){ return !r.dias.length || r.dias.indexOf(o.f) !== -1; }).sort(function(a, b){ return b.f.localeCompare(a.f) || a.x.donante.localeCompare(b.x.donante, 'es'); });
+  var gk = function(o){ return r.agr === 'gabai' ? (o.x.gabai || 'Sin gabai') : r.agr === 'ambos' ? (o.concepto || 'Sin concepto') + ' · ' + (o.x.gabai || 'Sin gabai') : r.agr === 'concepto' ? (o.concepto || 'Sin concepto') : ''; };
+  var filas = f1.filter(function(o){ return !r.dias.length || r.dias.indexOf(o.f) !== -1; }).map(function(o){ o.g = gk(o); return o; }).sort(function(a, b){ return a.g.localeCompare(b.g, 'es') || b.f.localeCompare(a.f) || a.x.donante.localeCompare(b.x.donante, 'es'); });
   return {base: base, filas: filas, dias: dias, total: f1.length};
 }
 function vAprReporte(){
@@ -4412,24 +4418,26 @@ function vAprReporte(){
   return '<section class="panel"><h2>Reporte de cobros autorizados</h2><p class="sub" style="margin-top:-4px">Filtra lo que autorizaste, marca con palomita lo que quieres incluir y descarga o comparte el reporte.</p>' +
     '<div class="form"><label class="f">Año<select id="repAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (a === r.anio ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Mes<select id="repMes"><option value="todo">Todo el año ' + esc(r.anio) + '</option>' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (r.mes === String(k + 1) ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + esc(r.anio) + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="repGab">' + optsGabai(r.gab, true) + '</select></label>' +
     '<label class="f">Concepto<select id="repCon"><option value="">Todos los conceptos</option>' + Object.keys(concs).sort().map(function(c){ return '<option' + (c === r.concepto ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Cobrador<select id="repCob"><option value="">Todos</option>' + Object.keys(cobs).map(function(id){ return '<option value="' + esc(id) + '"' + (id === r.cobrador ? ' selected' : '') + '>' + esc(cobs[id]) + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Buscar donante<input id="repQ" type="search" value="' + esc(r.q) + '" placeholder="Nombre"></label>' +
+    '<label class="f">Separar el reporte por<select id="repAgr">' + [['concepto', 'Concepto'], ['gabai', 'Gabai'], ['ambos', 'Concepto y gabai'], ['nada', 'Todo junto']].map(function(o){ return '<option value="' + o[0] + '"' + (r.agr === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Día según<select id="repBase"><option value="aut"' + (r.base === 'aut' ? ' selected' : '') + '>Fecha en que autoricé</option><option value="pago"' + (r.base === 'pago' ? ' selected' : '') + '>Fecha del pago</option></select></label></div>' +
-    '<div class="rgf"><div class="sub">Moneda</div><div class="chips rgch">' + chip('repMon', '', !r.mons.length, 'Todas') + ['MXN', 'USD'].map(function(m){ return chip('repMon', m, r.mons.indexOf(m) !== -1, m); }).join('') + '</div>' +
+    '<div class="rgf"><div class="sub"><span style="display:inline-flex;gap:12px;align-items:center">Gabai (marca uno o varios)<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span></div><div class="chips rgch">' + chip('repGabC', '', !r.gabs.length, 'Todos') + S.gabaim.map(function(g){ return chip('repGabC', g, !r.gabs.length || r.gabs.indexOf(g) !== -1, ((!r.gabs.length || r.gabs.indexOf(g) !== -1) ? '☑ ' : '☐ ') + '<span dir="auto">' + esc(g) + '</span>'); }).join('') + '</div>' +
+    '<div class="sub">Moneda</div><div class="chips rgch">' + chip('repMon', '', !r.mons.length, 'Todas') + ['MXN', 'USD'].map(function(m){ return chip('repMon', m, r.mons.indexOf(m) !== -1, m); }).join('') + '</div>' +
     '<div class="sub">Caja</div><div class="chips rgch">' + chip('repCaja', '', !r.cajas.length, 'Todas') + CAJAS.map(function(k){ return chip('repCaja', k.id, r.cajas.indexOf(k.id) !== -1, esc(k.nombre)); }).join('') + '</div>' +
-    '<div class="sub">Día (marca uno o varios)</div><div class="chips rgch">' + chip('repDia', '', !r.dias.length, 'Todos <b>' + R.total + '</b>') + dias.map(function(d){ return chip('repDia', d, r.dias.indexOf(d) !== -1, (r.dias.indexOf(d) !== -1 ? '☑ ' : '☐ ') + fFecha(d) + ' <b>' + R.dias[d] + '</b>'); }).join('') + '</div></div>' +
+    '<div class="sub">Día (marca uno o varios)</div><div class="chips rgch">' + chip('repDia', '', !r.dias.length, 'Todos <b>' + R.total + '</b>') + chip('repDia', hoy(), r.dias.indexOf(hoy()) !== -1, (r.dias.indexOf(hoy()) !== -1 ? '☑ ' : '☐ ') + 'Hoy · ' + fFecha(hoy()) + ' <b>' + (R.dias[hoy()] || 0) + '</b>') + '<label class="chip repfecha">📅 Otra fecha <input type="date" id="repFecha" aria-label="Elegir fecha"></label>' + dias.concat(r.dias.filter(function(d){ return dias.indexOf(d) === -1; })).filter(function(d){ return d !== hoy(); }).map(function(d){ return chip('repDia', d, r.dias.indexOf(d) !== -1, (r.dias.indexOf(d) !== -1 ? '☑ ' : '☐ ') + fFecha(d) + ' <b>' + (R.dias[d] || 0) + '</b>'); }).join('') + '</div></div>' +
     '<div class="kpis"><div class="kpi"><span>En el reporte</span><strong>' + inc.length + ' cobro' + (inc.length === 1 ? '' : 's') + '</strong><small>de ' + R.filas.length + ' con este filtro</small></div><div class="kpi"><span>Pesos</span><strong>' + money(t.MXN, 'MXN') + '</strong></div><div class="kpi"><span>Dólares</span><strong>' + money(t.USD, 'USD') + '</strong></div><div class="kpi"><span>Total en USD (referencia)</span><strong>' + money(ref, 'USD') + '</strong></div></div>' +
-    (R.filas.length ? '<div class="row" style="gap:8px;margin:6px 0;flex-wrap:wrap"><button type="button" class="btn primary" data-a="repWa">📲 Enviar por WhatsApp</button><button type="button" class="btn ghost" data-a="repTodos" data-v="1">Marcar todos</button><button type="button" class="btn ghost" data-a="repTodos" data-v="0">Quitar todos</button></div>' +
-      tbBar('aprRep') + '<div class="tw cards"><table class="cobt" data-cf="aprRep" data-tt="Cobros autorizados"><thead><tr><th></th><th>' + (r.base === 'pago' ? 'Fecha del pago' : 'Autorizado') + '</th><th>Cobrador</th><th>Donante</th><th>Gabai</th><th>Concepto</th><th>Mes</th><th>Moneda</th><th class="n">Monto</th><th class="n">Referencia USD</th><th>Forma</th><th>Caja</th><th>Recibo</th></tr></thead><tbody>' + R.filas.map(fila).join('') + '</tbody></table></div>'
+    (R.filas.length ? '<div class="row" style="gap:8px;margin:6px 0;flex-wrap:wrap"><button type="button" class="btn primary" data-a="repWa">📲 Enviar por WhatsApp</button>' + (r.agr !== 'nada' ? '<button type="button" class="btn ghost" data-a="repPdfGrupos">⬇ Un PDF por ' + ({concepto: 'concepto', gabai: 'gabai', ambos: 'concepto y gabai'}[r.agr]) + '</button>' : '') + '<button type="button" class="btn ghost" data-a="repTodos" data-v="1">Marcar todos</button><button type="button" class="btn ghost" data-a="repTodos" data-v="0">Quitar todos</button></div>' +
+      tbBar('aprRep') + '<div class="tw cards"><table class="cobt" data-cf="aprRep" data-tt="Cobros autorizados"><thead><tr><th></th><th>' + (r.base === 'pago' ? 'Fecha del pago' : 'Autorizado') + '</th><th>Cobrador</th><th>Donante</th><th>Gabai</th><th>Concepto</th><th>Mes</th><th>Moneda</th><th class="n">Monto</th><th class="n">Referencia USD</th><th>Forma</th><th>Caja</th><th>Recibo</th></tr></thead><tbody>' + (function(){ var out = '', last = null, inc2 = R.filas.filter(function(o){ return !r.excl[o.x.id]; }); R.filas.forEach(function(o){ if(r.agr !== 'nada' && o.g !== last){ last = o.g; var gi = inc2.filter(function(z){ return z.g === o.g; }), gt = {MXN: 0, USD: 0}, gr = 0; gi.forEach(function(z){ gt[z.x.mon] += z.x.monto; gr += (z.x.mon === 'USD' ? z.x.monto : z.x.ref) || 0; }); var txt = o.g + ' — ' + gi.length + ' cobro' + (gi.length === 1 ? '' : 's') + (gt.MXN ? ' · ' + money(gt.MXN, 'MXN') : '') + (gt.USD ? ' · ' + money(gt.USD, 'USD') : '') + ' · Total USD ' + money(gr, 'USD'); out += '<tr class="gsep" data-sep="' + esc(txt) + '"><td colspan="13" dir="auto">' + esc(txt) + '</td></tr>'; } out += fila(o); }); return out; })() + '</tbody></table></div>'
       : '<div class="empty">No hay cobros autorizados con este filtro.</div>') + '</section>';
 }
 function repTexto(){
   var r = aprRepState(), R = aprRepFilas(), inc = R.filas.filter(function(o){ return !r.excl[o.x.id]; }), t = {MXN: 0, USD: 0}, ref = 0;
   inc.forEach(function(o){ t[o.x.mon] += o.x.monto; ref += (o.x.mon === 'USD' ? o.x.monto : o.x.ref) || 0; });
   var dd = r.dias.length ? r.dias.map(fFecha).join(', ') : (r.mes === 'todo' ? 'Año ' + r.anio : Mes(+r.mes) + ' ' + r.anio);
-  return 'Bait Lapletot · Cobros autorizados\n' + dd + '\n\n' + inc.map(function(o){ var x = o.x; return '• ' + x.donante + ' — ' + money(x.monto, x.mon) + (x.mon === 'MXN' ? ' (' + money(x.ref, 'USD') + ')' : '') + ' · ' + Mes(x.mes) + (x.recibo ? ' · ' + x.recibo : ''); }).join('\n') +
+  var lastG = null;
+  return 'Bait Lapletot · Cobros autorizados\n' + dd + '\n\n' + inc.map(function(o){ var x = o.x, hd = (r.agr !== 'nada' && o.g !== lastG) ? ((lastG === null ? '' : '\n') + '*' + o.g + '*\n') : ''; lastG = o.g; return hd + '• ' + x.donante + ' — ' + money(x.monto, x.mon) + (x.mon === 'MXN' ? ' (' + money(x.ref, 'USD') + ')' : '') + ' · ' + Mes(x.mes) + (x.recibo ? ' · ' + x.recibo : ''); }).join('\n') +
     '\n\nTotal: ' + inc.length + ' cobros' + (t.MXN ? ' · ' + money(t.MXN, 'MXN') : '') + (t.USD ? ' · ' + money(t.USD, 'USD') : '') + '\nTotal en USD: ' + money(ref, 'USD');
 }
 function pdfTabla(titulo, sub, headers, rows, widths){
@@ -4626,6 +4634,11 @@ document.addEventListener('click', function(ev){
     try{ var pdv = paAplicar(px); log('Autorizó cobro de ' + px.cobrador + ' · ' + px.donante + ' (' + pdv.recibo + ')'); delete ui.apr.sel[id]; save(); render(); toast('Autorizado · ' + pdv.recibo); }catch(e){ toast('No se pudo autorizar: ' + e.message); } }
   else if(a === 'bkEst'){ ui.cob.bkEst = b.getAttribute('data-e'); render(); }
   else if(a === 'aprEst'){ ui.apr.f.est = b.getAttribute('data-e'); render(); }
+  else if(a === 'repPdfGrupos'){ (async function(){ var rows = Array.prototype.slice.call(document.querySelectorAll('table[data-cf=aprRep] tbody tr')), grupos = [], cur = null; rows.forEach(function(tr){ if(tr.hasAttribute('data-sep')){ cur = {sep: tr, rows: []}; grupos.push(cur); } else if(cur) cur.rows.push(tr); });
+      var marcados = rows.filter(function(tr){ return tr.hasAttribute('data-excl'); });
+      for(var gi = 0; gi < grupos.length; gi++){ var g = grupos[gi]; if(!g.rows.some(function(tr){ return !tr.hasAttribute('data-excl'); })) continue; rows.forEach(function(tr){ if(g.rows.indexOf(tr) === -1 && tr !== g.sep) tr.setAttribute('data-excl', '1'); }); await tbPdf('aprRep', 'v', null, g.sep.getAttribute('data-sep').split(' — ')[0]); rows.forEach(function(tr){ if(marcados.indexOf(tr) === -1) tr.removeAttribute('data-excl'); }); }
+    })(); }
+  else if(a === 'repGabC'){ var rg = aprRepState(), gv = b.getAttribute('data-v'); if(!gv) rg.gabs = []; else { if(!rg.gabs.length) rg.gabs = S.gabaim.slice(); var gix = rg.gabs.indexOf(gv); if(gix === -1) rg.gabs.push(gv); else rg.gabs.splice(gix, 1); if(rg.gabs.length >= S.gabaim.length) rg.gabs = []; else if(!rg.gabs.length) rg.gabs = ['__ninguno__']; } render(); }
   else if(a === 'repMon' || a === 'repCaja' || a === 'repDia'){ var rr = aprRepState(), rk = {repMon: 'mons', repCaja: 'cajas', repDia: 'dias'}[a], rv = b.getAttribute('data-v'); if(!rv) rr[rk] = []; else { var ri = rr[rk].indexOf(rv); if(ri === -1) rr[rk].push(rv); else rr[rk].splice(ri, 1); } render(); }
   else if(a === 'repTodos'){ var rr2 = aprRepState(); aprRepFilas().filas.forEach(function(o){ if(b.getAttribute('data-v') === '1') delete rr2.excl[o.x.id]; else rr2.excl[o.x.id] = true; }); render(); }
   else if(a === 'repWa'){ if(!aprRepFilas().filas.some(function(o){ return !aprRepState().excl[o.x.id]; })){ toast('Marca al menos un cobro.'); return; } tbPdf('aprRep', 'v', repTexto()); }
@@ -4791,7 +4804,8 @@ document.addEventListener('change', function(ev){
     if(pf === 'mon'){ var pc = comp(pz.compId); if(pz.mon === 'MXN') pz.caja = 'MXN'; else { pz.caja = caja(pz.caja).mon === 'USD' ? pz.caja : cajaUsd(pc && pc.gabai); if(pc && pc.moneda === 'USD') pz.ref = pz.monto; } }
     save(); render(); }
   else if(t.id === 'bkDon'){ ui.cob.bkDon = t.value; render(); }
-  else if(t.id === 'repAnio' || t.id === 'repMes' || t.id === 'repGab' || t.id === 'repCon' || t.id === 'repCob' || t.id === 'repBase'){ var r3 = aprRepState(); r3[{repAnio: 'anio', repMes: 'mes', repGab: 'gab', repCon: 'concepto', repCob: 'cobrador', repBase: 'base'}[t.id]] = t.value; r3.dias = []; render(); }
+  else if(t.id === 'repAnio' || t.id === 'repMes' || t.id === 'repCon' || t.id === 'repCob' || t.id === 'repBase' || t.id === 'repAgr'){ var r3 = aprRepState(); r3[{repAnio: 'anio', repMes: 'mes', repCon: 'concepto', repCob: 'cobrador', repBase: 'base', repAgr: 'agr'}[t.id]] = t.value; if(t.id !== 'repAgr') r3.dias = []; render(); }
+  else if(t.id === 'repFecha'){ var r5 = aprRepState(); if(t.value && r5.dias.indexOf(t.value) === -1) r5.dias.push(t.value); if(t.value){ r5.anio = t.value.slice(0, 4); r5.mes = 'todo'; } render(); }
   else if(t.getAttribute && t.getAttribute('data-repx')){ var r4 = aprRepState(), xid = t.getAttribute('data-repx'); if(t.checked) delete r4.excl[xid]; else r4.excl[xid] = true; render(); }
   else if(t.id === 'aprDon'){ ui.apr.f.don = t.value; render(); }
   else if(t.id === 'aprGab'){ ui.apr.f.gab = t.value; render(); }
@@ -4897,5 +4911,3 @@ aplicarIngresosNuevos();
   if(u && u.pw && !u.inactivo){ S.user = S.usuarios.indexOf(u); LOGUEADO = true; render(); } else { applyLang(); mostrarLogin(); } })();
 })();
 </script>
-
-</body></html>
