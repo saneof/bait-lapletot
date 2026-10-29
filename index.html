@@ -818,7 +818,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v138</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v139</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -956,6 +956,7 @@ function fixAdopcionNina(){
 }
 function aplicarRopa(){
   if(!S || !S.donativos) return; S.fixes = S.fixes || {}; var hechos = 0;
+  if(!S.fixes.ropaTxt1){ S.fixes.ropaTxt1 = true; S.compromisos.forEach(function(c){ if(/^Ropa /.test(c.concepto || '') && /importado del Excel/.test(c.descripcion || '')) c.descripcion = ''; }); S.donativos.forEach(function(p){ if(p.obs === 'Ropa USD' || p.obs === 'Ropa MXN') p.obs = ''; }); }
   ['Ropa Pesaj', 'Ropa Rosh Hashana'].forEach(function(k){ S.conceptos = S.conceptos || []; if(S.conceptos.indexOf(k) === -1) S.conceptos.push(k); });
   ROPA_NUEVOS.forEach(function(x){
     var key = 'ropa|' + x[0] + '|' + x[2] + '|' + x[3]; if(S.fixes[key]) return;
@@ -966,10 +967,10 @@ function aplicarRopa(){
     if(S.compromisos.some(function(c){ return c.donanteId === d.id && c.concepto === con && S.donativos.some(function(p){ return p.compId === c.id && p.fecha === x[2] && p.montoC === x[3]; }); })) return;
     var base = S.compromisos.find(function(c){ return c.donanteId === d.id && c.anio === 2026; }) || {};
     var pct = x[4] != null ? x[4] : (base.comisionPct || 0), cj = mon === 'MXN' ? 'MXN' : cajaUsd(x[1]);
-    var c = crearCompromiso({donanteId: d.id, anio: 2026, modalidad: 'Pago directo', mesIni: mes, anualC: x[3], cuotaC: x[3], moneda: mon, monPago: mon, forma: 'Efectivo', caja: cj, gabai: x[1], emisor: cj === 'NY' ? 'Bait Lapletot USA' : (mon === 'MXN' ? 'Bait Lapletot México' : (base.emisor || (S.emisores || [''])[0])), concepto: con, comisionPct: pct, descripcion: 'Ropa (' + mon + ') · importado del Excel'});
+    var c = crearCompromiso({donanteId: d.id, anio: 2026, modalidad: 'Pago directo', mesIni: mes, anualC: x[3], cuotaC: x[3], moneda: mon, monPago: mon, forma: 'Efectivo', caja: cj, gabai: x[1], emisor: cj === 'NY' ? 'Bait Lapletot USA' : (mon === 'MXN' ? 'Bait Lapletot México' : (base.emisor || (S.emisores || [''])[0])), concepto: con, comisionPct: pct, descripcion: ''});
     c.origen = 'importado'; c.estatus = 'activo'; c.fechaInicio = x[2];
     var q = S.cuotas.find(function(z){ return z.compId === c.id; });
-    registrarDonativo(c, {fecha: x[2], montoC: x[3], moneda: mon, montoCompC: x[3], forma: 'Efectivo', caja: cj, plan: q ? [{q: q, ap: x[3]}] : [], obs: 'Ropa ' + mon});
+    registrarDonativo(c, {fecha: x[2], montoC: x[3], moneda: mon, montoCompC: x[3], forma: 'Efectivo', caja: cj, plan: q ? [{q: q, ap: x[3]}] : [], obs: ''});
     hechos++;
   });
   if(hechos) save();
