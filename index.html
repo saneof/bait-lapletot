@@ -810,7 +810,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v119</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v120</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -893,7 +893,24 @@ function estadoGuardable(){
   if(!GSW || S !== GSW.S) return S;
   var t = Object.assign({}, S); GAB_KS.concat(['gabaim']).forEach(function(k){ if(GSW.orig[k]) t[k] = gabUnir(k); }); return t;
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(estadoGuardable())); }catch(e){} }
+function save(){ try{ var nv = estadoGuardable(); resgGuardar(nv); localStorage.setItem(KEY, JSON.stringify(nv)); }catch(e){} }
+/* Resguardo automático: si un guardado deja menos donadores que antes, se guarda una copia de lo anterior para poder recuperarlo */
+var RESG_KEY = KEY + '-resguardo';
+function resgGuardar(nv){
+  try{ var prevTxt = localStorage.getItem(KEY); if(!prevTxt || !nv || !Array.isArray(nv.donantes)) return; var prev = JSON.parse(prevTxt); if(!prev || !Array.isArray(prev.donantes)) return;
+    if(prev.donantes.length >= nv.donantes.length + 3){ var r0 = null; try{ r0 = JSON.parse(localStorage.getItem(RESG_KEY) || 'null'); }catch(e){} if(!r0 || !Array.isArray(r0.donantes) || r0.donantes.length < prev.donantes.length) localStorage.setItem(RESG_KEY, prevTxt); } }catch(e){}
+}
+function resgFuente(){
+  var mejor = null; [RESG_KEY, KEY + '-original'].forEach(function(k){ try{ var r = JSON.parse(localStorage.getItem(k) || 'null'); if(r && Array.isArray(r.donantes) && (!mejor || r.donantes.length > mejor.donantes.length)) mejor = r; }catch(e){} });
+  if(!mejor) return null; var ids = {}; S.donantes.forEach(function(d){ ids[d.id] = 1; }); var faltan = mejor.donantes.filter(function(d){ return !ids[d.id]; }).length;
+  return faltan ? {s: mejor, faltan: faltan} : null;
+}
+function combinarDatos(src){
+  var n = 0; GAB_KS.forEach(function(k){ if(!Array.isArray(src[k])) return; S[k] = S[k] || []; var ids = {}; S[k].forEach(function(x){ ids[x.id] = 1; }); src[k].forEach(function(x){ if(x && x.id && !ids[x.id]){ S[k].push(x); ids[x.id] = 1; if(k === 'donantes') n++; } }); });
+  (src.gabaim || []).forEach(function(g){ if(S.gabaim.indexOf(g) === -1) S.gabaim.push(g); });
+  if(src.seq > (S.seq || 0)) S.seq = src.seq; if(src.recibo > (S.recibo || 0)) S.recibo = src.recibo;
+  return n;
+}
 var CONCEPTOS = ['Adopcion de Niña', 'Adopcion de Niño', 'Donativo Eventual', 'Ropa', 'Comida', 'Hajnasat Kala', 'Ayuda Psicologica', 'Tefilin', 'Camp Shabat', 'Purim', 'Extras', 'Donativo Unico', 'Moises Michan (Abuelo)', 'Pesaj', 'Niña Enferma', 'Rosh Hashana'];
 var CONC_VIEJOS = {'Gabaim · cuota mensual': 'Adopcion de Niño', 'Donativo general': 'Donativo Eventual', 'Kimjá / evento': 'Extras'};
 function egresosEjemplo(s){
@@ -3051,7 +3068,8 @@ function vDonantes(){
       '<div class="full err" id="afErr" hidden></div>' +
       '<div class="full row"><button type="submit" class="btn primary">Agregar donador</button><button type="button" class="btn ghost" data-a="afLimpiar">Limpiar</button></div>' +
     '</form></section>';
-  var list = '<section class="panel tint-list"><div class="row" style="justify-content:space-between"><h2>Lista de donadores</h2></div>' +
+  var rf = gabPermUsuario() ? null : resgFuente();
+  var list = (rf ? '<div class="note resgnote">⚠️ En este navegador hay una copia guardada con <b>' + rf.faltan + ' donador' + (rf.faltan === 1 ? '' : 'es') + '</b> que no aparecen en la lista. <button type="button" class="btn primary sm" data-a="resgRec">Recuperarlos</button></div>' : '') + '<section class="panel tint-list"><div class="row" style="justify-content:space-between"><h2>Lista de donadores</h2></div>' +
     '<div class="form"><label class="f">Elegir donador<select id="donSel"><option value="">Todos los donadores (' + S.donantes.length + ')</option>' + S.donantes.slice().sort(function(a, b){ return (a.ape || '').localeCompare(b.ape || '', 'es') || (a.nom || '').localeCompare(b.nom || '', 'es'); }).map(function(x){ return '<option value="' + x.id + '"' + (f.pick === x.id ? ' selected' : '') + '>' + esc(x.ape + ', ' + x.nom) + '</option>'; }).join('') + '</select></label>' +
       '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="donGab">' + optsGabai(f.gab || 'todos', true) + '</select></label>' +
       '<label class="f">Buscar por nombre, teléfono o correo<input id="donQ" type="search" value="' + esc(f.q) + '" placeholder="Buscar"></label></div>' +
@@ -3465,7 +3483,7 @@ function respLeer(file){
     openModal(head('Importar respaldo', esc(file.name)) +
       '<div class="kpis">' + [['Donadores', s.donantes.length], ['Compromisos', s.compromisos.length], ['Pagos', s.donativos.length], ['Egresos', (s.egresos || []).length], ['Usuarios', s.usuarios.length]].map(function(x){ return '<div class="kpi"><span>' + x[0] + '</span><strong>' + x[1] + '</strong></div>'; }).join('') + '</div>' +
       '<div class="note">Esto reemplaza todos los datos actuales de este navegador por los del respaldo, incluidos usuarios y contraseñas. Descarga antes un respaldo de lo actual si lo quieres conservar.</div>' +
-      '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="respOk">Reemplazar e importar</button></div>');
+      '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="respComb">Solo agregar lo que falta</button><button type="button" class="btn danger" data-a="respOk">Reemplazar e importar</button></div>');
   };
   rd.readAsText(file);
 }
@@ -3500,6 +3518,7 @@ function borrarDonantes(ids){
   S.recordar = S.recordar.filter(function(x){ return cids.indexOf(x.compId) === -1; });
   S.compromisos = S.compromisos.filter(function(x){ return ids.indexOf(x.donanteId) === -1; });
   S.donantes = S.donantes.filter(function(x){ return ids.indexOf(x.id) === -1; });
+  try{ [RESG_KEY, KEY + '-original'].forEach(function(k){ var r = JSON.parse(localStorage.getItem(k) || 'null'); if(r && Array.isArray(r.donantes)){ r.donantes = r.donantes.filter(function(x){ return ids.indexOf(x.id) === -1; }); localStorage.setItem(k, JSON.stringify(r)); } }); }catch(e){}
   ids.forEach(function(i){ if(ui.don.sel) delete ui.don.sel[i]; });
   if(ids.indexOf(ui.don.open) !== -1) ui.don.open = null; if(ids.indexOf(ui.don.pick) !== -1) ui.don.pick = null;
   if(ui.comp.sel && cids.indexOf(ui.comp.sel) !== -1) ui.comp.sel = null; if(ids.indexOf(ui.portal.d) !== -1) ui.portal.d = null;
@@ -4116,7 +4135,7 @@ function pruebaBarra(){
   document.querySelectorAll('[data-a=pruebaOn]').forEach(function(x){ x.classList.toggle('on', enPrueba()); x.textContent = enPrueba() ? '🧪 En prueba' : '🧪 Prueba'; });
 }
 function pruebaEntrar(){
-  try{ localStorage.setItem(PRUEBA_KEY, JSON.stringify(S)); }catch(e){ toast('No se pudo activar el modo prueba.'); return; }
+  try{ localStorage.setItem(PRUEBA_KEY, JSON.stringify(estadoGuardable())); }catch(e){ toast('No se pudo activar el modo prueba.'); return; }
   pruebaBarra(); toast('Modo prueba activado: lo que cambies no se guardará al salir.');
 }
 function pruebaSalir(conservar){
@@ -4669,8 +4688,10 @@ document.addEventListener('click', function(ev){
   else if(a === 'colcTodas'){ S.cfg.contOcultas = []; render(); var cp3 = document.querySelector('.ccp'); if(cp3) cp3.open = true; }
   else if(a === 'colsTodas'){ S.cfg.colsQ = []; render(); var dp = document.querySelector('.colpick'); if(dp) dp.open = true; }
   else if(a === 'egSave') egSave();
-  else if(a === 'respBajar'){ log('Descargó un respaldo completo'); save(); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: new Date().toISOString(), version: 5, datos: S}, null, 1); guardar(respNombre() + '.json', new TextEncoder().encode(txt)); }
+  else if(a === 'respBajar'){ log('Descargó un respaldo completo'); save(); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: new Date().toISOString(), version: 5, datos: estadoGuardable()}, null, 1); guardar(respNombre() + '.json', new TextEncoder().encode(txt)); }
   else if(a === 'respOk') respAplicar();
+  else if(a === 'respComb'){ if(!RESP) return; var rs = RESP; RESP = null; migrar(rs); var nn = combinarDatos(rs); save(); closeModal(); if(LOGUEADO){ log('Combinó un respaldo: agregó ' + nn + ' donadores'); render(); } else mostrarLogin(); toast(nn ? 'Se agregaron ' + nn + ' donadores que faltaban (lo demás se conservó)' : 'No faltaba nada: todo ya estaba'); }
+  else if(a === 'resgRec'){ var rf2 = resgFuente(); if(!rf2) return; var nn2 = combinarDatos(rf2.s); save(); log('Recuperó ' + nn2 + ' donadores desde la copia guardada'); render(); toast('Se recuperaron ' + nn2 + ' donadores'); }
   else if(a === 'respXls'){
     if(!window.XLSX){ toast('No se pudo preparar el Excel.'); return; }
     var wbr = XLSX.utils.book_new(), hoja = function(nom, filas){ XLSX.utils.book_append_sheet(wbr, XLSX.utils.json_to_sheet(filas.length ? filas : [{}]), nom); };
