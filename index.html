@@ -488,6 +488,7 @@ table[data-cf=cob] .qtools .ibtn,table[data-cf=cob] .qtools .ck{width:40px !impo
 .fuente{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.fuente button{border:0;background:transparent;padding:0 10px;min-height:34px;font:inherit;font-weight:700;color:var(--ink,#1B2230);cursor:pointer}.fuente button+button{border-left:1px solid var(--line)}.fuente button.on{background:var(--brand);color:#fff}.fuente .f1{font-size:12px}.fuente .f2{font-size:14px}.fuente .f3{font-size:16px}.fuente .f4{font-size:18px}
 .rggrp{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}.rghead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:var(--brand-soft);flex-wrap:wrap}.rgit{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line);flex-wrap:wrap}.rgbtns{flex-wrap:wrap;gap:6px}.rgfecha{position:relative;cursor:pointer}.rgfecha input{position:absolute;inset:0;opacity:0;cursor:pointer}.rgpop{max-height:60vh;overflow:auto}.rgbell .cnt{background:#E5484D;color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:4px}.rgch2 input{margin:0 4px 0 0}
 .rgfchip{display:inline-flex;align-items:center;gap:6px}.rgfchip button{border:0;background:rgba(255,255,255,.25);color:inherit;border-radius:50%;width:20px;height:20px;line-height:1;cursor:pointer;font-size:14px;padding:0}#rgFecNueva{min-height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit}
+.avfilt{display:grid;grid-template-columns:minmax(220px,1.4fr) minmax(180px,1fr) minmax(180px,1fr) auto;gap:10px;align-items:end;margin:6px 0 8px}.avfilt .avlimpia{min-height:40px}@media (max-width:760px){.avfilt{grid-template-columns:1fr}}
 .refnota{margin:-6px 0 12px;font-size:12.5px}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
@@ -829,7 +830,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v154</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v155</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3677,7 +3678,8 @@ function rgGuardar(id){
 function vAvisos(){
   ui.avf = ui.avf || 'deben';
   var grupo = function(x){ return x.tipo === 'venc' || x.tipo === 'varias' ? 'deben' : x.tipo === 'pre' ? 'pre' : 'renov'; };
-  var todos = porEnviar(), cnt = {deben: 0, pre: 0, renov: 0, todos: 0}; todos.forEach(function(x){ if(x.omitir) return; cnt[grupo(x)]++; cnt.todos++; });
+  var avPasa = function(x){ var d = don(x.c.donanteId) || {nombre: ''}; if(ui.avGab && (x.c.gabai || '') !== ui.avGab) return false; if(ui.avCon && (x.c.concepto || '') !== ui.avCon) return false; if(ui.avQ && (d.nombre + ' ' + (d.hebreo || '')).toLowerCase().indexOf(ui.avQ.toLowerCase()) === -1) return false; return true; };
+  var todos0 = porEnviar(), todos = todos0.filter(avPasa), cnt = {deben: 0, pre: 0, renov: 0, todos: 0}; todos.forEach(function(x){ if(x.omitir) return; cnt[grupo(x)]++; cnt.todos++; });
   var lista = todos.filter(function(x){ return ui.avf === 'todos' || grupo(x) === ui.avf; }), env = lista.filter(function(x){ return !x.omitir; }), om = lista.filter(function(x){ return x.omitir; });
   var av = S.avisos.slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
   function card(x, k){
@@ -3689,7 +3691,13 @@ function vAvisos(){
   }
   var chipsAv = '<div class="chips rgch" style="margin:8px 0 4px">' + [['deben', '🔴 Deben (vencidas)'], ['pre', '🟡 Antes de vencer (van al corriente)'], ['renov', '🔵 Renovación'], ['todos', 'Todos']].map(function(o){ return '<button type="button" class="chip' + (ui.avf === o[0] ? ' on' : '') + '" data-a="avF" data-f="' + o[0] + '">' + o[1] + ' <b>' + cnt[o[0]] + '</b></button>'; }).join('') + '</div>';
   var expl = ui.avf === 'pre' ? '<div class="note">Estos donadores <b>no deben nada</b>: es el aviso amable de que su próxima cuota vence pronto (hasta 3 días antes). Se puede apagar en Configuración.</div>' : ui.avf === 'deben' ? '<div class="sub">Solo donadores con cuotas vencidas sin pagar. Si ya pagó, desaparece solo. Máximo 2 recordatorios por cuota (días ' + S.cfg.d1 + ' y ' + S.cfg.d2 + ' después de vencer).</div>' : '';
-  return '<div style="display:grid;gap:18px"><section class="panel"><h2>Por enviar hoy (' + env.length + ')</h2>' + chipsAv + expl +
+  var nombresAv = {}; todos0.forEach(function(x){ var d = don(x.c.donanteId); if(d) nombresAv[d.nombre] = 1; });
+  var consAv = {}; todos0.forEach(function(x){ if(x.c.concepto) consAv[x.c.concepto] = 1; });
+  var filtrosAv = '<div class="avfilt"><label class="f avq"><span>🔎 Donador</span><input id="avQ" type="search" list="avNombres" value="' + esc(ui.avQ || '') + '" placeholder="Escribe o elige un nombre"><datalist id="avNombres">' + Object.keys(nombresAv).sort().map(function(n){ return '<option value="' + esc(n) + '">'; }).join('') + '</datalist></label>' +
+    '<label class="f"><span class="lrow">Gabai</span><select id="avGab"><option value="">Todos los gabaim</option>' + (S.gabaim || []).map(function(g){ return '<option value="' + esc(g) + '"' + (ui.avGab === g ? ' selected' : '') + '>' + esc(g) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f"><span>Concepto</span><select id="avCon"><option value="">Todos los conceptos</option>' + Object.keys(consAv).map(function(k){ return '<option' + (ui.avCon === k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label>' +
+    ((ui.avQ || ui.avGab || ui.avCon) ? '<button type="button" class="btn ghost sm avlimpia" data-a="avLimpiar">✕ Quitar filtros</button>' : '') + '</div>';
+  return '<div style="display:grid;gap:18px"><section class="panel"><h2>Por enviar hoy (' + env.length + ')</h2>' + filtrosAv + chipsAv + expl +
     (env.length ? '<div class="avlist">' + lista.map(function(x, k){ return x.omitir ? '' : card(x, k); }).join('') + '</div>' : '<div class="empty">No hay recordatorios pendientes para hoy.</div>') +
     (om.length ? '<details><summary class="sub" style="cursor:pointer">' + om.length + ' que no salen hoy y por qué</summary><div class="avlist">' + lista.map(function(x, k){ return x.omitir ? card(x, k) : ''; }).join('') + '</div></details>' : '') + '</section>' +
   '<section class="panel"><h2>Avisos enviados</h2>' + (av.length ? '<div class="tw cards"><table><thead><tr><th>Fecha</th><th>Canal</th><th>Para</th><th>Plantilla</th><th>Estado</th></tr></thead><tbody>' +
@@ -5191,6 +5199,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'rgIcs'){ var ri2 = reglas().find(function(z){ return z.id === id; }); if(ri2) icsDescargar([ri2], 'Recordatorio ' + ri2.nombre); }
   else if(a === 'rgIcsTodas'){ icsDescargar(misReglas().filter(function(r){ return r.estado === 'activa'; }), 'Recordatorios Bait Lapletot'); }
   else if(a === 'avF'){ ui.avf = b.getAttribute('data-f'); render(); }
+  else if(a === 'avLimpiar'){ ui.avQ = ''; ui.avGab = ''; ui.avCon = ''; render(); }
   else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'gabOrd'){ ev.preventDefault(); abrirGabOrd(); }
@@ -5436,7 +5445,9 @@ document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && ev.t
   if(ev.key === 'Enter' && ev.target.id && ev.target.id.indexOf('cat_') === 0){ ev.preventDefault(); var b5 = document.querySelector('[data-a=catAdd][data-cat="' + ev.target.id.slice(4) + '"]'); if(b5) b5.click(); }
   if(ev.key === 'Enter' && ev.target.id === 'gbNuevo'){ ev.preventDefault(); var bb = document.querySelector('[data-a=gbAdd]'); if(bb) bb.click(); } if(ev.key === 'Enter' && ev.target.hasAttribute && ev.target.hasAttribute('data-gbn')){ ev.preventDefault(); var b2 = document.querySelector('[data-a=gbSave][data-k="' + ev.target.getAttribute('data-gbn') + '"]'); if(b2) b2.click(); } });
 document.addEventListener('focusin', function(ev){ var t = ev.target; if(!t.hasAttribute || !t.hasAttribute('data-mg') || t.value !== '' || t.disabled) return; var gp = t.getAttribute('data-mg'); if(fcPer(gp) !== 'Personalizado') return; var cu = $(gp + 'Cuota'); if(cu && cents(cu.value) > 0){ t.value = String(cu.value).replace(/[^0-9.]/g, ''); ui.mg = ui.mg || {}; var gs = ui.mg[gp] = ui.mg[gp] || {user: true, vals: {}}; gs.user = true; gs.vals[t.getAttribute('data-m')] = t.value; fcCalc(gp); setTimeout(function(){ try{ t.select(); }catch(e){} }, 0); } });
+var AVQ_T = null;
 document.addEventListener('input', function(ev){
+  if(ev.target && ev.target.id === 'avQ'){ var tq = ev.target; clearTimeout(AVQ_T); AVQ_T = setTimeout(function(){ ui.avQ = tq.value; render(); var e2 = $('avQ'); if(e2){ e2.focus(); var L = e2.value.length; try{ e2.setSelectionRange(L, L); }catch(er){} } }, 350); return; }
   if(ev.target && (ev.target.id === 'invPw' || ev.target.id === 'invUrl' || ev.target.id === 'invTel')){ var ib = $('dlg').querySelector('[data-a=invWa]'); if(ib) invPrev(+ib.getAttribute('data-k')); }
   var t = ev.target;
   if(t.hasAttribute && t.hasAttribute('data-cfk')){ ui.cf = ui.cf || {}; var cfs = ui.cf[t.getAttribute('data-cfk')] = ui.cf[t.getAttribute('data-cfk')] || {}; cfs[t.getAttribute('data-cfi')] = t.value; cfAplicar(t.closest('table')); if($('bkTot')) bkResumen(); return; }
@@ -5556,6 +5567,7 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'rgTipo'){ $('rgDonW').hidden = t.value !== 'donador'; var gw = document.querySelector('.rggabw'); if(gw) gw.hidden = t.value === 'donador' || t.value === 'nota'; $('rgDiasW').hidden = t.value !== 'sinpago'; $('rgCobW').hidden = t.value !== 'autorizar'; }
   else if(t.id === 'rgDon'){ var nm = $('rgNom'); if(nm && !nm.value && t.value){ var dd = don(t.value); if(dd) nm.value = 'Recordar a ' + dd.nombre; } }
   else if(t.id === 'rgFrec'){ $('rgDowW').hidden = t.value !== 'semanal'; $('rgDomW').hidden = t.value !== 'mensual'; $('rgFecW').hidden = t.value !== 'una'; $('rgFechasW').hidden = t.value !== 'fechas'; }
+  else if(t.id === 'avQ' || t.id === 'avGab' || t.id === 'avCon'){ if((ui[t.id] || '') === t.value) return; ui[t.id] = t.value; if(t.id === 'avQ'){ clearTimeout(AVQ_T); setTimeout(render, 0); } else render(); }
   else if(t.id === 'cobCon'){ ui.cob.con = t.value; if(ui.cf) delete ui.cf.cob; render(); }
   else if(t.id === 'recEstilo'){ S.cfg = S.cfg || {}; S.cfg.recEstilo = t.value; save(); toast('Estilo de recibo guardado'); }
   else if(t.id === 'portalSel'){ ui.portal.d = t.value; render(); }
