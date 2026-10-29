@@ -481,6 +481,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .rgm td.rgc{vertical-align:top;padding-top:10px;white-space:nowrap;border-right:1px solid var(--line)}.rgm .rgcp{font-size:12px}.rgm tr.rggt td{background:#F5F7FA}
 .nghw{position:relative}nav.side .menu .nghw{position:relative;display:block}nav.side .menu button.ngeye{position:absolute !important;right:30px;top:10px;width:24px !important;min-height:24px !important;height:24px;margin:0 !important;border:0;border-radius:7px !important;background:transparent;color:rgba(255,255,255,.45);display:inline-flex;flex-direction:row;align-items:center;justify-content:center;cursor:pointer;padding:0 !important;z-index:2;gap:0}nav.side .menu button.ngeye:hover{background:rgba(255,255,255,.14);color:#fff}.modocg{margin:6px 0 10px;padding:8px 10px;border-radius:10px}.modocsel{background:var(--brand-soft)}.modocr{display:flex !important;align-items:center;gap:8px;padding:5px 0}.modocr .mico{display:inline-flex;width:22px;opacity:.7}
 .wahelp{margin-top:12px;font-size:13px;color:var(--muted)}.wahelp summary{cursor:pointer;color:var(--brand);font-weight:600}.wahelp ol{margin:8px 0 0 18px;padding:0;display:grid;gap:4px}
+.chip.chpend:not(.on){border-color:#F3C1BC;color:#B42318}.chip.chliq:not(.on){border-color:#BFE3CF;color:#1E6B45}
 .refnota{margin:-6px 0 12px;font-size:12.5px}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
@@ -822,7 +823,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v148</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v149</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2763,6 +2764,9 @@ function pwSave(k){
 /* ================= Cobranza ================= */
 function cobLimpiar(){ if(ui.cf){ delete ui.cf.cob; delete ui.cf.bk; } if(ui.cob){ ui.cob.q = ''; ui.cob.bkDon = ''; ui.cob.bkEst = 'todos'; } }
 function cobMesTxt(){ var f = ui.cob, Y = f.anio || anioAct(); return f.mes === 'previas' ? 'Vencidas de meses anteriores' : f.mes === 'vencidas' ? 'Todas las vencidas hasta hoy' : f.mes === 'todo' ? 'Todo el año ' + Y : Mes(+f.mes) + ' ' + Y; }
+function cobEdoGrupo(q){ var e = estadoQ(q); return e === 'pagada' || e === 'adelantada' ? 'liq' : e === 'cancelada' || e === 'pausada' ? 'otra' : 'pend'; }
+var conDia2Skip = false;
+function cobEdoConteo(){ conDia2Skip = true; try{ var b = cobFiltradas(true); }finally{ conDia2Skip = false; } var r = {todas: b.length, pend: 0, liq: 0}; b.forEach(function(q){ var g = cobEdoGrupo(q); if(r[g] != null) r[g]++; }); return r; }
 function cobFiltradas(conDia){
   var t = hoy(), f = ui.cob, Y = +(f.anio || anioAct());
   var qs = S.cuotas.filter(function(q){
@@ -2777,6 +2781,7 @@ function cobFiltradas(conDia){
   if(f.caja !== 'todos') qs = qs.filter(function(q){ return planVista(q).caja === f.caja; });
   if((f.cajas || []).length) qs = qs.filter(function(q){ return f.cajas.indexOf(planVista(q).caja) !== -1; });
   if((f.mons || []).length) qs = qs.filter(function(q){ return f.mons.indexOf(planVista(q).mon) !== -1; });
+  if(f.edo && f.edo !== 'todas' && !conDia2Skip) qs = qs.filter(function(q){ return cobEdoGrupo(q) === f.edo; });
   if(conDia && f.dia !== 'todos') qs = qs.filter(function(q){ return +q.venc.slice(8, 10) === +f.dia; });
   return qs.sort(function(a, b){ return a.venc.localeCompare(b.venc) || don(comp(a.compId).donanteId).nombre.localeCompare(don(comp(b.compId).donanteId).nombre, 'es'); });
 }
@@ -2903,7 +2908,8 @@ function vCobranza(){
     (soloBloque() ? (requiereAprob() ? '<div class="note">Marca con palomita los cobros que vas a entregar, pon el monto (pesos o dólares) y la caja. Dirección los autoriza antes de registrarse.</div>' : '') : '<div class="row" style="justify-content:space-between"><div class="seg" role="group" aria-label="Modo"><button type="button" class="' + (f.rap ? '' : 'on') + '" data-a="cobModo" data-m="lista">Lista de cuotas</button><button type="button" class="' + (f.rap ? 'on' : '') + '" data-a="cobModo" data-m="bloque">Cobro en bloque</button></div></div>') +
     '<div class="form">' + selAnio + '<label class="f">Mes<select id="cobMes">' + opts + '</select></label>' + (f.rap ? '' : '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="cobGab">' + optsGabai(f.gab, true) + '</select></label>') +
     '<label class="f">Buscar donante<input id="cobQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre"></label></div>' +
-    '<div class="rgf"><div class="sub">Moneda</div><div class="chips rgch"><button type="button" class="chip' + (!(f.mons || []).length ? ' on' : '') + '" data-a="cobMonAll">Todas</button>' + ['MXN', 'USD'].map(function(m){ var on = (f.mons || []).indexOf(m) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobMon" data-m="' + m + '" aria-pressed="' + on + '">' + m + '</button>'; }).join('') + '</div>' +
+    '<div class="rgf"><div class="sub">Estado</div><div class="chips rgch">' + (function(){ var ce = cobEdoConteo(), ed = f.edo || 'todas'; return [['todas', 'Todas'], ['pend', 'Pendientes y vencidas'], ['liq', 'Liquidadas']].map(function(o){ return '<button type="button" class="chip' + (ed === o[0] ? ' on' : '') + (o[0] === 'pend' ? ' chpend' : o[0] === 'liq' ? ' chliq' : '') + '" data-a="cobEdo" data-e="' + o[0] + '" aria-pressed="' + (ed === o[0]) + '">' + o[1] + ' <b>' + ce[o[0]] + '</b></button>'; }).join(''); })() + '</div>' +
+    '<div class="sub">Moneda</div><div class="chips rgch"><button type="button" class="chip' + (!(f.mons || []).length ? ' on' : '') + '" data-a="cobMonAll">Todas</button>' + ['MXN', 'USD'].map(function(m){ var on = (f.mons || []).indexOf(m) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobMon" data-m="' + m + '" aria-pressed="' + on + '">' + m + '</button>'; }).join('') + '</div>' +
       '<div class="sub">Caja</div><div class="chips rgch"><button type="button" class="chip' + (!(f.cajas || []).length ? ' on' : '') + '" data-a="cobCjAll">Todas</button>' + CAJAS.map(function(k){ var on = (f.cajas || []).indexOf(k.id) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobCj" data-c="' + k.id + '" aria-pressed="' + on + '">' + esc(k.nombre) + '</button>'; }).join('') + '</div></div>' +
     '<div><div class="sub" style="margin-bottom:8px">Día de vencimiento</div><div class="chips"><button type="button" class="chip' + (f.dia === 'todos' ? ' on' : '') + '" data-a="cobDia" data-d="todos">Todos <b>' + base.length + '</b></button>' +
       Object.keys(porDia).sort(function(a, b){ return a - b; }).map(function(d){ return '<button type="button" class="chip' + (String(f.dia) === d ? ' on' : '') + '" data-a="cobDia" data-d="' + d + '">Día ' + d + ' <b>' + porDia[d] + '</b></button>'; }).join('') + '</div></div>' +
@@ -4984,6 +4990,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'cobCjAll'){ ui.cob.cajas = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobCj'){ var ck = ui.cob.cajas = ui.cob.cajas || [], kv = b.getAttribute('data-c'), ki = ck.indexOf(kv); if(ki === -1) ck.push(kv); else ck.splice(ki, 1); if(ck.length === CAJAS.length) ui.cob.cajas = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMonAll'){ ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
+  else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'gabOrd'){ ev.preventDefault(); abrirGabOrd(); }
   else if(a === 'reset'){ if(user().rol !== 'Dirección' || S.real) return; try{ localStorage.removeItem(KEY); }catch(e){} seed(); ui.comp.sel = null; save(); cerrarMas(); sesionBorrar(); mostrarLogin(); }
