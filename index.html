@@ -478,6 +478,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .gmform{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel2,#F8FAFC)}.gmform summary{cursor:pointer}.gmtab{display:flex;flex-direction:column;gap:4px;margin:10px 0 6px}.gmtr{display:grid;grid-template-columns:140px minmax(0,1fr) 140px;gap:8px;align-items:center}.gmtr select,.gmtr input{min-height:36px}.gmth{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.gmdif{background:#FFF4DB;border-radius:8px;padding:2px 4px}@media (max-width:760px){.gmtr{grid-template-columns:90px minmax(0,1fr) 90px}}
 .icomini{width:26px !important;min-width:26px !important;height:26px !important;min-height:26px !important;vertical-align:middle;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--brand)}
 .recmenu{position:relative;display:inline-block}.recmenu summary{list-style:none;cursor:pointer}.recmenu summary::-webkit-details-marker{display:none}.recmenuin{position:absolute;right:0;top:calc(100% + 4px);z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(18,50,79,.18);padding:6px;min-width:220px;display:flex;flex-direction:column}.recmenuin button{border:0;background:none;text-align:left;padding:9px 10px;border-radius:8px;font:inherit;font-size:14px;color:var(--ink,#1B2230);cursor:pointer;display:flex;gap:6px;align-items:center}.recmenuin button:hover{background:#EEF2F7}#qlook .recmenu summary{background:#fff}
+.rgm td.rgc{vertical-align:top;padding-top:10px;white-space:nowrap;border-right:1px solid var(--line)}.rgm .rgcp{font-size:12px}.rgm tr.rggt td{background:#F5F7FA}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
 .gmlist{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 10px}.gmrow{display:flex !important;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line)}.gmrow:last-child{border-bottom:0}.gmmes{width:96px;font-weight:600}.gmpct{width:150px}.gmhead{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;cursor:default}.gmgab{flex:1;text-align:left}.gmes{font-size:10.5px;padding:1px 6px}
@@ -818,7 +819,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v140</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v141</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2447,7 +2448,7 @@ function movimientos(){
   var out = [];
   S.donativos.forEach(function(p){
     var c = comp(p.compId), d = c ? don(c.donanteId) : null;
-    out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo, concepto: c ? (c.concepto || 'Donativo') : 'Donativo', nombre: d ? d.nombre : '—', gabai: p.gabai != null ? p.gabai : (c ? (c.gabai || '') : ''), corr: corrTxt(p, c), corrM: (p.cubre || []).reduce(function(m, k){ return k.ap > 0 ? Math.min(m, k.mes) : m; }, 99), cuotaC: c && c.modalidad !== 'Pago directo' ? c.cuotaC : null, cuotaMon: c ? c.moneda : 'USD', gabaiTxt: '', donId: d ? d.id : '', eqC: p.montoCompC, forma: p.forma, caja: p.caja || cajaDef(p.moneda), moneda: p.moneda, montoC: p.montoC, tc: p.tc, obs: p.obs || '', compId: p.compId});
+    out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo, concepto: c ? (c.concepto || 'Donativo') : 'Donativo', nombre: d ? d.nombre : '—', gabai: p.gabai != null ? p.gabai : (c ? (c.gabai || '') : ''), corr: corrTxt(p, c), corrM: (p.cubre || []).reduce(function(m, k){ return k.ap > 0 ? Math.min(m, k.mes) : m; }, 99), cuotaC: c && c.modalidad !== 'Pago directo' ? c.cuotaC : null, cuotaMon: c ? c.moneda : 'USD', gabaiTxt: '', donId: d ? d.id : '', eqC: c && c.moneda === 'USD' ? p.montoCompC : (p.moneda === 'USD' ? p.montoC : Math.round(p.montoC / (p.tc || S.cfg.tc || 1))), forma: p.forma, caja: p.caja || cajaDef(p.moneda), moneda: p.moneda, montoC: p.montoC, tc: p.tc, obs: p.obs || '', compId: p.compId});
   });
   (S.egresos || []).forEach(function(e){
     out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio, concepto: e.concepto, nombre: e.benef, gabai: e.gabai || '', donId: '', eqC: e.moneda === 'USD' ? e.montoC : Math.round(e.montoC / (e.tc || S.cfg.tc || 1)), forma: e.forma, caja: e.caja, moneda: e.moneda, montoC: e.montoC, tc: e.tc, obs: [e.desc, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · '), id: e.id});
@@ -2470,18 +2471,19 @@ function contResumenGab(){
   var gabs = (S.gabaim || []).slice(); ing.forEach(function(x){ if(gabs.indexOf(x.gabai || '') === -1) gabs.push(x.gabai || ''); });
   var gSel = f.rg.length ? gabs.filter(function(g){ return f.rg.indexOf(g) !== -1; }) : gabs;
   var mSel = f.rm.length ? f.rm.slice().sort(function(a, b){ return a - b; }) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  var z = function(){ return {MXN: 0, USD: 0, eq: 0}; }, D = {}, TG = {}, TM = {}, TT = z();
+  var z = function(){ return {MXN: 0, USD: 0, eq: 0}; }, D = {}, TG = {}, TM = {}, TT = z(), DC = {}, TGC = {}, GK = {};
   ing.forEach(function(x){
     var g = x.gabai || '', m = +x.fecha.slice(5, 7);
     if(gSel.indexOf(g) === -1 || mSel.indexOf(m) === -1) return;
     if(f.rc.length && f.rc.indexOf(x.concepto || '') === -1) return;
-    var k = g + '|' + m; [D[k] = D[k] || z(), TG[g] = TG[g] || z(), TM[m] = TM[m] || z(), TT].forEach(function(o){ o[x.moneda] += x.montoC; o.eq += x.eqC || 0; });
+    var cn = x.concepto || 'Sin concepto', k = g + '|' + m, kc = g + '|' + cn + '|' + m, tc = g + '|' + cn; GK[g] = GK[g] || []; if(GK[g].indexOf(cn) === -1) GK[g].push(cn);
+    [D[k] = D[k] || z(), DC[kc] = DC[kc] || z(), TGC[tc] = TGC[tc] || z(), TG[g] = TG[g] || z(), TM[m] = TM[m] || z(), TT].forEach(function(o){ o[x.moneda] += x.montoC; o.eq += x.eqC || 0; });
   });
   var gN = function(g){ return g ? '<span dir="auto">' + esc(g) + '</span>' : 'Sin gabai'; };
   var c = function(o, k, b){ var v = o ? o[k] : 0; return '<td class="n' + (b ? ' rtot' : '') + '">' + (v ? (b ? '<b>' + mN(v) + '</b>' : mN(v)) : '<span class="rz">–</span>') + '</td>'; };
   var TIPOS = [['MXN', 'MXN'], ['USD', 'USD'], ['eq', 'Eq. USD']], tipos = f.rt.length ? TIPOS.filter(function(t){ return f.rt.indexOf(t[0]) !== -1; }) : TIPOS;
-  var bloque = function(nombre, get, tot, cls){
-    return tipos.map(function(t, i){ return '<tr class="' + (cls || '') + (i === 0 ? ' rg1' : '') + (t[0] === 'eq' ? ' req' : '') + '">' + (i === 0 ? '<th scope="row" rowspan="' + tipos.length + '" class="rgn">' + nombre + '</th>' : '') + '<td class="rgt">' + t[1] + '</td>' + mSel.map(function(m){ return c(get(m), t[0]); }).join('') + c(tot, t[0], true) + '</tr>'; }).join('');
+  var bloque = function(nombre, get, tot, cls, con, span){
+    return tipos.map(function(t, i){ return '<tr class="' + (cls || '') + (i === 0 ? ' rg1' : '') + (t[0] === 'eq' ? ' req' : '') + '">' + (i === 0 && nombre != null ? '<th scope="row" rowspan="' + (span || tipos.length) + '" class="rgn">' + nombre + '</th>' : '') + (i === 0 ? '<td rowspan="' + tipos.length + '" class="rgc">' + (con || '') + '</td>' : '') + '<td class="rgt">' + t[1] + '</td>' + mSel.map(function(m){ return c(get(m), t[0]); }).join('') + c(tot, t[0], true) + '</tr>'; }).join('');
   };
   var chipsG = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rg.length ? ' on' : '') + '" data-a="rgGAll">Todos</button>' + gabs.map(function(g){ return '<button type="button" class="chip' + (f.rg.indexOf(g) !== -1 ? ' on' : '') + '" data-a="rgG" data-g="' + esc(g) + '" aria-pressed="' + (f.rg.indexOf(g) !== -1) + '">' + gN(g) + '</button>'; }).join('') + '</div>';
   var chipsM = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rm.length ? ' on' : '') + '" data-a="rgMAll">Todo el año</button>' + MESES.es.map(function(n, k){ var on = f.rm.indexOf(k + 1) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgM" data-m="' + (k + 1) + '" aria-pressed="' + on + '">' + Mes(k + 1).slice(0, 3) + '</button>'; }).join('') + '</div>';
@@ -2490,9 +2492,14 @@ function contResumenGab(){
   var chipsT = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rt.length ? ' on' : '') + '" data-a="rgTAll">Todas</button>' + TIPOS.map(function(t){ var on = f.rt.indexOf(t[0]) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgT" data-t="' + t[0] + '" aria-pressed="' + on + '">' + t[1] + '</button>'; }).join('') + '</div>';
   return '<section class="panel"><h2>Resumen por gabai · ' + esc(f.anio) + '</h2>' +
     '<div class="rgf"><div class="sub">Gabai</div>' + chipsG + '<div class="sub">Concepto</div>' + chipsC + '<div class="sub">Mes</div>' + chipsM + '<div class="sub">Moneda</div>' + chipsT + '</div>' +
-    (!f.rv ? '' : '<div class="tw rgw"><table class="cobt rgm"><thead><tr><th>Gabai</th><th></th>' + mSel.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Total</th></tr></thead><tbody>' +
-      gSel.map(function(g){ return bloque(gN(g), function(m){ return D[g + '|' + m]; }, TG[g]); }).join('') +
-      bloque('<b>Total</b>', function(m){ return TM[m]; }, TT, 'rgtot') +
+    (!f.rv ? '' : '<div class="tw rgw"><table class="cobt rgm"><thead><tr><th>Gabai</th><th>Concepto</th><th></th>' + mSel.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Total</th></tr></thead><tbody>' +
+      gSel.map(function(g){ var ks = (GK[g] || []).slice().sort(function(a, b){ return cons.indexOf(a) - cons.indexOf(b); });
+        if(!ks.length) return bloque(gN(g), function(m){ return D[g + '|' + m]; }, TG[g], '', '<span class="sub">—</span>');
+        var multi = ks.length > 1, span = tipos.length * (ks.length + (multi ? 1 : 0));
+        return ks.map(function(k, ki){ return bloque(ki === 0 ? gN(g) : null, function(m){ return DC[g + '|' + k + '|' + m]; }, TGC[g + '|' + k], ki ? 'rgsub' : '', '<span class="pill t-info rgcp">' + esc(k) + '</span>', span); }).join('') +
+          (multi ? bloque(null, function(m){ return D[g + '|' + m]; }, TG[g], 'rgsub rggt', '<b>Total gabai</b>') : '');
+      }).join('') +
+      bloque('<b>Total</b>', function(m){ return TM[m]; }, TT, 'rgtot', f.rc.length ? f.rc.map(esc).join(' + ') : 'Todos los conceptos') +
     '</tbody></table></div>') + '</section>';
 }
 var CONT_COLS = [
