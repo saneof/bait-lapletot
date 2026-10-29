@@ -473,6 +473,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:500;white-space:nowrap}
 @media (min-width:761px){table[data-cf] td[data-l=Alerta]{max-width:120px}table[data-cf] td[data-l=Alerta] .pill{white-space:normal;border-radius:12px;line-height:1.25}}
 .portalenc{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:2px solid #C9A24A}.portalenc img{height:54px;width:auto;flex-shrink:0;padding-right:16px;border-right:1px solid var(--line)}.portalenc .ptit{font-size:19px;font-weight:700;color:var(--brand)}
+.recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
 .semaf{display:inline-flex;gap:2px;padding:2px 3px;border-radius:7px;background:#1B2230;margin-right:7px;vertical-align:middle}.semaf i{width:7px;height:7px;border-radius:50%;background:#3a4252}.s-r i:nth-child(1){background:#E5484D;box-shadow:0 0 5px #E5484D}.s-a i:nth-child(2){background:#F5B83D;box-shadow:0 0 5px #F5B83D}.s-v i:nth-child(3){background:#30A46C;box-shadow:0 0 5px #30A46C}.s-g i{background:#5b6472}.prec .name{display:flex;align-items:center;flex-wrap:wrap;gap:4px}.pend-r{background:var(--bad-soft);border-radius:10px;padding-left:8px;padding-right:8px}.pend-a{background:var(--warn-soft);border-radius:10px;padding-left:8px;padding-right:8px}.semleg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:8px}
 .t-ok{background:var(--ok-soft);color:var(--ok)}.t-warn{background:var(--warn-soft);color:var(--warn)}.t-bad{background:var(--bad-soft);color:var(--bad)}
 .t-info{background:var(--brand-soft);color:var(--ink)}.t-mute{background:var(--mute-soft);color:var(--muted)}
@@ -810,7 +811,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v121</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v122</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3430,6 +3431,60 @@ function linkPrev(){
 }
 
 /* ================= Portal ================= */
+/* --- Recibo individual de cada pago (PDF y WhatsApp) --- */
+function numLetras(n){
+  n = Math.floor(n); if(n === 0) return 'cero';
+  var U = ['', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte', 'veintiún', 'veintidós', 'veintitrés', 'veinticuatro', 'veinticinco', 'veintiséis', 'veintisiete', 'veintiocho', 'veintinueve'];
+  var D = ['', '', '', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'], C = ['', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+  var cien = function(x){ if(x === 100) return 'cien'; var c = Math.floor(x / 100), r = x % 100, t = C[c]; if(r){ t += (t ? ' ' : '') + (r < 30 ? U[r] : D[Math.floor(r / 10)] + (r % 10 ? ' y ' + U[r % 10] : '')); } return t; };
+  var mil = function(x){ var m = Math.floor(x / 1000), r = x % 1000; return (m ? (m === 1 ? 'mil' : cien(m) + ' mil') : '') + (r ? (m ? ' ' : '') + cien(r) : ''); };
+  var mm = Math.floor(n / 1000000), r = n % 1000000;
+  return ((mm ? (mm === 1 ? 'un millón' : mil(mm) + ' millones') : '') + (r ? (mm ? ' ' : '') + mil(r) : '')).trim();
+}
+function montoLetras(c, mon){ var e = Math.floor(c / 100), ct = Math.round(c % 100); var t = numLetras(e); t = t.charAt(0).toUpperCase() + t.slice(1); return t + (mon === 'USD' ? (e === 1 ? ' dólar' : ' dólares') : (e === 1 ? ' peso' : ' pesos')) + ' ' + pad(ct) + '/100 ' + (mon === 'USD' ? 'USD' : 'M.N.'); }
+function reciboHtml(p){
+  var c = comp(p.compId) || {}, d = don(c.donanteId) || {nombre: ''}, lg = logoSrc(), cub = (p.cubre || []).map(function(y){ return Mes(y.mes); }).join(', ');
+  var fila = function(l, v){ return '<tr><td style="padding:9px 0;color:#5B6472;width:150px;vertical-align:top;font-size:12px;text-transform:uppercase;letter-spacing:.05em">' + l + '</td><td style="padding:9px 0;font-size:14px;color:#1B2230;border-bottom:1px dotted #C9CED6">' + v + '</td></tr>'; };
+  var cj = p.caja ? caja(p.caja).nombre : '';
+  return '<div style="width:816px;height:1056px;box-sizing:border-box;padding:48px 56px;background:#fff;font-family:Inter,Arial,sans-serif;color:#1B2230;position:relative">' +
+    '<div style="border:2px solid #12324F;border-radius:14px;padding:30px 34px;position:relative">' +
+      '<div style="display:flex;align-items:center;gap:20px;padding-bottom:16px;border-bottom:2.5px solid #C9A24A">' + (lg ? '<img src="' + lg + '" style="height:70px;width:auto">' : '') +
+        '<div style="flex:1;border-left:1px solid #E3E6EB;padding-left:18px"><div style="font-size:24px;font-weight:800;color:#12324F;letter-spacing:.02em">RECIBO DE DONATIVO</div><div style="font-size:12px;color:#5B6472;margin-top:3px">' + esc(c.emisor || 'Bait Lapletot') + '</div></div>' +
+        '<div style="text-align:right"><div style="font-size:11px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em">Folio</div><div style="font-size:22px;font-weight:800;color:#B42318">' + esc(p.recibo || '') + '</div><div style="font-size:12px;color:#5B6472;margin-top:4px">' + fFecha(p.fecha) + '</div></div></div>' +
+      '<div style="margin:22px 0 6px;background:#F2F5F9;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:11px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em">Cantidad recibida</div><div style="font-size:13px;color:#1B2230;margin-top:4px;font-style:italic">(' + esc(montoLetras(p.montoC, p.moneda)) + ')</div></div><div style="font-size:28px;font-weight:800;color:#12324F;white-space:nowrap">' + money(p.montoC, p.moneda) + '</div></div>' +
+      '<table style="width:100%;border-collapse:collapse;margin-top:10px">' +
+        fila('Recibimos de', '<b>' + esc(d.nombre) + '</b>' + (d.hebreo && d.idioma === 'he' ? ' · <span dir="rtl" style="color:#5B6472">' + esc(d.hebreo) + '</span>' : '')) +
+        fila('Concepto', esc(c.concepto || 'Donativo') + (c.anio ? ' ' + c.anio : '')) +
+        (cub ? fila('Corresponde a', esc(cub)) : '') +
+        fila('Forma de pago', esc(p.forma || '')) +
+        (cj ? fila('Caja', esc(cj)) : '') +
+        (c.gabai ? fila('Gabai', '<span dir="rtl">' + esc(c.gabai) + '</span>') : '') +
+        (p.moneda === 'MXN' && p.montoCompC && c.moneda === 'USD' ? fila('Equivalente', money(p.montoCompC, 'USD') + (p.tc ? ' · T.C. ' + p.tc : '')) : '') +
+        (p.obs ? fila('Observaciones', esc(p.obs)) : '') +
+      '</table>' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:60px"><div style="font-size:12px;color:#5B6472;max-width:330px;line-height:1.5">Gracias por tu generosidad y por ser parte de Bait Lapletot.<div style="font-size:15px;color:#12324F;margin-top:6px;font-weight:600;text-align:left"><span dir="rtl">תודה רבה ותזכו למצוות</span></div></div>' +
+        '<div style="width:250px;text-align:center"><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Recibió</div></div></div>' +
+    '</div>' +
+    '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:14px">Recibo generado automáticamente el ' + fFecha(hoy()) + ' · Folio ' + esc(p.recibo || '') + '</div></div>';
+}
+async function reciboPdf(pid, wa){
+  var p = (S.donativos || []).find(function(x){ return x.id === pid; }); if(!p){ toast('No encontré ese pago.'); return; }
+  var J = window.jspdf && window.jspdf.jsPDF; if(!J){ toast('No se pudo preparar el PDF. Recarga la página.'); return; }
+  toast('Preparando recibo…');
+  try{ await cargarJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', function(){ return !!window.html2canvas; }); }catch(e){ toast('No se pudo preparar el PDF. Revisa tu conexión.'); return; }
+  var box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-20000px;top:0;z-index:-1;background:#fff'; box.innerHTML = reciboHtml(p); document.body.appendChild(box);
+  var c = comp(p.compId) || {}, d = don(c.donanteId) || {nombre: ''}, nom = 'Recibo ' + (p.recibo || '') + ' ' + d.nombre + '.pdf';
+  var doc = new J({unit: 'pt', format: 'letter', orientation: 'portrait'}), dw = doc.internal.pageSize.getWidth(), dh = doc.internal.pageSize.getHeight();
+  try{ var cv = await html2canvas(box.firstChild, {scale: 2, backgroundColor: '#ffffff', logging: false}); doc.addImage(cv.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, dw, dh); }catch(e){ box.remove(); toast('No se pudo generar el recibo.'); return; }
+  box.remove();
+  var buf = doc.output('arraybuffer');
+  if(!wa){ guardar(nom, buf); return; }
+  var txt = 'Hola ' + d.nombre.split(' ')[0] + ', te enviamos tu recibo ' + (p.recibo || '') + ' por ' + money(p.montoC, p.moneda) + ' del ' + fFecha(p.fecha) + '. ¡Muchas gracias por tu apoyo a Bait Lapletot!';
+  try{ var fl = new File([buf], nom, {type: 'application/pdf'}); var tactil = window.matchMedia && window.matchMedia('(pointer:coarse)').matches; if(tactil && navigator.canShare && navigator.canShare({files: [fl]})){ await navigator.share({files: [fl], title: nom, text: txt}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
+  guardar(nom, buf); var tel = telDigits(d.tel), wu = 'https://wa.me/' + (tel || '') + '?text=' + encodeURIComponent(txt), wv = null; try{ wv = window.open(wu, '_blank'); if(wv) wv.opener = null; }catch(e){}
+  toast(tel ? 'Recibo descargado: arrástralo al chat de WhatsApp que se abrió' : 'Recibo descargado. Este donador no tiene teléfono: elige el chat en WhatsApp y adjunta el PDF');
+}
+function recBtns(x){ return '<span class="recbtns"><button type="button" class="btn ghost sm" data-a="recPdf" data-id="' + x.id + '">⬇ Recibo PDF</button><button type="button" class="btn sm recwa" data-a="recWa" data-id="' + x.id + '">WhatsApp</button></span>'; }
 function vPortal(){
   if(!S.donantes.length) return '<section class="panel"><div class="empty">No hay donadores para mostrar.</div></section>';
   if(!ui.portal.d || !don(ui.portal.d)) ui.portal.d = S.donantes[0].id;
@@ -3452,11 +3507,11 @@ function vPortal(){
   var qs = cuotasDe(c.id).slice().sort(function(a, b){ return (a.venc || '').localeCompare(b.venc || '') || a.num - b.num; });
   var usados = {}, filasRec = [];
   qs.forEach(function(q){
-    recs.forEach(function(x){ if(usados[x.id]) return; var cub = x.cubre || []; if(!cub.length) return; var prim = cub.map(function(y){ var qq = S.cuotas.find(function(z){ return z.id === y.qid; }); return qq ? qq.venc : ''; }).sort()[0]; var mio = cub.some(function(y){ return y.qid === q.id; }) || (!cub.some(function(y){ return y.qid; }) && cub.some(function(y){ return y.mes === q.mes; })); if(mio && (!prim || prim === q.venc || cub[0].qid === q.id || !cub[0].qid)){ usados[x.id] = 1; filasRec.push('<div class="item prec"><div class="grow"><div class="name">' + sem('v') + Mes(q.mes) + ' · ' + esc(x.recibo) + '</div><div class="sub">' + fFecha(x.fecha) + ' · ' + cub.map(function(y){ return Mes(y.mes); }).join(', ') + '</div></div><b>' + money(x.montoC, x.moneda) + '</b></div>'); } });
+    recs.forEach(function(x){ if(usados[x.id]) return; var cub = x.cubre || []; if(!cub.length) return; var prim = cub.map(function(y){ var qq = S.cuotas.find(function(z){ return z.id === y.qid; }); return qq ? qq.venc : ''; }).sort()[0]; var mio = cub.some(function(y){ return y.qid === q.id; }) || (!cub.some(function(y){ return y.qid; }) && cub.some(function(y){ return y.mes === q.mes; })); if(mio && (!prim || prim === q.venc || cub[0].qid === q.id || !cub[0].qid)){ usados[x.id] = 1; filasRec.push('<div class="item prec"><div class="grow"><div class="name">' + sem('v') + Mes(q.mes) + ' · ' + esc(x.recibo) + '</div><div class="sub">' + fFecha(x.fecha) + ' · ' + cub.map(function(y){ return Mes(y.mes); }).join(', ') + '</div></div><b>' + money(x.montoC, x.moneda) + '</b>' + recBtns(x) + '</div>'); } });
     var e = etq(q);
     if(falta(q) > 0 && (e[2] === 'r' || e[2] === 'a')) filasRec.push('<div class="item prec pend-' + e[2] + '"><div class="grow"><div class="name">' + sem(e[2]) + Mes(q.mes) + ' · <span class="pill ' + e[1] + '">' + e[0] + '</span></div><div class="sub">' + (e[2] === 'r' ? 'Vencido el ' + fFecha(q.venc) : 'Vence el ' + fFecha(q.venc)) + ' · sin recibo' + (q.aplicadoC > 0 ? ' por ' + money(falta(q), c.moneda) : '') + '</div></div><b>' + money(falta(q), c.moneda) + '</b></div>');
   });
-  recs.forEach(function(x){ if(!usados[x.id]) filasRec.push('<div class="item prec"><div class="grow"><div class="name">' + sem('v') + esc(x.recibo) + '</div><div class="sub">' + fFecha(x.fecha) + ' · ' + (x.cubre || []).map(function(y){ return Mes(y.mes); }).join(', ') + '</div></div><b>' + money(x.montoC, x.moneda) + '</b></div>'); });
+  recs.forEach(function(x){ if(!usados[x.id]) filasRec.push('<div class="item prec"><div class="grow"><div class="name">' + sem('v') + esc(x.recibo) + '</div><div class="sub">' + fFecha(x.fecha) + ' · ' + (x.cubre || []).map(function(y){ return Mes(y.mes); }).join(', ') + '</div></div><b>' + money(x.montoC, x.moneda) + '</b>' + recBtns(x) + '</div>'); });
   var npend = qs.filter(function(q){ var k = etq(q)[2]; return falta(q) > 0 && k === 'r'; }).length;
   return sel + '<section class="panel portal"><div class="portalenc">' + (logoSrc() ? '<img src="' + logoSrc() + '" alt="Bait Lapletot">' : '') + '<div><div class="ptit">Estado de cuenta ' + c.anio + '</div><div class="sub">Hola ' + esc(d.nombre.split(' ')[0]) + ', gracias por tu compromiso ' + c.anio + ' con Bait Lapletot.</div></div></div>' +
     '<div class="kpis"><div class="kpi"><span>Llevas dado</span><strong>' + money(dado, c.moneda) + '</strong></div><div class="kpi"><span>Falta</span><strong>' + money(Math.max(0, c.anualC - dado), c.moneda) + '</strong></div><div class="kpi"><span>Tu compromiso</span><strong>' + money(c.anualC, c.moneda) + '</strong><div class="bar" aria-hidden="true"><i style="width:' + Math.min(100, p) + '%"></i></div><small>' + p + '% completado</small></div></div>' +
@@ -4699,6 +4754,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'egSave') egSave();
   else if(a === 'respBajar'){ log('Descargó un respaldo completo'); save(); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: new Date().toISOString(), version: 5, datos: estadoGuardable()}, null, 1); guardar(respNombre() + '.json', new TextEncoder().encode(txt)); }
   else if(a === 'respOk') respAplicar();
+  else if(a === 'recPdf') reciboPdf(id, false);
+  else if(a === 'recWa') reciboPdf(id, true);
   else if(a === 'portalGab'){ ui.portal.gab = b.getAttribute('data-v') || ''; render(); }
   else if(a === 'respComb'){ if(!RESP) return; var rs = RESP; RESP = null; migrar(rs); var nn = combinarDatos(rs); save(); closeModal(); if(LOGUEADO){ log('Combinó un respaldo: agregó ' + nn + ' donadores'); render(); } else mostrarLogin(); toast(nn ? 'Se agregaron ' + nn + ' donadores que faltaban (lo demás se conservó)' : 'No faltaba nada: todo ya estaba'); }
   else if(a === 'resgRec'){ var rf2 = resgFuente(); if(!rf2) return; var nn2 = combinarDatos(rf2.s); save(); log('Recuperó ' + nn2 + ' donadores desde la copia guardada'); render(); toast('Se recuperaron ' + nn2 + ' donadores'); }
