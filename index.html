@@ -818,7 +818,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v139</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v140</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2465,7 +2465,7 @@ function contPasa(x, f, q){
   return true;
 }
 function contResumenGab(){
-  var f = ui.cont; f.rg = f.rg || []; f.rm = f.rm || []; f.rt = f.rt || [];
+  var f = ui.cont; f.rg = f.rg || []; f.rm = f.rm || []; f.rt = f.rt || []; f.rc = f.rc || [];
   var ing = movimientos().filter(function(x){ return x.tipo === 'ing' && x.fecha.slice(0, 4) === f.anio; });
   var gabs = (S.gabaim || []).slice(); ing.forEach(function(x){ if(gabs.indexOf(x.gabai || '') === -1) gabs.push(x.gabai || ''); });
   var gSel = f.rg.length ? gabs.filter(function(g){ return f.rg.indexOf(g) !== -1; }) : gabs;
@@ -2474,6 +2474,7 @@ function contResumenGab(){
   ing.forEach(function(x){
     var g = x.gabai || '', m = +x.fecha.slice(5, 7);
     if(gSel.indexOf(g) === -1 || mSel.indexOf(m) === -1) return;
+    if(f.rc.length && f.rc.indexOf(x.concepto || '') === -1) return;
     var k = g + '|' + m; [D[k] = D[k] || z(), TG[g] = TG[g] || z(), TM[m] = TM[m] || z(), TT].forEach(function(o){ o[x.moneda] += x.montoC; o.eq += x.eqC || 0; });
   });
   var gN = function(g){ return g ? '<span dir="auto">' + esc(g) + '</span>' : 'Sin gabai'; };
@@ -2484,9 +2485,11 @@ function contResumenGab(){
   };
   var chipsG = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rg.length ? ' on' : '') + '" data-a="rgGAll">Todos</button>' + gabs.map(function(g){ return '<button type="button" class="chip' + (f.rg.indexOf(g) !== -1 ? ' on' : '') + '" data-a="rgG" data-g="' + esc(g) + '" aria-pressed="' + (f.rg.indexOf(g) !== -1) + '">' + gN(g) + '</button>'; }).join('') + '</div>';
   var chipsM = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rm.length ? ' on' : '') + '" data-a="rgMAll">Todo el año</button>' + MESES.es.map(function(n, k){ var on = f.rm.indexOf(k + 1) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgM" data-m="' + (k + 1) + '" aria-pressed="' + on + '">' + Mes(k + 1).slice(0, 3) + '</button>'; }).join('') + '</div>';
+  var cons = []; (S.conceptos || []).forEach(function(k){ if(cons.indexOf(k) === -1 && ing.some(function(x){ return x.concepto === k; })) cons.push(k); }); ing.forEach(function(x){ if(x.concepto && cons.indexOf(x.concepto) === -1) cons.push(x.concepto); });
+  var chipsC = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rc.length ? ' on' : '') + '" data-a="rgCAll">Todos</button>' + cons.map(function(k){ var on = f.rc.indexOf(k) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgC" data-c="' + esc(k) + '" aria-pressed="' + on + '">' + esc(k) + '</button>'; }).join('') + '</div>';
   var chipsT = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rt.length ? ' on' : '') + '" data-a="rgTAll">Todas</button>' + TIPOS.map(function(t){ var on = f.rt.indexOf(t[0]) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgT" data-t="' + t[0] + '" aria-pressed="' + on + '">' + t[1] + '</button>'; }).join('') + '</div>';
   return '<section class="panel"><h2>Resumen por gabai · ' + esc(f.anio) + '</h2>' +
-    '<div class="rgf"><div class="sub">Gabai</div>' + chipsG + '<div class="sub">Mes</div>' + chipsM + '<div class="sub">Moneda</div>' + chipsT + '</div>' +
+    '<div class="rgf"><div class="sub">Gabai</div>' + chipsG + '<div class="sub">Concepto</div>' + chipsC + '<div class="sub">Mes</div>' + chipsM + '<div class="sub">Moneda</div>' + chipsT + '</div>' +
     (!f.rv ? '' : '<div class="tw rgw"><table class="cobt rgm"><thead><tr><th>Gabai</th><th></th>' + mSel.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Total</th></tr></thead><tbody>' +
       gSel.map(function(g){ return bloque(gN(g), function(m){ return D[g + '|' + m]; }, TG[g]); }).join('') +
       bloque('<b>Total</b>', function(m){ return TM[m]; }, TT, 'rgtot') +
@@ -4897,6 +4900,8 @@ document.addEventListener('click', function(ev){
   if(a === 'navMostrar'){ if(esMovil()){ navAbrir(true); return; } S.cfg = S.cfg || {}; S.cfg.nav = 'compacto'; save(); navAplicar(); return; }
   if(a === 'go'){ if(esMovil()) navAbrir(false); ui.view = b.getAttribute('data-v'); cobLimpiar(); if(ui.view === 'conta') ui.cont = null; if(ui.view === 'compromisos') ui.comp.sel = null; render(); window.scrollTo(0, 0); }
   else if(a === 'close') closeModal();
+  else if(a === 'rgCAll'){ ui.cont.rv = true; ui.cont.rc = []; render(); }
+  else if(a === 'rgC'){ ui.cont.rv = true; var rcv = b.getAttribute('data-c'), rca = ui.cont.rc = ui.cont.rc || [], rci = rca.indexOf(rcv); if(rci === -1) rca.push(rcv); else rca.splice(rci, 1); render(); }
   else if(a === 'rgGAll' || a === 'rgMAll' || a === 'rgTAll'){ ui.cont.rv = true; ui.cont[{rgGAll: 'rg', rgMAll: 'rm', rgTAll: 'rt'}[a]] = []; render(); }
   else if(a === 'rgG' || a === 'rgM' || a === 'rgT'){ ui.cont.rv = true; var rk = {rgG: 'rg', rgM: 'rm', rgT: 'rt'}[a], rv = a === 'rgG' ? b.getAttribute('data-g') : a === 'rgT' ? b.getAttribute('data-t') : +b.getAttribute('data-m'), ra = ui.cont[rk] = ui.cont[rk] || [], ri = ra.indexOf(rv); if(ri === -1) ra.push(rv); else ra.splice(ri, 1); render(); }
   else if(a === 'sugAbrir'){ cerrarMas && cerrarMas(); abrirSugerencias(); }
