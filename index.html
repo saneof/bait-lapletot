@@ -813,7 +813,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v127</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v129</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -933,7 +933,8 @@ var INGRESOS_NUEVOS = [
   {n: 'Alfonso Cassab', f: '2026-10-28', mes: 10, mx: 1000000, usd: 50000},
   {n: 'Arie Chicurel', f: '2026-10-28', mes: 10, mx: 2000000, usd: 100000}
 ];
-function aplicarIngresosNuevos(){
+function recEstiloFix(){ if(!S) return; S.fixes = S.fixes || {}; if(S.fixes.recEst1) return; S.fixes.recEst1 = true; S.cfg = S.cfg || {}; S.cfg.recEstilo = 'estado'; }
+function aplicarIngresosNuevos(){ recEstiloFix();
   if(!S || !S.donativos) return; S.fixes = S.fixes || {}; var hechos = 0;
   INGRESOS_NUEVOS.forEach(function(x){
     var k = 'ing|' + x.n + '|' + x.f + '|' + x.mx + '|' + x.usd; if(S.fixes[k]) return; S.fixes[k] = true;
@@ -1000,11 +1001,24 @@ function fixSoloPagado(s, nombre, clave){
   });
   if(grupos.length){ c.n = grupos.length; c.mesIni = +grupos[0].fecha.slice(5, 7); c.cuotaC = grupos[0].montoCompC; c.anualC = grupos.reduce(function(a, g){ return a + g.montoCompC; }, 0); c.periodo = 'Mensual'; c.fechaInicio = c.anio + '-' + pad(c.mesIni) + '-01'; }
 }
+function fixKanarek(s){
+  s.fixes = s.fixes || {}; if(s.fixes.kan1 || !s.donantes || !s.donativos) return; s.fixes.kan1 = true;
+  var d = s.donantes.find(function(x){ return x.nombre === 'Michelle Kanarek'; }); if(!d) return;
+  var c = s.compromisos.find(function(x){ return x.donanteId === d.id && x.anio === 2026; }); if(!c) return;
+  var qs = s.cuotas.filter(function(q){ return q.compId === c.id; }), qN = qs.find(function(q){ return q.mes === 11; }), qD = qs.find(function(q){ return q.mes === 12; }); if(!qN || !qD) return;
+  var oct = s.donativos.filter(function(p){ return p.compId === c.id && p.fecha === '2026-10-07' && p.moneda === 'USD'; }).sort(function(a, b){ return (a.cubre[0] || {}).mes - (b.cubre[0] || {}).mes; });
+  if(!oct.length) return; var tot = oct.reduce(function(a, p){ return a + p.montoC; }, 0); if(tot !== 100000) return;
+  var keep = oct[0]; keep.montoC = 100000; keep.montoCompC = 100000; keep.cubre = [{qid: qN.id, num: qN.num, mes: 11, ap: 100000}]; keep.mesCorr = 11;
+  oct.slice(1).forEach(function(p){ var i = s.donativos.indexOf(p); if(i !== -1) s.donativos.splice(i, 1); });
+  s.donativos.forEach(function(p){ if(p.compId !== c.id || p === keep) return; (p.cubre || []).forEach(function(y){ if(y.qid === qN.id){ y.qid = qD.id; y.num = qD.num; y.mes = 12; if(p.mesCorr === 11) p.mesCorr = 12; } }); });
+  [qN, qD].forEach(function(q){ q.aplicadoC = s.donativos.reduce(function(a, p){ return a + (p.cubre || []).reduce(function(b, y){ return b + (y.qid === q.id ? y.ap : 0); }, 0); }, 0); });
+}
 function migrar(s){
   fixSoloPagado(s, 'Toni Chayo', 'toni1');
   fixEfectivoMX(s);
   fixOficinaUSD(s);
   fixOficinaUSD2(s);
+  fixKanarek(s);
   (s.usuarios || []).forEach(function(u, k){ if(!u.id) u.id = 'u' + (k + 1); });
   if(!s.permisos){ s.permisos = {}; (s.usuarios || []).forEach(function(u){ if(u.rol === 'Cobranza') s.permisos[u.id] = ['donantes', 'nuevocomp', 'seg2', 'cobranza', 'avisos']; }); }
   if(!s.egresos) egresosEjemplo(s);
@@ -3449,7 +3463,7 @@ function numLetras(n){
 }
 function montoLetras(c, mon){ var e = Math.floor(c / 100), ct = Math.round(c % 100); var t = numLetras(e); t = t.charAt(0).toUpperCase() + t.slice(1); return t + (mon === 'USD' ? (e === 1 ? ' dólar' : ' dólares') : (e === 1 ? ' peso' : ' pesos')) + ' ' + pad(ct) + '/100 ' + (mon === 'USD' ? 'USD' : 'M.N.'); }
 function reciboHtml(p, est){
-  est = est || (S.cfg && S.cfg.recEstilo) || 'clasico';
+  est = est || (S.cfg && S.cfg.recEstilo) || 'estado';
   if(est !== 'clasico') return reciboHtml2(p, est);
   var c = comp(p.compId) || {}, d = don(c.donanteId) || {nombre: ''}, lg = logoSrc(), cub = (p.cubre || []).map(function(y){ return Mes(y.mes); }).join(', ');
   var fila = function(l, v){ return '<tr><td style="padding:9px 0;color:#5B6472;width:150px;vertical-align:top;font-size:12px;text-transform:uppercase;letter-spacing:.05em">' + l + '</td><td style="padding:9px 0;font-size:14px;color:#1B2230;border-bottom:1px dotted #C9CED6">' + v + '</td></tr>'; };
@@ -3630,7 +3644,7 @@ function vPortal(){
     '<h2>Tus aportaciones</h2><div class="tw cards"><table><thead><tr><th>Mes</th><th class="n">Monto</th><th>Estado</th></tr></thead><tbody>' +
       qs.map(function(q){ var x = etq(q); return '<tr><td data-l="Mes">' + sem(x[2]) + Mes(q.mes) + '</td><td class="n" data-l="Monto">' + money(q.montoC, c.moneda) + '</td><td data-l="Estado"><span class="pill ' + x[1] + '">' + x[0] + '</span></td></tr>'; }).join('') +
     '</tbody></table></div>' +
-    '<div class="row" style="justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px"><h2>Tus recibos</h2>' + (!esDonante() && user().rol === 'Dirección' ? '<label class="f" style="max-width:220px">Estilo del recibo<select id="recEstilo">' + [['clasico', '1 · Clásico'], ['banda', '2 · Banda azul'], ['elegante', '3 · Elegante'], ['tarjeta', '4 · Tarjeta moderna'], ['estado', '5 · Como estado de cuenta']].map(function(o){ return '<option value="' + o[0] + '"' + (((S.cfg && S.cfg.recEstilo) || 'clasico') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' : '') + '</div>' + (npend ? '<div class="sub">' + sem('r') + npend + (npend === 1 ? ' mes pendiente' : ' meses pendientes') + '</div>' : '') + (filasRec.length ? '<div class="list">' + filasRec.join('') + '</div>' : '<div class="sub">Aún no hay recibos.</div>') +
+    '<div class="row" style="justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px"><h2>Tus recibos</h2>' + (!esDonante() && user().rol === 'Dirección' ? '<label class="f" style="max-width:220px">Estilo del recibo<select id="recEstilo">' + [['estado', 'Estado de cuenta (recomendado)'], ['clasico', 'Clásico'], ['banda', 'Banda azul'], ['elegante', 'Elegante'], ['tarjeta', 'Tarjeta moderna']].map(function(o){ return '<option value="' + o[0] + '"' + (((S.cfg && S.cfg.recEstilo) || 'estado') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' : '') + '</div>' + (npend ? '<div class="sub">' + sem('r') + npend + (npend === 1 ? ' mes pendiente' : ' meses pendientes') + '</div>' : '') + (filasRec.length ? '<div class="list">' + filasRec.join('') + '</div>' : '<div class="sub">Aún no hay recibos.</div>') +
     '<div class="semleg">' + sem('v') + 'Recibida ' + sem('a') + 'En curso / en parte ' + sem('r') + 'Pendiente vencido</div>' +
     (esDonante() ? '' : '<div class="note">Link personal con token: ' + esc(link('portal', c)) + ' · válido hasta ' + fFecha(addDias(hoy(), 30)) + '</div>') +
     '<div class="acts"><button type="button" class="btn primary" data-a="portalSend" data-id="' + c.id + '">Enviar por WhatsApp o correo</button><button type="button" class="btn ghost" data-a="portalPdf" data-id="' + c.id + '">Descargar PDF</button></div></section>';
