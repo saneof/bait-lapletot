@@ -486,6 +486,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 .cobcon{width:auto !important;max-width:340px;min-height:38px;min-width:240px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font:inherit;background:#fff}
 table[data-cf=cob] .qtools .ibtn,table[data-cf=cob] .qtools .ck{width:40px !important;min-width:40px !important;height:40px !important;min-height:40px !important;border-radius:11px}table[data-cf=cob] .qtools .ck input{width:22px;height:22px}table[data-cf=cob] .qtools .ibtn svg{width:21px;height:21px}table[data-cf=cob] .qicos .ibtn{min-width:40px;height:40px;border-radius:11px}.icoparc{position:relative;display:inline-flex}.icoparc b{position:absolute;right:-7px;bottom:-6px;font-size:10px;line-height:1;background:#FFF4DB;color:#8A5A00;border:1px solid #F1D9A8;border-radius:6px;padding:1px 3px}.qicos [data-a=qParcial]{color:#1E6B45;border-color:#BFE3CF;background:#E9F7EF}
 .fuente{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.fuente button{border:0;background:transparent;padding:0 10px;min-height:34px;font:inherit;font-weight:700;color:var(--ink,#1B2230);cursor:pointer}.fuente button+button{border-left:1px solid var(--line)}.fuente button.on{background:var(--brand);color:#fff}.fuente .f1{font-size:12px}.fuente .f2{font-size:14px}.fuente .f3{font-size:16px}.fuente .f4{font-size:18px}
+.rggrp{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}.rghead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:var(--brand-soft);flex-wrap:wrap}.rgit{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line);flex-wrap:wrap}.rgbtns{flex-wrap:wrap;gap:6px}.rgfecha{position:relative;cursor:pointer}.rgfecha input{position:absolute;inset:0;opacity:0;cursor:pointer}.rgpop{max-height:60vh;overflow:auto}.rgbell .cnt{background:#E5484D;color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:4px}.rgch2 input{margin:0 4px 0 0}
 .refnota{margin:-6px 0 12px;font-size:12.5px}
 .icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
@@ -825,9 +826,9 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
   <main>
     <div class="top">
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
-      <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
+      <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v151</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v152</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -914,7 +915,7 @@ function estadoGuardable(){
   if(!GSW || S !== GSW.S) return S;
   var t = Object.assign({}, S); GAB_KS.concat(['gabaim']).forEach(function(k){ if(GSW.orig[k]) t[k] = gabUnir(k); }); return t;
 }
-function save(){ try{ var nv = estadoGuardable(); resgGuardar(nv); localStorage.setItem(KEY, JSON.stringify(nv)); }catch(e){} }
+function save(){ try{ var nv = estadoGuardable(); if(nv.user !== 0){ nv = Object.assign({}, nv, {user: 0}); } var txt = JSON.stringify(nv); if(localStorage.getItem(KEY) === txt) return; resgGuardar(nv); localStorage.setItem(KEY, txt); }catch(e){} }
 /* Resguardo automático: si un guardado deja menos donadores que antes, se guarda una copia de lo anterior para poder recuperarlo */
 var RESG_KEY = KEY + '-resguardo';
 function resgGuardar(nv){
@@ -1359,7 +1360,7 @@ function seed(){
 /* ================= navegación ================= */
 var ui = {don: {q: '', f: 'todos', open: null}, nd: {}, view: 'donantes', cob: {mes: String(mesAct()), dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}, comp: {f: 'activos', q: '', sel: null, gab: 'todos'}, portal: {d: null}, link: {done: null}};
 var VIEWS = [
-  ['donantes', 'Donadores'], ['nuevocomp', 'Compromisos'], ['seg2', 'Seguimientos'], ['cobranza', 'Cobranza'], ['aprobar', 'Autorizaciones'], ['comis', '% Comisiones'], ['conta', 'Contabilidad'], ['egresos', 'Egresos'], ['direccion', 'Dirección'], ['avisos', 'Avisos'], ['exportar', 'Exportar'], ['config', 'Configuración'], ['permisos', 'Permisos'],
+  ['donantes', 'Donadores'], ['nuevocomp', 'Compromisos'], ['seg2', 'Seguimientos'], ['cobranza', 'Cobranza'], ['aprobar', 'Autorizaciones'], ['comis', '% Comisiones'], ['conta', 'Contabilidad'], ['egresos', 'Egresos'], ['direccion', 'Dirección'], ['avisos', 'Avisos'], ['recordat', 'Recordatorios'], ['exportar', 'Exportar'], ['config', 'Configuración'], ['permisos', 'Permisos'],
   ['grp', 'Lo que ve el donante'], ['portal', 'Portal del donante']
 ];
 function esDonante(){ return user().rol === 'Donante'; }
@@ -1430,6 +1431,7 @@ function moverTab(id, d){
   var bt = document.querySelector('[data-a=tabMov][data-v="' + id + '"][data-d="' + d + '"]'); if(bt && !bt.disabled) bt.focus();
 }
 var ICONOS = {
+  recordat: '<path d="M12 8v4l2.5 2.5"/><circle cx="12" cy="13" r="8"/><path d="M5 3L2 6M19 3l3 3"/>',
   aprobar: '<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
   donantes: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   nuevocomp: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>',
@@ -1496,7 +1498,7 @@ function accionPrincipal(){
   if(a[0] === 'goEgreso' && !puede('egresos')) return '';
   return '<button type="button" class="btn primary" data-a="' + a[0] + '">' + a[1] + '</button>';
 }
-var CORTO = {donantes: 'Donad.', nuevocomp: 'Compr.', seg2: 'Segui.', cobranza: 'Cobro', aprobar: 'Autor.', comis: '% Com.', conta: 'Conta.', egresos: 'Egres.', direccion: 'Direc.', avisos: 'Avisos', exportar: 'Export.', config: 'Config.', permisos: 'Perm.', portal: 'Portal'};
+var CORTO = {donantes: 'Donad.', nuevocomp: 'Compr.', seg2: 'Segui.', cobranza: 'Cobro', aprobar: 'Autor.', comis: '% Com.', conta: 'Conta.', egresos: 'Egres.', direccion: 'Direc.', avisos: 'Avisos', recordat: 'Record.', exportar: 'Export.', config: 'Config.', permisos: 'Perm.', portal: 'Portal'};
 function esMovil(){ return window.innerWidth <= 760; }
 function navModo(){ return (S && S.cfg && S.cfg.nav) || 'compacto'; }
 function navAplicar(){ var ob = document.querySelector('.navord'); if(ob) ob.hidden = !(user() && user().rol === 'Dirección'); var b = document.body, m = navModo(), n = document.querySelector('nav.side'); if(!n) return;
@@ -1506,7 +1508,7 @@ function navAbrir(on){ var n = document.querySelector('nav.side'); if(!n) return
   if(esMovil()){ n.classList.toggle('open', !!on); document.body.classList.toggle('nav-movil-open', !!on); var bg = $('navbg'); if(bg) bg.hidden = !on; return; }
   S.cfg = S.cfg || {}; S.cfg.nav = on ? 'abierto' : 'compacto'; save(); navAplicar(); }
 window.addEventListener('resize', function(){ if(typeof S !== 'undefined' && S) navAplicar(); });
-var NAV_GRUPOS = [['don', 'Donadores', ['donantes', 'nuevocomp', 'seg2']], ['cob', 'Cobros', ['cobranza', 'aprobar', 'avisos']], ['fin', 'Finanzas', ['comis', 'conta', 'egresos']], ['rep', 'Reportes', ['direccion', 'exportar']], ['aju', 'Ajustes', ['config', 'permisos', 'portal']]];
+var NAV_GRUPOS = [['don', 'Donadores', ['donantes', 'nuevocomp', 'seg2']], ['cob', 'Cobros', ['cobranza', 'aprobar', 'avisos', 'recordat']], ['fin', 'Finanzas', ['comis', 'conta', 'egresos']], ['rep', 'Reportes', ['direccion', 'exportar']], ['aju', 'Ajustes', ['config', 'permisos', 'portal']]];
 var ICO_OJO_NO = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M3 3l18 18"/></svg>';
 function navOc(){ var u = user(); return (u && S.cfg && S.cfg['navOc_' + u.id]) || []; }
 function abrirModOc(gid){
@@ -1549,10 +1551,11 @@ function render0(){
   if(ui.view === 'gabaim') ui.view = 'config';
   if(!puede(ui.view)){ var pv = vistasTodas().find(function(v){ return puede(v[0]); }); ui.view = pv ? pv[0] : 'portal'; }
   renderNav();
-  var f = {aprobar: vAprobar, permisos: vPermisos, conta: vConta, egresos: vEgresos, comis: vComis, seg2: vSeg2, nuevocomp: vNuevoComp, gabaim: vGabaim, direccion: vDireccion, cobranza: vCobranza, donantes: vDonantes, compromisos: vCompromisos, avisos: vAvisos, exportar: vExportar, config: vConfig, link: vLink, portal: vPortal}[ui.view];
-  var titles = {aprobar: 'Autorizaciones', permisos: 'Permisos', conta: 'Contabilidad', egresos: 'Egresos', comis: '% Comisiones', seg2: 'Seguimientos', nuevocomp: 'Compromisos', gabaim: 'Gabaim', direccion: 'Dirección', cobranza: 'Cobranza', donantes: 'Donadores', compromisos: 'Seguimientos', avisos: 'Avisos', exportar: 'Exportar', config: 'Configuración', link: 'Link de compromiso', portal: 'Portal del donante'};
+  var f = {aprobar: vAprobar, permisos: vPermisos, conta: vConta, egresos: vEgresos, comis: vComis, seg2: vSeg2, nuevocomp: vNuevoComp, gabaim: vGabaim, direccion: vDireccion, cobranza: vCobranza, donantes: vDonantes, compromisos: vCompromisos, avisos: vAvisos, recordat: vRecordat, exportar: vExportar, config: vConfig, link: vLink, portal: vPortal}[ui.view];
+  var titles = {aprobar: 'Autorizaciones', permisos: 'Permisos', conta: 'Contabilidad', egresos: 'Egresos', comis: '% Comisiones', seg2: 'Seguimientos', nuevocomp: 'Compromisos', gabaim: 'Gabaim', direccion: 'Dirección', cobranza: 'Cobranza', donantes: 'Donadores', compromisos: 'Seguimientos', avisos: 'Avisos', recordat: 'Recordatorios', exportar: 'Exportar', config: 'Configuración', link: 'Link de compromiso', portal: 'Portal del donante'};
   $('vtitle').textContent = titles[ui.view];
   $('view').innerHTML = f();
+  setTimeout(function(){ try{ rgCampana(); if(!RG_POP_INI && LOGUEADO){ RG_POP_INI = true; if(puede('recordat') && ui.view !== 'recordat') rgPopup(false); } }catch(e){} }, 400);
   $('vkick').textContent = trTxt(kicker()).toUpperCase(); $('vact').innerHTML = accionPrincipal(); renderTabbar(); if(!$('sheet').hidden) cerrarMas();
   if(ui.view === 'donantes') restoreNd();
   if(ui.view === 'nuevocomp') restoreCc();
@@ -2648,8 +2651,9 @@ function vistasTodas(){ return vistasOrden().concat(VIEWS.filter(function(v){ re
 function fijo(u, v){ return u.rol === 'Dirección' && (v === 'permisos' || v === 'config'); }
 function puedeU(u, v){
   if(v === 'aprobar') return u.rol === 'Dirección';
+  if(v === 'recordat') return u.rol !== 'Donante';
   if(v === 'portal' && u.rol !== 'Donante' && u.rol !== 'Dirección') return !!(S.permPortal && S.permPortal[u.id]);
-  if(u.rol !== 'Dirección' && soloBloque(u)) return v === 'cobranza';
+  if(u.rol !== 'Dirección' && soloBloque(u)) return v === 'cobranza' || v === 'recordat';
   if(v === 'compromisos') v = 'seg2';
   if(v === 'gabaim' || v === 'link') v = 'config';
   if(u.rol === 'Donante') return v === 'portal';
@@ -3527,6 +3531,139 @@ function vCompDetalle(c){
   '<section class="panel"><h2>Historial de ajustes</h2>' + (c.ajustes.length ? '<div class="list">' + c.ajustes.slice().reverse().map(function(a){ return '<div class="item"><div class="grow">' + esc(a.desc) + '<div class="sub">' + fFecha(a.fecha) + ' · ' + esc(a.usuario) + '</div></div></div>'; }).join('') + '</div>' : '<div class="sub">Sin ajustes.</div>') + '</section></div>';
 }
 
+/* ================= Recordatorios y reglas ================= */
+var RG_TIPOS = [['donador', 'Un donador en específico'], ['vencidas', 'Cuotas vencidas'], ['pendmes', 'Cuotas pendientes del mes'], ['autorizar', 'Cobros por autorizar'], ['sinpago', 'Donadores sin pagar en X días'], ['nota', 'Solo un recordatorio con nota']];
+var RG_MOD = {donador: 'cobranza', vencidas: 'cobranza', pendmes: 'cobranza', autorizar: 'aprobar', sinpago: 'seg2', nota: ''};
+var DIAS_SEM = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+function reglas(){ S.reglas = S.reglas || []; return S.reglas; }
+function misReglas(){ var u = user(); return reglas().filter(function(r){ return (r.uid || dirId()) === (u && u.id); }); }
+function dirId(){ var d = S.usuarios.find(function(u){ return u.rol === 'Dirección'; }); return d ? d.id : ''; }
+function misSueltos(){ var u = user(); return (S.recordar || []).filter(function(x){ return (x.uid || dirId()) === (u && u.id); }); }
+function rgTocaHoy(r){
+  var t = hoy(), d = new Date(t + 'T12:00:00');
+  if(r.estado !== 'activa') return false;
+  if(r.hasta && r.hasta > t) return false;
+  if(r.frec === 'siempre') return true;
+  if(r.frec === 'una') return !!r.fecha && t >= r.fecha;
+  if(r.frec === 'semanal') return d.getDay() === +r.dow;
+  if(r.frec === 'mensual'){ var ult = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); return d.getDate() === Math.min(+r.dom || 1, ult); }
+  return false;
+}
+function rgItems(r){
+  var t = hoy(), out = [], gOk = function(g){ return !(r.gabs || []).length || r.gabs.indexOf(g || '') !== -1; }, cOk = function(c){ return !r.concepto || (c && c.concepto) === r.concepto; };
+  var vis = function(k){ if((r.res || {})[k]) return false; var po = (r.pos || {})[k]; return !po || po <= t; };
+  if(r.tipo === 'vencidas' || r.tipo === 'pendmes'){
+    S.cuotas.forEach(function(q){ var c = comp(q.compId); if(!c || c.estatus === 'por confirmar' || q.pausada || falta(q) <= 0) return; var e = estadoQ(q);
+      if(r.tipo === 'vencidas' && e !== 'vencida') return; if(r.tipo === 'pendmes' && q.venc.slice(0, 7) !== t.slice(0, 7)) return;
+      if(!gOk(gabQ(q, c)) || !cOk(c) || !vis(q.id)) return; var d = don(c.donanteId) || {nombre: ''};
+      out.push({k: q.id, txt: d.nombre, sub: Mes(q.mes) + ' ' + c.anio + ' · ' + (c.concepto || '') + ' · falta ' + money(falta(q), c.moneda), g: gabQ(q, c)}); });
+  } else if(r.tipo === 'autorizar'){
+    (S.porAprobar || []).forEach(function(x){ if(x.estado !== 'pendiente' || (r.cobrador && x.cobradorId !== r.cobrador) || !gOk(x.gabai) || !vis(x.id)) return; var c = comp(x.compId); if(!cOk(c)) return;
+      out.push({k: x.id, txt: x.donante, sub: 'Entregó ' + x.cobrador + ' · ' + money(x.monto, x.mon) + ' · ' + Mes(x.mes), g: x.gabai}); });
+  } else if(r.tipo === 'sinpago'){
+    var lim = addDias(t, -(+r.dias || 30));
+    S.compromisos.forEach(function(c){ if(c.estatus !== 'activo' || !gOk(c.gabai) || !cOk(c) || !vis(c.id)) return; if(!cuotasDe(c.id).some(function(q){ return falta(q) > 0 && !q.pausada; })) return;
+      var ult = S.donativos.filter(function(p){ return p.compId === c.id; }).reduce(function(a, p){ return p.fecha > a ? p.fecha : a; }, '');
+      if(ult && ult > lim) return; var d = don(c.donanteId) || {nombre: ''};
+      out.push({k: c.id, txt: d.nombre, sub: (ult ? 'Último pago ' + fFecha(ult) : 'Sin pagos') + ' · ' + (c.concepto || ''), g: c.gabai}); });
+  } else if(r.tipo === 'donador'){
+    var d0 = don(r.donId); if(d0){ var kd = 'don|' + (r.frec === 'una' ? (r.fecha || '') : t); if(vis(kd)){ var cs0 = S.compromisos.filter(function(c){ return c.donanteId === d0.id && c.estatus === 'activo'; }), fl0 = 0, mon0 = 'USD'; cs0.forEach(function(c){ cuotasDe(c.id).forEach(function(q){ if(q.venc <= t && !q.pausada){ fl0 += falta(q); mon0 = c.moneda; } }); });
+      out.push({k: kd, txt: d0.nombre, sub: (r.nota || 'Recordatorio') + (fl0 ? ' · debe ' + money(fl0, mon0) : ' · al corriente'), g: (cs0[0] || {}).gabai || ''}); } }
+  } else if(r.tipo === 'nota'){
+    var kk = 'nota|' + t; if(vis(kk) && !(r.res || {})['nota|' + (r.fecha || '')]) out.push({k: kk, txt: r.nota || r.nombre, sub: '', g: ''});
+  }
+  return out;
+}
+function rgPendientes(){
+  var t = hoy(), L = [];
+  misReglas().forEach(function(r){ if(!rgTocaHoy(r)) return; var it = rgItems(r); if(it.length) L.push({r: r, it: it}); });
+  var sueltos = misSueltos().filter(function(x){ return !x.hecho && x.fecha <= t; });
+  if(sueltos.length) L.push({r: {id: '__sueltos', nombre: 'Recordatorios de “Después”', tipo: 'sueltos'}, it: sueltos.map(function(x){ var c = comp(x.compId) || {}, d = don(c.donanteId) || {nombre: ''}; return {k: x.id, txt: d.nombre, sub: (x.nota || '') + ' · desde ' + fFecha(x.fecha), g: c.gabai || ''}; })});
+  return L;
+}
+function rgCuenta(){ return rgPendientes().reduce(function(a, g){ return a + g.it.length; }, 0); }
+function rgAccion(rid, k, accion, fecha){
+  var t = hoy();
+  if(rid === '__sueltos'){ var x = (S.recordar || []).find(function(z){ return z.id === k; }); if(!x) return; if(accion === 'res') x.hecho = true; else x.fecha = fecha; save(); return; }
+  var r = reglas().find(function(z){ return z.id === rid; }); if(!r) return;
+  if(accion === 'res'){ r.res = r.res || {}; r.res[k] = t; if(r.tipo === 'nota' && r.frec === 'una'){ r.res['nota|' + (r.fecha || '')] = t; r.estado = 'hecha'; } }
+  else { r.pos = r.pos || {}; r.pos[k] = fecha; }
+  save();
+}
+function rgListaHtml(L, modo){
+  if(!L.length) return '<div class="empty">✅ No tienes pendientes por hoy.</div>';
+  return L.map(function(g){ var r = g.r, mod = RG_MOD[r.tipo];
+    return '<div class="rggrp"><div class="rghead"><div><b>' + esc(r.nombre) + '</b><div class="sub">' + g.it.length + ' pendiente' + (g.it.length === 1 ? '' : 's') + (r.nota && r.tipo !== 'nota' ? ' · ' + esc(r.nota) : '') + '</div></div><div class="acts nowrap">' +
+      (mod ? '<button type="button" class="btn ghost sm" data-a="rgIr" data-id="' + r.id + '">➡️ Ir a ' + esc((VIEWS.find(function(v){ return v[0] === mod; }) || ['', ''])[1]) + '</button>' : '') +
+      (r.id !== '__sueltos' ? '<button type="button" class="btn ghost sm" data-a="rgPausa" data-id="' + r.id + '">⏸ Stand by</button>' : '') + '</div></div>' +
+      g.it.map(function(it){ var dk = ' data-r="' + r.id + '" data-k="' + esc(it.k) + '"';
+        return '<div class="rgit"><div class="grow"><b>' + esc(it.txt) + '</b>' + (it.g ? ' <span class="sub" dir="auto">· ' + esc(it.g) + '</span>' : '') + (it.sub ? '<div class="sub">' + esc(it.sub) + '</div>' : '') + '</div><div class="acts nowrap rgbtns">' +
+          '<button type="button" class="btn ok sm" data-a="rgRes"' + dk + '>✅ Resuelto</button><button type="button" class="btn ghost sm" data-a="rgPos" data-d="1"' + dk + '>Mañana</button><button type="button" class="btn ghost sm" data-a="rgPos" data-d="7"' + dk + '>1 semana</button>' +
+          '<label class="btn ghost sm rgfecha">📅<input type="date" data-rgfecha="1"' + dk + ' min="' + addDias(hoy(), 1) + '" aria-label="Mover a otra fecha"></label></div></div>'; }).join('') + '</div>'; }).join('');
+}
+function rgPopup(forzar){ var gE = gabEntrar(); try{ rgPopup0(forzar); } finally{ if(gE) gabSalir(); } }
+function rgPopup0(forzar){
+  var L = rgPendientes(); if(!L.length){ if(forzar) toast('No tienes pendientes por hoy'); return; }
+  if(!forzar){ try{ if(sessionStorage.getItem('bl-recpop') === hoy()) return; sessionStorage.setItem('bl-recpop', hoy()); }catch(e){} }
+  if(!$('modal').hidden && !forzar) return;
+  openModal(head('🔔 Pendientes de hoy', fFecha(hoy()) + ' · ' + L.reduce(function(a, g){ return a + g.it.length; }, 0) + ' en total') + '<div class="rgpop">' + rgListaHtml(L, 'pop') + '</div><div class="dfoot"><button type="button" class="btn ghost" data-a="rgIrModulo">Ver todas mis reglas</button><button type="button" class="btn primary" data-a="close">Cerrar</button></div>');
+  $('dlg').classList.add('wide');
+}
+var RG_POP_INI = false;
+setInterval(function(){ try{ if(LOGUEADO && puede('recordat') && ui.view !== 'recordat') rgPopup(false); }catch(e){} }, 30 * 60 * 1000);
+function rgCampana(){ var n = 0, gE = gabEntrar(); try{ n = puede('recordat') ? rgCuenta() : 0; }catch(e){} finally{ if(gE) gabSalir(); } var b = $('rgBell'); if(b){ b.hidden = !puede('recordat'); b.querySelector('.cnt').textContent = n; b.querySelector('.cnt').hidden = !n; } }
+function icsTxt(t){ return String(t || '').replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n'); }
+function icsRegla(r){
+  var dias = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'], base = r.frec === 'una' ? (r.fecha || hoy()) : hoy(), d = new Date(base + 'T12:00:00');
+  if(r.frec === 'semanal'){ while(d.getDay() !== +r.dow) d.setDate(d.getDate() + 1); }
+  if(r.frec === 'mensual'){ d.setDate(Math.min(+r.dom || 1, 28)); if(d < new Date(hoy() + 'T00:00:00')) d.setMonth(d.getMonth() + 1); }
+  var ymd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()), dn = r.tipo === 'donador' && don(r.donId) ? don(r.donId).nombre : '';
+  var rr = r.frec === 'semanal' ? 'RRULE:FREQ=WEEKLY;BYDAY=' + dias[+r.dow || 0] : r.frec === 'mensual' ? 'RRULE:FREQ=MONTHLY;BYMONTHDAY=' + (r.dom || 1) : r.frec === 'siempre' ? 'RRULE:FREQ=DAILY' : '';
+  return ['BEGIN:VEVENT', 'UID:' + r.id + '@bait-lapletot', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z', 'DTSTART:' + ymd + 'T090000', 'DTEND:' + ymd + 'T091500', rr, 'SUMMARY:' + icsTxt('Bait Lapletot · ' + r.nombre), 'DESCRIPTION:' + icsTxt((dn ? dn + ' · ' : '') + (r.nota || '') + ((r.gabs || []).length ? ' · Gabai: ' + r.gabs.join(', ') : '')), 'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsTxt(r.nombre), 'TRIGGER:-PT0M', 'END:VALARM', 'END:VEVENT'].filter(Boolean).join('\r\n');
+}
+function icsDescargar(lista, nombre){
+  var txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Bait Lapletot//Recordatorios//ES', 'CALSCALE:GREGORIAN', 'X-WR-TIMEZONE:America/Mexico_City'].concat(lista.map(icsRegla)).concat(['END:VCALENDAR']).join('\r\n');
+  guardar(nombre + '.ics', new TextEncoder().encode(txt)); toast('Ábrelo en tu iPhone o Android para agregarlo al calendario con alarma');
+}
+function vRecordat(){
+  var R = misReglas(), L = rgPendientes(), ed = ui.rgEd;
+  var fila = function(r){ var tp = (RG_TIPOS.find(function(x){ return x[0] === r.tipo; }) || ['', ''])[1], fr = r.frec === 'siempre' ? 'Diario (mientras haya)' : r.frec === 'una' ? 'El ' + fFecha(r.fecha || hoy()) : r.frec === 'semanal' ? 'Cada ' + DIAS_SEM[+r.dow || 0].toLowerCase() : 'El día ' + (r.dom || 1) + ' de cada mes';
+    var n = r.estado === 'activa' ? rgItems(r).length : 0, st = r.estado === 'activa' ? ['Activa', 't-ok'] : r.estado === 'pausa' ? ['Stand by', 't-warn'] : ['Hecha', 't-mute'];
+    return '<tr><td data-l="Regla"><b>' + esc(r.nombre) + '</b>' + (r.nota ? '<div class="sub">' + esc(r.nota) + '</div>' : '') + '</td><td data-l="Qué revisa">' + esc(tp) + (r.tipo === 'sinpago' ? ' (' + (r.dias || 30) + ' días)' : '') + '</td><td data-l="Gabai">' + ((r.gabs || []).length ? r.gabs.map(function(g){ return '<span dir="auto">' + esc(g) + '</span>'; }).join(', ') : 'Todos') + (r.concepto ? '<div class="sub">' + esc(r.concepto) + '</div>' : '') + (r.cobrador ? '<div class="sub">Cobrador: ' + esc((S.usuarios.find(function(u){ return u.id === r.cobrador; }) || {nombre: ''}).nombre) + '</div>' : '') + '</td><td data-l="Cuándo">' + esc(fr) + (r.hasta && r.hasta > hoy() ? '<div class="sub">Pospuesta al ' + fFecha(r.hasta) + '</div>' : '') + '</td><td data-l="Estado"><span class="pill ' + st[1] + '">' + st[0] + '</span>' + (n ? ' <b>' + n + '</b>' : '') + '</td>' +
+      '<td data-l="Acciones"><div class="acts nowrap"><button type="button" class="btn ghost sm" data-a="rgIcs" data-id="' + r.id + '">📅 A mi calendario</button><button type="button" class="btn ghost sm" data-a="rgEdit" data-id="' + r.id + '">Editar</button>' + (r.estado === 'activa' ? '<button type="button" class="btn ghost sm" data-a="rgPausa" data-id="' + r.id + '">⏸ Stand by</button>' : '<button type="button" class="btn ghost sm" data-a="rgActivar" data-id="' + r.id + '">▶ Activar</button>') + bDel('data-a="rgDel" data-id="' + r.id + '"') + '</div></td></tr>'; };
+  return '<div style="display:grid;gap:18px"><section class="panel"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Pendientes de hoy</h2><button type="button" class="btn primary" data-a="rgNueva">＋ Nueva regla</button></div>' + rgListaHtml(L) + '</section>' +
+    (ed ? rgForm(ed) : '') +
+    '<section class="panel"><div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Mis reglas (' + R.length + ')</h2>' + (R.filter(function(r){ return r.estado === 'activa'; }).length ? '<button type="button" class="btn ghost sm" data-a="rgIcsTodas">📅 Mandar todas a mi calendario (iPhone / Android)</button>' : '') + '</div>' + (R.length ? '<div class="tw cards"><table class="cobt"><thead><tr><th>Regla</th><th>Qué revisa</th><th>Gabai</th><th>Cuándo avisa</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>' + R.map(fila).join('') + '</tbody></table></div>' : '<div class="empty">Todavía no tienes reglas. Crea una con “＋ Nueva regla”.</div>') + '</section></div>';
+}
+function rgForm(id){
+  var r = id === 'nueva' ? {tipo: 'donador', frec: 'una', fecha: addDias(hoy(), 1), dow: 1, dom: 1, gabs: [], dias: 30} : reglas().find(function(z){ return z.id === id; }); if(!r) return '';
+  var cons = (S.conceptos || []).filter(function(k){ return S.compromisos.some(function(c){ return c.concepto === k; }); });
+  return '<section class="panel rgform" id="rgForm"><h2>' + (id === 'nueva' ? 'Nueva regla' : 'Editar regla') + '</h2><div class="form">' +
+    '<label class="f full">Nombre *<input id="rgNom" maxlength="80" value="' + esc(r.nombre || '') + '" placeholder="Ej. Revisar vencidas de Rafa"></label>' +
+    '<label class="f">¿Qué revisa?<select id="rgTipo">' + RG_TIPOS.filter(function(t){ return t[0] !== 'autorizar' || user().rol === 'Dirección'; }).map(function(t){ return '<option value="' + t[0] + '"' + (t[0] === r.tipo ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f" id="rgDonW"' + (r.tipo === 'donador' ? '' : ' hidden') + '>Donador<select id="rgDon"><option value="">— Elige —</option>' + S.donantes.slice().sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); }).map(function(d){ var c = S.compromisos.find(function(z){ return z.donanteId === d.id; }); return '<option value="' + d.id + '"' + (d.id === r.donId ? ' selected' : '') + '>' + esc(d.nombre) + (c && c.gabai ? ' · ' + esc(c.gabai) : '') + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f" id="rgDiasW"' + (r.tipo === 'sinpago' ? '' : ' hidden') + '>Días sin pagar<input id="rgDias" inputmode="numeric" value="' + (r.dias || 30) + '"></label>' +
+    '<label class="f" id="rgCobW"' + (r.tipo === 'autorizar' ? '' : ' hidden') + '>Cobrador<select id="rgCob"><option value="">Todos</option>' + S.usuarios.filter(function(u){ return u.rol !== 'Dirección'; }).map(function(u){ return '<option value="' + u.id + '"' + (u.id === r.cobrador ? ' selected' : '') + '>' + esc(u.nombre) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Concepto<select id="rgCon"><option value="">Todos</option>' + cons.map(function(k){ return '<option' + (k === r.concepto ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label>' +
+    '<div class="f full rggabw"' + (r.tipo === 'donador' || r.tipo === 'nota' ? ' hidden' : '') + '><span>Gabai (marca uno o varios; ninguno = todos)</span><div class="chips">' + (S.gabaim || []).map(function(g){ return '<label class="chip rgch2"><input type="checkbox" data-rggab="' + esc(g) + '"' + ((r.gabs || []).indexOf(g) !== -1 ? ' checked' : '') + '> <span dir="auto">' + esc(g) + '</span></label>'; }).join('') + '</div></div>' +
+    '<label class="f">¿Cuándo te aviso?<select id="rgFrec">' + [['semanal', 'Cada semana'], ['mensual', 'Cada mes'], ['una', 'Una sola vez (en una fecha)'], ['siempre', 'Diario, mientras haya pendientes']].map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === r.frec ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f" id="rgDowW"' + (r.frec === 'semanal' ? '' : ' hidden') + '>Día de la semana<select id="rgDow">' + DIAS_SEM.map(function(n, i){ return '<option value="' + i + '"' + (+r.dow === i ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f" id="rgDomW"' + (r.frec === 'mensual' ? '' : ' hidden') + '>Día del mes<input id="rgDom" inputmode="numeric" value="' + (r.dom || 1) + '"></label>' +
+    '<label class="f" id="rgFecW"' + (r.frec === 'una' ? '' : ' hidden') + '>Fecha<input id="rgFec" type="date" value="' + esc(r.fecha || addDias(hoy(), 1)) + '"></label>' +
+    '<label class="f full">Nota (lo que tienes que hacer)<input id="rgNota" maxlength="200" value="' + esc(r.nota || '') + '" placeholder="Ej. Llamar a Rafa para el corte"></label>' +
+    '</div><div class="err" id="rgErr" hidden></div><div class="row" style="gap:8px"><button type="button" class="btn primary" data-a="rgGuardar" data-id="' + (r.id || 'nueva') + '">Guardar regla</button><button type="button" class="btn ghost" data-a="rgCancelar">Cancelar</button></div></section>';
+}
+function rgGuardar(id){
+  var nom = $('rgNom').value.trim(), err = $('rgErr'); if(!nom){ err.textContent = 'Ponle un nombre a la regla.'; err.hidden = false; return; }
+  var r = id === 'nueva' ? {id: nid('rg'), uid: user().id, estado: 'activa', creada: hoy(), res: {}, pos: {}} : reglas().find(function(z){ return z.id === id; });
+  if($('rgTipo').value === 'donador' && !$('rgDon').value){ err.textContent = 'Elige el donador.'; err.hidden = false; return; }
+  r.nombre = nom; r.tipo = $('rgTipo').value; r.donId = r.tipo === 'donador' ? $('rgDon').value : ''; r.dias = +($('rgDias').value || 30); r.cobrador = r.tipo === 'autorizar' ? $('rgCob').value : ''; r.concepto = $('rgCon').value;
+  r.gabs = Array.prototype.map.call(document.querySelectorAll('[data-rggab]:checked'), function(x){ return x.getAttribute('data-rggab'); });
+  r.frec = $('rgFrec').value; r.dow = +$('rgDow').value; r.dom = Math.max(1, Math.min(31, +$('rgDom').value || 1)); r.fecha = $('rgFec').value; r.nota = $('rgNota').value.trim();
+  if(r.estado === 'hecha') r.estado = 'activa';
+  if(id === 'nueva') reglas().push(r);
+  log((id === 'nueva' ? 'Creó' : 'Editó') + ' la regla "' + nom + '"'); ui.rgEd = null; save(); render(); toast('Regla guardada');
+}
 /* ================= Avisos ================= */
 function vAvisos(){
   var lista = porEnviar(), env = lista.filter(function(x){ return !x.omitir; }), om = lista.filter(function(x){ return x.omitir; });
@@ -5023,6 +5160,20 @@ document.addEventListener('click', function(ev){
   else if(a === 'cobColMov'){ var cc = cobColsCfg(), ck2 = b.getAttribute('data-k'), ci2 = cc.orden.indexOf(ck2), cj2 = ci2 + (+b.getAttribute('data-d')); if(cj2 >= 0 && cj2 < cc.orden.length){ cc.orden.splice(ci2, 1); cc.orden.splice(cj2, 0, ck2); cobColGuardar(cc); } }
   else if(a === 'cobColReset'){ cobColGuardar({orden: COB_DEF.concat(COB_EXTRA), oc: COB_EXTRA.slice()}); }
   else if(a === 'fuente'){ try{ localStorage.setItem('bl-zoom', b.getAttribute('data-z')); }catch(e){} fuenteAplicar(); }
+  else if(a === 'rgNueva'){ ui.rgEd = 'nueva'; render(); var fm = $('rgForm'); if(fm) fm.scrollIntoView({behavior: 'smooth'}); }
+  else if(a === 'rgEdit'){ ui.rgEd = id; render(); var fm2 = $('rgForm'); if(fm2) fm2.scrollIntoView({behavior: 'smooth'}); }
+  else if(a === 'rgCancelar'){ ui.rgEd = null; render(); }
+  else if(a === 'rgGuardar') rgGuardar(id);
+  else if(a === 'rgPausa'){ var rp = reglas().find(function(z){ return z.id === id; }); if(rp){ rp.estado = 'pausa'; save(); log('Puso en stand by la regla "' + rp.nombre + '"'); } if(!$('modal').hidden){ closeModal(); rgPopup(true); } render(); rgCampana(); toast('Regla en stand by: no te avisará hasta que la actives'); }
+  else if(a === 'rgActivar'){ var ra = reglas().find(function(z){ return z.id === id; }); if(ra){ ra.estado = 'activa'; ra.hasta = ''; save(); } render(); rgCampana(); toast('Regla activa'); }
+  else if(a === 'rgDel'){ var rd = reglas().find(function(z){ return z.id === id; }); if(!rd) return; openModal(head('Quitar regla', esc(rd.nombre)) + '<div>¿Quitar la regla <b>' + esc(rd.nombre) + '</b>? Ya no te avisará.</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="rgDelOk" data-id="' + id + '">Quitar</button></div>'); }
+  else if(a === 'rgDelOk'){ S.reglas = reglas().filter(function(z){ return z.id !== id; }); save(); closeModal(); render(); rgCampana(); toast('Regla quitada'); }
+  else if(a === 'rgRes' || a === 'rgPos'){ var rr4 = b.getAttribute('data-r'), kk4 = b.getAttribute('data-k'); rgAccion(rr4, kk4, a === 'rgRes' ? 'res' : 'pos', addDias(hoy(), +(b.getAttribute('data-d') || 1))); var fil = b.closest('.rgit'); if(fil) fil.remove(); toast(a === 'rgRes' ? 'Marcado como resuelto' : 'Te lo recuerdo el ' + fFecha(addDias(hoy(), +b.getAttribute('data-d')))); if(ui.view === 'recordat' && $('modal').hidden) render(); rgCampana(); }
+  else if(a === 'rgIr'){ var ri = reglas().find(function(z){ return z.id === id; }) || {tipo: 'sueltos'}, mv = RG_MOD[ri.tipo] || 'cobranza'; closeModal(); if(mv === 'cobranza'){ ui.cob.gab = (ri.gabs || []).length === 1 ? ri.gabs[0] : 'todos'; ui.cob.edo = 'pend'; ui.cob.con = ri.concepto || ''; if(ri.tipo === 'vencidas') ui.cob.mes = 'vencidas'; } ui.view = mv; render(); }
+  else if(a === 'rgIrModulo'){ closeModal(); ui.view = 'recordat'; render(); }
+  else if(a === 'rgBell'){ rgPopup(true); }
+  else if(a === 'rgIcs'){ var ri2 = reglas().find(function(z){ return z.id === id; }); if(ri2) icsDescargar([ri2], 'Recordatorio ' + ri2.nombre); }
+  else if(a === 'rgIcsTodas'){ icsDescargar(misReglas().filter(function(r){ return r.estado === 'activa'; }), 'Recordatorios Bait Lapletot'); }
   else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
   else if(a === 'gabOrd'){ ev.preventDefault(); abrirGabOrd(); }
@@ -5102,7 +5253,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'qNota'){ var q3 = S.cuotas.find(function(x){ return x.id === id; }); openModal(head('Nota de la cuota', Mes(q3.mes) + ' · ' + esc(don(comp(q3.compId).donanteId).nombre)) + '<label class="f">Nota<textarea id="qnTxt" maxlength="300">' + esc(q3.nota) + '</textarea></label><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="qnSave" data-id="' + id + '">Guardar nota</button></div>'); }
   else if(a === 'qnSave'){ cobLimpiar(); var q4 = S.cuotas.find(function(x){ return x.id === id; }); q4.nota = $('qnTxt').value.trim(); log('Nota en cuota de ' + Mes(q4.mes) + ' de ' + don(comp(q4.compId).donanteId).nombre); closeModal(); render(); toast('Nota guardada'); }
   else if(a === 'qLuego'){ var q5 = S.cuotas.find(function(x){ return x.id === id; }); openModal(head('Recordarme después', Mes(q5.mes) + ' · ' + esc(don(comp(q5.compId).donanteId).nombre)) + '<div class="form"><label class="f">¿Cuándo?<input id="rlF" type="date" value="' + addDias(hoy(), 3) + '"></label><label class="f full">¿Qué hay que hacer?<input id="rlN" maxlength="200" placeholder="Ej. llamar para confirmar el pago"></label></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="rlSave" data-id="' + id + '">Guardar</button></div>'); }
-  else if(a === 'rlSave'){ cobLimpiar(); var q6 = S.cuotas.find(function(x){ return x.id === id; }), rf = $('rlF').value || hoy(); S.recordar.push({id: nid('r'), compId: q6.compId, fecha: rf, nota: ($('rlN').value.trim() || 'Revisar cuota de ' + Mes(q6.mes)), hecho: false}); log('Se programó un recordatorio interno para ' + fFecha(rf)); closeModal(); render(); toast('Te lo recordamos el ' + fFecha(rf)); }
+  else if(a === 'rlSave'){ cobLimpiar(); var q6 = S.cuotas.find(function(x){ return x.id === id; }), rf = $('rlF').value || hoy(); S.recordar.push({id: nid('r'), uid: user().id, compId: q6.compId, fecha: rf, nota: ($('rlN').value.trim() || 'Revisar cuota de ' + Mes(q6.mes)), hecho: false}); log('Se programó un recordatorio interno para ' + fFecha(rf)); closeModal(); render(); toast('Te lo recordamos el ' + fFecha(rf)); }
   else if(a === 'conciliar'){
     var n = 0;
     S.compromisos.filter(function(c){ return c.forma === 'Cargo recurrente'; }).forEach(function(c){
@@ -5384,6 +5535,10 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'pmCaja'){ var pk = caja(t.value); $('pmMon').value = pk.mon; $('pmNY').hidden = !pk.externa; pmPrev(); }
   else if(t.id === 'userSel' || t.id === 'userSel2'){ S.user = +t.value; cerrarMas(); render(); }
   else if(t.getAttribute && t.getAttribute('data-modoc')){ modOcSet(t.getAttribute('data-modoc'), t.checked); }
+  else if(t.getAttribute && t.getAttribute('data-rgfecha') && t.value){ rgAccion(t.getAttribute('data-r'), t.getAttribute('data-k'), 'pos', t.value); var fl2 = t.closest('.rgit'); if(fl2) fl2.remove(); toast('Te lo recuerdo el ' + fFecha(t.value)); rgCampana(); if(ui.view === 'recordat' && $('modal').hidden) render(); }
+  else if(t.id === 'rgTipo'){ $('rgDonW').hidden = t.value !== 'donador'; var gw = document.querySelector('.rggabw'); if(gw) gw.hidden = t.value === 'donador' || t.value === 'nota'; $('rgDiasW').hidden = t.value !== 'sinpago'; $('rgCobW').hidden = t.value !== 'autorizar'; }
+  else if(t.id === 'rgDon'){ var nm = $('rgNom'); if(nm && !nm.value && t.value){ var dd = don(t.value); if(dd) nm.value = 'Recordar a ' + dd.nombre; } }
+  else if(t.id === 'rgFrec'){ $('rgDowW').hidden = t.value !== 'semanal'; $('rgDomW').hidden = t.value !== 'mensual'; $('rgFecW').hidden = t.value !== 'una'; }
   else if(t.id === 'cobCon'){ ui.cob.con = t.value; if(ui.cf) delete ui.cf.cob; render(); }
   else if(t.id === 'recEstilo'){ S.cfg = S.cfg || {}; S.cfg.recEstilo = t.value; save(); toast('Estilo de recibo guardado'); }
   else if(t.id === 'portalSel'){ ui.portal.d = t.value; render(); }
@@ -5441,7 +5596,7 @@ window.addEventListener('storage', function(e){
   var n = null; try{ n = JSON.parse(e.newValue); }catch(er){ return; } if(!n || n.v !== 5 || !Array.isArray(n.usuarios)) return;
   var yo = user(), modal = !$('modal').hidden;
   S = n; var k = yo ? S.usuarios.findIndex(function(u){ return u.id === yo.id; }) : -1; if(k !== -1) S.user = k;
-  if(LOGUEADO){ if(k === -1){ sesionBorrar(); mostrarLogin(); return; } if(!modal) render(); }
+  if(LOGUEADO){ if(k === -1){ sesionBorrar(); mostrarLogin(); return; } var ae = document.activeElement, editando = ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && $('view').contains(ae); if(!modal && !editando) render(); else if(editando){ var rr = function(){ ae.removeEventListener('blur', rr); setTimeout(function(){ var a3 = document.activeElement; if(!(a3 && /^(INPUT|SELECT|TEXTAREA)$/.test(a3.tagName) && $('view').contains(a3)) && $('modal').hidden) render(); }, 300); }; ae.addEventListener('blur', rr); } }
 });
 aplicarIngresosNuevos();
 (function(){ var ses = sesionLeer(), u = ses && S.usuarios.find(function(x){ return x.id === ses.uid; });
