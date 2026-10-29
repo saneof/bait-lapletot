@@ -819,7 +819,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v142</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v143</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3683,16 +3683,9 @@ async function reciboPdf(pid, wa, est){
   if(!wa){ guardar(nom, buf); return; }
   var txt = 'Hola ' + d.nombre.split(' ')[0] + ', te enviamos tu recibo ' + (p.recibo || '') + ' por ' + money(p.montoC, p.moneda) + ' del ' + fFecha(p.fecha) + '. ¡Muchas gracias por tu apoyo a Bait Lapletot!';
   var png = await new Promise(function(res){ try{ cv.toBlob(function(b){ res(b); }, 'image/png'); }catch(e){ res(null); } });
-  REC_WA = {buf: buf, nom: nom, txt: txt, png: png, tel: telDigits(d.tel), nombre: d.nombre};
-  var tactil = window.matchMedia && window.matchMedia('(pointer:coarse)').matches, puedeFile = false;
-  try{ puedeFile = !!(navigator.canShare && navigator.canShare({files: [new File([buf], nom, {type: 'application/pdf'})]})); }catch(e){}
-  var url = png ? URL.createObjectURL(png) : '';
-  openModal(head('Enviar recibo por WhatsApp', esc(d.nombre) + ' · ' + esc(p.recibo || '')) +
-    (url ? '<div class="recprev"><img src="' + url + '" alt="Vista previa del recibo"></div>' : '') +
-    (puedeFile && tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recShare">📤 Compartir el PDF (elige WhatsApp)</button>' : '') +
-    (!tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recCopiaWa">Abrir WhatsApp con el recibo</button><div class="sub" style="text-align:center;margin-top:6px">Se abre WhatsApp con el mensaje y el recibo ya copiado: en el chat solo presiona <b>⌘ V</b> (pegar) y <b>Enviar</b>.</div>' : '') +
-    '<div class="dfoot"><button type="button" class="btn ghost" data-a="recBajar">⬇ Descargar PDF</button><button type="button" class="btn ghost" data-a="close">Cerrar</button></div>');
+  waModal('Enviar recibo por WhatsApp', esc(d.nombre) + ' · ' + esc(p.recibo || ''), {buf: buf, nom: nom, txt: txt, png: png, tel: telDigits(d.tel), nombre: d.nombre}, 'el recibo');
 }
+
 /* --- Vista rápida (como la barra espaciadora de la Mac) --- */
 var QL = null, QL_HOVER = null;
 document.addEventListener('click', function(ev){ document.querySelectorAll('details.recmenu[open]').forEach(function(m){ if(!m.contains(ev.target)) m.open = false; }); }, true);
@@ -3728,6 +3721,17 @@ document.addEventListener('keydown', function(ev){
   var b = base.querySelector('[data-a=recVer],[data-a=portalVer]'); if(!b) return;
   ev.preventDefault(); qlAbrir(b.getAttribute('data-a') === 'recVer' ? 'rec' : 'edo', b.getAttribute('data-id'));
 }, true);
+function waModal(t1, t2, R, que){
+  REC_WA = R; var buf = R.buf, nom = R.nom;
+  var tactil = window.matchMedia && window.matchMedia('(pointer:coarse)').matches, puedeFile = false;
+  try{ puedeFile = !!(navigator.canShare && navigator.canShare({files: [new File([buf], nom, {type: 'application/pdf'})]})); }catch(e){}
+  var url = R.png ? URL.createObjectURL(R.png) : '';
+  openModal(head(t1, t2) +
+    (url ? '<div class="recprev"><img src="' + url + '" alt="Vista previa"></div>' : '') +
+    (puedeFile && tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recShare">📤 Compartir el PDF (elige WhatsApp)</button>' : '') +
+    (!tactil ? '<button type="button" class="btn sm recwa recbig" data-a="recCopiaWa">Abrir WhatsApp con ' + que + '</button><div class="sub" style="text-align:center;margin-top:6px">Se abre WhatsApp con el mensaje y ' + que + ' ya copiado: en el chat solo presiona <b>⌘ V</b> (pegar) y <b>Enviar</b>. El PDF también se descarga por si prefieres adjuntarlo.</div>' : '') +
+    '<div class="dfoot"><button type="button" class="btn ghost" data-a="recBajar">⬇ Descargar PDF</button><button type="button" class="btn ghost" data-a="close">Cerrar</button></div>');
+}
 var REC_WA = null;
 function pdfVentana(){ var w = null; try{ w = window.open('', '_blank'); if(w){ w.document.write('<!doctype html><title>Preparando…</title><body style="font-family:-apple-system,Arial;display:grid;place-items:center;height:90vh;color:#5B6472">Preparando PDF…</body>'); } }catch(e){} return w; }
 function pdfVerEn(w, buf){ var u = URL.createObjectURL(new Blob([buf], {type: 'application/pdf'})); if(w && !w.closed){ try{ w.location.href = u; return; }catch(e){} } var w2 = null; try{ w2 = window.open(u, '_blank'); }catch(e){} if(!w2) toast('Tu navegador bloqueó la ventana: permite ventanas emergentes para ver el PDF'); }
@@ -4376,6 +4380,21 @@ function firmasHtml(f){
   return '<div style="margin-top:46px;display:flex;gap:56px;justify-content:space-around;page-break-inside:avoid">' + f.map(function(x){ return '<div style="flex:1;max-width:300px;text-align:center"><div style="height:46px"></div><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700;color:#1B2230">' + esc(x.nombre || '') + '</div><div style="font-size:10px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">' + esc(x.rol) + '</div><div style="font-size:10px;color:#5B6472;margin-top:10px">Fecha: ____ / ____ / ________</div></div>'; }).join('') + '</div>' +
     '<div style="margin-top:22px;text-align:center;font-size:9.5px;color:#8A93A3">Al firmar, quien entrega y quien recibe confirman que los montos de este reporte coinciden con el efectivo y los comprobantes entregados.</div>';
 }
+var REP_SOLO_GRUPO = false;
+function aprRepResumen(){
+  var r = aprRepState(), R = aprRepFilas(), G = {}, orden = [], T = {n: 0, MXN: 0, USD: 0, ref: 0};
+  R.filas.forEach(function(o){ if(r.excl[o.x.id]) return; var k = o.concepto || 'Sin concepto'; if(!G[k]){ G[k] = {n: 0, MXN: 0, USD: 0, ref: 0}; orden.push(k); } var g = G[k], x = o.x, rf = (x.mon === 'USD' ? x.monto : x.ref) || 0; [g, T].forEach(function(t){ t.n++; t[x.mon] += x.monto; t.ref += rf; }); });
+  return {orden: orden, G: G, T: T};
+}
+function aprRepResumenHtml(){
+  var Z = aprRepResumen(); if(!Z.orden.length) return '';
+  var td = 'padding:9px 12px;border-bottom:1px solid #E3E6EB;font-size:14px', th = 'padding:9px 12px;background:#12324F;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.05em;text-align:right';
+  return '<div style="margin-top:22px;border:2px solid #12324F;border-radius:12px;overflow:hidden;page-break-inside:avoid">' +
+    '<div style="background:#12324F;color:#fff;padding:12px 16px;font-size:18px;font-weight:800;letter-spacing:.02em">GRAN TOTAL · ' + Z.T.n + ' cobro' + (Z.T.n === 1 ? '' : 's') + '</div>' +
+    '<table style="width:100%;border-collapse:collapse"><thead><tr><th style="' + th + ';text-align:left;background:#2F5E8C">Concepto</th><th style="' + th + ';background:#2F5E8C">Cobros</th><th style="' + th + ';background:#2F5E8C">Pesos (MXN)</th><th style="' + th + ';background:#2F5E8C">Dólares (USD)</th><th style="' + th + ';background:#2F5E8C">Total en USD</th></tr></thead><tbody>' +
+    Z.orden.map(function(k, i){ var g = Z.G[k]; return '<tr style="background:' + (i % 2 ? '#F8F9FB' : '#fff') + '"><td style="' + td + ';font-weight:700;color:#12324F">' + esc(k) + '</td><td style="' + td + ';text-align:right">' + g.n + '</td><td style="' + td + ';text-align:right;font-weight:600">' + (g.MXN ? money(g.MXN, 'MXN') : '—') + '</td><td style="' + td + ';text-align:right;font-weight:600">' + (g.USD ? money(g.USD, 'USD') : '—') + '</td><td style="' + td + ';text-align:right;font-weight:700">' + money(g.ref, 'USD') + '</td></tr>'; }).join('') +
+    '<tr style="background:#EEF2F6"><td style="' + td + ';font-size:17px;font-weight:800;color:#12324F">TOTAL</td><td style="' + td + ';text-align:right;font-size:17px;font-weight:800">' + Z.T.n + '</td><td style="' + td + ';text-align:right;font-size:17px;font-weight:800;color:#12324F">' + money(Z.T.MXN, 'MXN') + '</td><td style="' + td + ';text-align:right;font-size:17px;font-weight:800;color:#12324F">' + money(Z.T.USD, 'USD') + '</td><td style="' + td + ';text-align:right;font-size:19px;font-weight:800;color:#1E6B45">' + money(Z.T.ref, 'USD') + '</td></tr></tbody></table></div>';
+}
 function aprRepFirmas(){
   var R = aprRepFilas(), ex = aprRepState().excl || {}, nom = {};
   R.filas.forEach(function(o){ if(!ex[o.x.id] && o.x.cobrador) nom[o.x.cobrador] = 1; });
@@ -4433,7 +4452,9 @@ async function tbExcel(k){
     sumables.forEach(function(mo, j){ if(!mo || j === 0) return; var c = tr.getCell(j + 1); c.value = {formula: 'SUBTOTAL(9,' + L(j) + n1 + ':' + L(j) + n2 + ')'}; c.numFmt = '"$"#,##0.00' + (mo !== '-' ? '" ' + mo + '"' : ''); c.font = {bold: true}; });
     for(var j = 1; j <= nC; j++) tr.getCell(j).fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FFEEF2F6'}};
   }
-  if(k === 'aprRep') xlsFirmas(ws, nC, aprRepFirmas());
+  if(k === 'aprRep'){ var Z = aprRepResumen(); if(Z.orden.length){ ws.addRow([]); var hr2 = ws.addRow(['GRAN TOTAL POR CONCEPTO']); ws.mergeCells(hr2.number, 1, hr2.number, nC); hr2.getCell(1).font = {bold: true, size: 14, color: {argb: 'FFFFFFFF'}}; hr2.getCell(1).fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF12324F'}}; hr2.height = 24;
+      var hh = ws.addRow(['Concepto', 'Cobros', 'Pesos (MXN)', 'Dólares (USD)', 'Total en USD']); hh.eachCell(function(cl){ cl.font = {bold: true, color: {argb: 'FFFFFFFF'}}; cl.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF2F5E8C'}}; });
+      Z.orden.concat(['__T']).forEach(function(k2){ var g = k2 === '__T' ? Z.T : Z.G[k2], rr = ws.addRow([k2 === '__T' ? 'TOTAL' : k2, g.n, g.MXN / 100, g.USD / 100, g.ref / 100]); rr.getCell(3).numFmt = '"$"#,##0.00" MXN"'; rr.getCell(4).numFmt = '"$"#,##0.00" USD"'; rr.getCell(5).numFmt = '"$"#,##0.00" USD"'; rr.getCell(1).font = {bold: true}; if(k2 === '__T'){ rr.eachCell(function(cl){ cl.font = {bold: true, size: 13}; cl.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FFEEF2F6'}}; }); } }); } xlsFirmas(ws, nC, aprRepFirmas()); }
   var buf = await wb.xlsx.writeBuffer();
   guardar(D.titulo + ' ' + hoy() + '.xlsx', new Uint8Array(buf));
 }
@@ -4461,12 +4482,13 @@ async function tbPdf(k, orient, compartir, extra, ver){
     if(pg.querySelector('table').getBoundingClientRect().bottom - pg.getBoundingClientRect().top > lim && tb.rows.length > 1){ tb.removeChild(tr); pags.push(pg); n++; pg = nueva(n); tb = pg.querySelector('tbody'); tb.appendChild(tr); }
   });
   pags.push(pg);
-  if(k === 'aprRep' || /^aprRep/.test(k)){ var fdv = document.createElement('div'); fdv.innerHTML = firmasHtml(aprRepFirmas()); pg.appendChild(fdv); if(fdv.getBoundingClientRect().bottom - pg.getBoundingClientRect().top > PH - M - 10){ pg.removeChild(fdv); var pf = nueva(n + 1); pf.querySelector('table').remove(); pf.appendChild(fdv); pags.push(pf); } }
+  if(k === 'aprRep' || /^aprRep/.test(k)){ var pgU = pg, nU = n; [REP_SOLO_GRUPO ? '' : aprRepResumenHtml(), firmasHtml(aprRepFirmas())].forEach(function(hh){ if(!hh) return; var fdv = document.createElement('div'); fdv.innerHTML = hh; pgU.appendChild(fdv); if(fdv.getBoundingClientRect().bottom - pgU.getBoundingClientRect().top > PH - M - 10){ pgU.removeChild(fdv); nU++; var pf = nueva(nU); pf.querySelector('table').remove(); pf.appendChild(fdv); pags.push(pf); pgU = pf; } }); }
   if(ver){ qlPaginas(pags, PW, PH, D.titulo); box.remove(); return; }
   var doc = new J({unit: 'pt', format: 'letter', orientation: land ? 'landscape' : 'portrait'}), dw = doc.internal.pageSize.getWidth(), dh = doc.internal.pageSize.getHeight();
   try{
+    var cvs = [];
     for(var q = 0; q < pags.length; q++){
-      var cv = await html2canvas(pags[q], {scale: 2, backgroundColor: '#ffffff', logging: false});
+      var cv = await html2canvas(pags[q], {scale: 2, backgroundColor: '#ffffff', logging: false}); cvs.push(cv);
       if(q) doc.addPage();
       doc.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, dw, dh);
       doc.setFontSize(8); doc.setTextColor(120); doc.text('Página ' + (q + 1) + ' de ' + pags.length, dw - 40, dh - 16, {align: 'right'});
@@ -4475,7 +4497,8 @@ async function tbPdf(k, orient, compartir, extra, ver){
   box.remove();
   var pdfNom = D.titulo + ' ' + hoy() + (land ? ' horizontal' : ' vertical') + '.pdf', pdfBuf = doc.output('arraybuffer');
   if(compartir){ try{ var fl = new File([pdfBuf], pdfNom, {type: 'application/pdf'}); var tactil = window.matchMedia && window.matchMedia('(pointer:coarse)').matches; if(tactil && navigator.canShare && navigator.canShare({files: [fl]})){ await navigator.share({files: [fl], title: D.titulo, text: compartir}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
-    guardar(pdfNom, pdfBuf); var wu = 'https://wa.me/?text=' + encodeURIComponent(compartir), wv = null; try{ wv = window.open(wu, '_blank'); if(wv) wv.opener = null; }catch(e){} toast('PDF descargado: adjúntalo en WhatsApp'); return; }
+    var png = null; try{ var W0 = cvs[0].width, H0 = cvs.reduce(function(a, c2){ return a + c2.height; }, 0), big = document.createElement('canvas'); big.width = W0; big.height = H0; var bx = big.getContext('2d'), yy = 0; bx.fillStyle = '#fff'; bx.fillRect(0, 0, W0, H0); cvs.forEach(function(c2){ bx.drawImage(c2, 0, yy); yy += c2.height; }); png = await new Promise(function(res){ try{ big.toBlob(function(b2){ res(b2); }, 'image/png'); }catch(e){ res(null); } }); }catch(e){}
+    guardar(pdfNom, pdfBuf); waModal('Enviar ' + D.titulo.toLowerCase() + ' por WhatsApp', pags.length + ' página' + (pags.length === 1 ? '' : 's'), {buf: pdfBuf, nom: pdfNom, txt: compartir, png: png, tel: ''}, 'el reporte'); return; }
   guardar(pdfNom, pdfBuf);
 }
 /* ================= Modo prueba ================= */
@@ -4850,9 +4873,9 @@ function vAprReporte(){
     '<div class="sub">Caja</div><div class="chips rgch">' + chip('repCaja', '', !r.cajas.length, 'Todas') + CAJAS.map(function(k){ return chip('repCaja', k.id, r.cajas.indexOf(k.id) !== -1, esc(k.nombre)); }).join('') + '</div>' +
     '<div class="sub">Día (marca uno o varios)</div><div class="chips rgch">' + chip('repDia', '', !r.dias.length, 'Todos <b>' + R.total + '</b>') + chip('repDia', hoy(), r.dias.indexOf(hoy()) !== -1, (r.dias.indexOf(hoy()) !== -1 ? '☑ ' : '☐ ') + 'Hoy · ' + fFecha(hoy()) + ' <b>' + (R.dias[hoy()] || 0) + '</b>') + '<label class="chip repfecha">📅 Otra fecha <input type="date" id="repFecha" aria-label="Elegir fecha"></label>' + dias.concat(r.dias.filter(function(d){ return dias.indexOf(d) === -1; })).filter(function(d){ return d !== hoy(); }).map(function(d){ return chip('repDia', d, r.dias.indexOf(d) !== -1, (r.dias.indexOf(d) !== -1 ? '☑ ' : '☐ ') + fFecha(d) + ' <b>' + (R.dias[d] || 0) + '</b>'); }).join('') + '</div></div>' +
     '<div class="kpis"><div class="kpi"><span>En el reporte</span><strong>' + inc.length + ' cobro' + (inc.length === 1 ? '' : 's') + '</strong><small>de ' + R.filas.length + ' con este filtro</small></div><div class="kpi"><span>Pesos</span><strong>' + money(t.MXN, 'MXN') + '</strong></div><div class="kpi"><span>Dólares</span><strong>' + money(t.USD, 'USD') + '</strong></div><div class="kpi"><span>Total en USD (referencia)</span><strong>' + money(ref, 'USD') + '</strong></div></div>' +
-    (R.filas.length ? '<div class="row" style="gap:8px;margin:6px 0;flex-wrap:wrap"><button type="button" class="btn primary" data-a="repWa">📲 Enviar por WhatsApp</button><button type="button" class="btn ghost" data-a="repVer">' + ICO_VER + ' Vista previa</button>' + (r.agr !== 'nada' ? '<button type="button" class="btn ghost" data-a="repPdfGrupos">⬇ Un PDF por ' + ({concepto: 'concepto', gabai: 'gabai', ambos: 'concepto y gabai'}[r.agr]) + '</button>' : '') + '<button type="button" class="btn ghost" data-a="repTodos" data-v="1">Marcar todos</button><button type="button" class="btn ghost" data-a="repTodos" data-v="0">Quitar todos</button></div>' +
+    (R.filas.length ? '<div class="row" style="gap:8px;margin:6px 0;flex-wrap:wrap"><button type="button" class="btn primary" data-a="repWa">📲 Enviar por WhatsApp</button><button type="button" class="btn ghost" data-a="repVer">' + ICO_VER + ' Vista previa</button><button type="button" class="btn ghost" data-a="tbPdf" data-k="aprRep" data-o="v">⬇ PDF del reporte completo</button>' + (r.agr !== 'nada' ? '<button type="button" class="btn ghost" data-a="repPdfGrupos">⬇ PDFs separados por ' + ({concepto: 'concepto', gabai: 'gabai', ambos: 'concepto y gabai'}[r.agr]) + '</button>' : '') + '<button type="button" class="btn ghost" data-a="repTodos" data-v="1">Marcar todos</button><button type="button" class="btn ghost" data-a="repTodos" data-v="0">Quitar todos</button></div>' +
       tbBar('aprRep') + '<div class="tw cards"><table class="cobt" data-cf="aprRep" data-tt="Cobros autorizados"><thead><tr><th></th><th>' + (r.base === 'pago' ? 'Fecha del pago' : 'Autorizado') + '</th><th>Cobrador</th><th>Donante</th><th>Gabai</th><th>Concepto</th><th>Mes</th><th>Moneda</th><th class="n">Monto</th><th class="n">Referencia USD</th><th>Forma</th><th>Caja</th><th>Recibo</th></tr></thead><tbody>' + (function(){ var out = '', last = null, inc2 = R.filas.filter(function(o){ return !r.excl[o.x.id]; }); R.filas.forEach(function(o){ if(r.agr !== 'nada' && o.g !== last){ last = o.g; var gi = inc2.filter(function(z){ return z.g === o.g; }), gt = {MXN: 0, USD: 0}, gr = 0; gi.forEach(function(z){ gt[z.x.mon] += z.x.monto; gr += (z.x.mon === 'USD' ? z.x.monto : z.x.ref) || 0; }); var txt = o.g + ' — ' + gi.length + ' cobro' + (gi.length === 1 ? '' : 's') + (gt.MXN ? ' · ' + money(gt.MXN, 'MXN') : '') + (gt.USD ? ' · ' + money(gt.USD, 'USD') : '') + ' · Total USD ' + money(gr, 'USD'); out += '<tr class="gsep" data-sep="' + esc(txt) + '"><td colspan="13" dir="auto">' + esc(txt) + '</td></tr>'; } out += fila(o); }); return out; })() + '</tbody></table></div>'
-      : '<div class="empty">No hay cobros autorizados con este filtro.</div>') + '</section>';
+      : '<div class="empty">No hay cobros autorizados con este filtro.</div>') + (R.filas.length ? '<div class="repres">' + aprRepResumenHtml() + '</div>' : '') + '</section>';
 }
 function repTexto(){
   var r = aprRepState(), R = aprRepFilas(), inc = R.filas.filter(function(o){ return !r.excl[o.x.id]; }), t = {MXN: 0, USD: 0}, ref = 0;
@@ -5096,7 +5119,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'aprEst'){ ui.apr.f.est = b.getAttribute('data-e'); render(); }
   else if(a === 'repPdfGrupos'){ (async function(){ var rows = Array.prototype.slice.call(document.querySelectorAll('table[data-cf=aprRep] tbody tr')), grupos = [], cur = null; rows.forEach(function(tr){ if(tr.hasAttribute('data-sep')){ cur = {sep: tr, rows: []}; grupos.push(cur); } else if(cur) cur.rows.push(tr); });
       var marcados = rows.filter(function(tr){ return tr.hasAttribute('data-excl'); });
-      for(var gi = 0; gi < grupos.length; gi++){ var g = grupos[gi]; if(!g.rows.some(function(tr){ return !tr.hasAttribute('data-excl'); })) continue; rows.forEach(function(tr){ if(g.rows.indexOf(tr) === -1 && tr !== g.sep) tr.setAttribute('data-excl', '1'); }); await tbPdf('aprRep', 'v', null, g.sep.getAttribute('data-sep').split(' — ')[0]); rows.forEach(function(tr){ if(marcados.indexOf(tr) === -1) tr.removeAttribute('data-excl'); }); }
+      for(var gi = 0; gi < grupos.length; gi++){ var g = grupos[gi]; if(!g.rows.some(function(tr){ return !tr.hasAttribute('data-excl'); })) continue; rows.forEach(function(tr){ if(g.rows.indexOf(tr) === -1 && tr !== g.sep) tr.setAttribute('data-excl', '1'); }); REP_SOLO_GRUPO = true; try{ await tbPdf('aprRep', 'v', null, g.sep.getAttribute('data-sep').split(' — ')[0]); }finally{ REP_SOLO_GRUPO = false; } rows.forEach(function(tr){ if(marcados.indexOf(tr) === -1) tr.removeAttribute('data-excl'); }); }
     })(); }
   else if(a === 'repGabC'){ var rg = aprRepState(), gv = b.getAttribute('data-v'); if(!gv) rg.gabs = []; else { if(!rg.gabs.length) rg.gabs = S.gabaim.slice(); var gix = rg.gabs.indexOf(gv); if(gix === -1) rg.gabs.push(gv); else rg.gabs.splice(gix, 1); if(rg.gabs.length >= S.gabaim.length) rg.gabs = []; else if(!rg.gabs.length) rg.gabs = ['__ninguno__']; } render(); }
   else if(a === 'repMon' || a === 'repCaja' || a === 'repDia'){ var rr = aprRepState(), rk = {repMon: 'mons', repCaja: 'cajas', repDia: 'dias'}[a], rv = b.getAttribute('data-v'); if(!rv) rr[rk] = []; else { var ri = rr[rk].indexOf(rv); if(ri === -1) rr[rk].push(rv); else rr[rk].splice(ri, 1); } render(); }
