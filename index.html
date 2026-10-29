@@ -474,6 +474,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 @media (min-width:761px){table[data-cf] td[data-l=Alerta]{max-width:120px}table[data-cf] td[data-l=Alerta] .pill{white-space:normal;border-radius:12px;line-height:1.25}}
 .portalenc{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:2px solid #C9A24A}.portalenc img{height:54px;width:auto;flex-shrink:0;padding-right:16px;border-right:1px solid var(--line)}.portalenc .ptit{font-size:19px;font-weight:700;color:var(--brand)}
 .recprev{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#EEF2F7;text-align:center}.recprev img{width:100%;max-width:420px;display:block;margin:0 auto}.recbig{width:100%;min-height:46px;font-size:15px;justify-content:center;margin-top:10px}
+.icov{padding:0 !important;width:34px;min-width:34px;justify-content:center}.acts .icov{width:44px;min-width:44px}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
 .gmlist{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 10px}.gmrow{display:flex !important;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line)}.gmrow:last-child{border-bottom:0}.gmmes{width:96px;font-weight:600}.gmpct{width:150px}.gmhead{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;cursor:default}.gmgab{flex:1;text-align:left}.gmes{font-size:10.5px;padding:1px 6px}
 .semaf{display:inline-flex;gap:2px;padding:2px 3px;border-radius:7px;background:#1B2230;margin-right:7px;vertical-align:middle}.semaf i{width:7px;height:7px;border-radius:50%;background:#3a4252}.s-r i:nth-child(1){background:#E5484D;box-shadow:0 0 5px #E5484D}.s-a i:nth-child(2){background:#F5B83D;box-shadow:0 0 5px #F5B83D}.s-v i:nth-child(3){background:#30A46C;box-shadow:0 0 5px #30A46C}.s-g i{background:#5b6472}.prec .name{display:flex;align-items:center;flex-wrap:wrap;gap:4px}.pend-r{background:var(--bad-soft);border-radius:10px;padding-left:8px;padding-right:8px}.pend-a{background:var(--warn-soft);border-radius:10px;padding-left:8px;padding-right:8px}.semleg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:8px}
@@ -813,7 +814,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v130</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v131</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3522,14 +3523,14 @@ function reciboEstadoHtml(p){
     '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:56px"><div style="font-size:12px;color:#5B6472">Gracias por tu generosidad y por ser parte de Bait Lapletot.<div style="font-size:15px;color:#12324F;margin-top:6px;font-weight:600"><span dir="rtl">תודה רבה ותזכו למצוות</span></div></div><div style="width:240px;text-align:center"><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Recibió</div></div></div>' +
     recLeyenda() + '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:12px">Recibo generado automáticamente · Folio ' + esc(p.recibo || '') + '</div></div>';
 }
-async function htmlPdf(html, nombre){
+async function htmlPdf(html, nombre, ver){
   var J = window.jspdf && window.jspdf.jsPDF; if(!J){ toast('No se pudo preparar el PDF. Recarga la página.'); return; }
   toast('Preparando PDF…');
   try{ await cargarJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', function(){ return !!window.html2canvas; }); }catch(e){ toast('No se pudo preparar el PDF. Revisa tu conexión.'); return; }
   var box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-20000px;top:0;z-index:-1;background:#fff'; box.innerHTML = html; document.body.appendChild(box);
   var el = box.firstChild, doc = new J({unit: 'pt', format: 'letter', orientation: 'portrait'}), dw = doc.internal.pageSize.getWidth(), dh = doc.internal.pageSize.getHeight();
   try{ var cv = await html2canvas(el, {scale: 2, backgroundColor: '#ffffff', logging: false}); var hh = Math.min(dh * 1.6, dw * cv.height / cv.width); doc.addImage(cv.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, dw * Math.min(1, dh / hh), Math.min(dh, hh)); }catch(e){ box.remove(); toast('No se pudo generar el PDF.'); return; }
-  box.remove(); guardar(nombre, doc.output('arraybuffer'));
+  box.remove(); if(ver !== undefined){ pdfVerEn(ver, doc.output('arraybuffer')); return; } guardar(nombre, doc.output('arraybuffer'));
 }
 var REC_LEYENDA = 'Este recibo no es deducible de impuestos; es solo un comprobante de pago.';
 function recLeyenda(col){ return '<div style="margin-top:26px;padding:10px 14px;border-radius:8px;background:rgba(18,50,79,.05);text-align:center;font-size:11.5px;color:' + (col || '#5B6472') + '">' + REC_LEYENDA + '</div>'; }
@@ -3595,6 +3596,7 @@ async function reciboPdf(pid, wa){
   try{ var cv = await html2canvas(box.firstChild, {scale: 2, backgroundColor: '#ffffff', logging: false}); doc.addImage(cv.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, dw, dh); }catch(e){ box.remove(); toast('No se pudo generar el recibo.'); return; }
   box.remove();
   var buf = doc.output('arraybuffer');
+  if(wa && wa.ver){ pdfVerEn(wa.ver, buf); return; }
   if(!wa){ guardar(nom, buf); return; }
   var txt = 'Hola ' + d.nombre.split(' ')[0] + ', te enviamos tu recibo ' + (p.recibo || '') + ' por ' + money(p.montoC, p.moneda) + ' del ' + fFecha(p.fecha) + '. ¡Muchas gracias por tu apoyo a Bait Lapletot!';
   var png = await new Promise(function(res){ try{ cv.toBlob(function(b){ res(b); }, 'image/png'); }catch(e){ res(null); } });
@@ -3609,8 +3611,11 @@ async function reciboPdf(pid, wa){
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="recBajar">⬇ Descargar PDF</button><button type="button" class="btn ghost" data-a="close">Cerrar</button></div>');
 }
 var REC_WA = null;
+function pdfVentana(){ var w = null; try{ w = window.open('', '_blank'); if(w){ w.document.write('<!doctype html><title>Preparando…</title><body style="font-family:-apple-system,Arial;display:grid;place-items:center;height:90vh;color:#5B6472">Preparando PDF…</body>'); } }catch(e){} return w; }
+function pdfVerEn(w, buf){ var u = URL.createObjectURL(new Blob([buf], {type: 'application/pdf'})); if(w && !w.closed){ try{ w.location.href = u; return; }catch(e){} } var w2 = null; try{ w2 = window.open(u, '_blank'); }catch(e){} if(!w2) toast('Tu navegador bloqueó la ventana: permite ventanas emergentes para ver el PDF'); }
+var ICO_VER = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 function recAbrirWa(){ var r = REC_WA; if(!r) return; var wu = 'https://wa.me/' + (r.tel || '') + '?text=' + encodeURIComponent(r.txt), wv = null; try{ wv = window.open(wu, '_blank'); if(wv) wv.opener = null; }catch(e){} if(!wv){ try{ location.href = wu; }catch(e){} } }
-function recBtns(x){ return '<span class="recbtns"><button type="button" class="btn ghost sm" data-a="recPdf" data-id="' + x.id + '">⬇ Recibo PDF</button><button type="button" class="btn sm recwa" data-a="recWa" data-id="' + x.id + '">WhatsApp</button></span>'; }
+function recBtns(x){ return '<span class="recbtns"><button type="button" class="btn ghost sm icov" data-a="recVer" data-id="' + x.id + '" aria-label="Ver recibo">' + ICO_VER + '</button><button type="button" class="btn ghost sm" data-a="recPdf" data-id="' + x.id + '">⬇ Recibo PDF</button><button type="button" class="btn sm recwa" data-a="recWa" data-id="' + x.id + '">WhatsApp</button></span>'; }
 function vPortal(){
   if(!S.donantes.length) return '<section class="panel"><div class="empty">No hay donadores para mostrar.</div></section>';
   if(!ui.portal.d || !don(ui.portal.d)) ui.portal.d = S.donantes[0].id;
@@ -3647,7 +3652,7 @@ function vPortal(){
     '<div class="row" style="justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px"><h2>Tus recibos</h2>' + (!esDonante() && user().rol === 'Dirección' ? '<label class="f" style="max-width:220px">Estilo del recibo<select id="recEstilo">' + [['estado', 'Estado de cuenta (recomendado)'], ['clasico', 'Clásico'], ['banda', 'Banda azul'], ['elegante', 'Elegante'], ['tarjeta', 'Tarjeta moderna']].map(function(o){ return '<option value="' + o[0] + '"' + (((S.cfg && S.cfg.recEstilo) || 'estado') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' : '') + '</div>' + (npend ? '<div class="sub">' + sem('r') + npend + (npend === 1 ? ' mes pendiente' : ' meses pendientes') + '</div>' : '') + (filasRec.length ? '<div class="list">' + filasRec.join('') + '</div>' : '<div class="sub">Aún no hay recibos.</div>') +
     '<div class="semleg">' + sem('v') + 'Recibida ' + sem('a') + 'En curso / en parte ' + sem('r') + 'Pendiente vencido</div>' +
     (esDonante() ? '' : '<div class="note">Link personal con token: ' + esc(link('portal', c)) + ' · válido hasta ' + fFecha(addDias(hoy(), 30)) + '</div>') +
-    '<div class="acts"><button type="button" class="btn primary" data-a="portalSend" data-id="' + c.id + '">Enviar por WhatsApp o correo</button><button type="button" class="btn ghost" data-a="portalPdf" data-id="' + c.id + '">Descargar PDF</button></div></section>';
+    '<div class="acts"><button type="button" class="btn primary" data-a="portalSend" data-id="' + c.id + '">Enviar por WhatsApp o correo</button><button type="button" class="btn ghost" data-a="portalPdf" data-id="' + c.id + '">Descargar PDF</button><button type="button" class="btn ghost icov" data-a="portalVer" data-id="' + c.id + '" aria-label="Ver estado de cuenta">' + ICO_VER + '</button></div></section>';
 }
 
 /* ================= Exportar ================= */
@@ -4922,6 +4927,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'respOk') respAplicar();
   else if(a === 'recPdf') reciboPdf(id, false);
   else if(a === 'recWa') reciboPdf(id, true);
+  else if(a === 'recVer'){ var wv0 = pdfVentana(); reciboPdf(id, {ver: wv0}); }
+  else if(a === 'portalVer'){ var wv1 = pdfVentana(), c6 = comp(id); htmlPdf(estadoHtml(c6), '', wv1); }
   else if(a === 'recShare'){ var r1 = REC_WA; if(!r1) return; try{ navigator.share({files: [new File([r1.buf], r1.nom, {type: 'application/pdf'})], text: r1.txt}).catch(function(){}); }catch(e){ toast('Este dispositivo no permite compartir archivos.'); } }
   else if(a === 'recCopiaWa'){ var r2 = REC_WA; if(!r2) return; var ok = false; try{ if(r2.png && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){ navigator.clipboard.write([new ClipboardItem({'image/png': r2.png})]).then(function(){ toast('Recibo copiado: pégalo en WhatsApp con ⌘V'); }, function(){ guardar(r2.nom, r2.buf); toast('No se pudo copiar: se descargó el PDF, arrástralo al chat'); }); ok = true; } }catch(e){} if(!ok){ guardar(r2.nom, r2.buf); toast('Se descargó el PDF: arrástralo al chat de WhatsApp'); } recAbrirWa(); }
   else if(a === 'recBajar'){ if(REC_WA) guardar(REC_WA.nom, REC_WA.buf); }
