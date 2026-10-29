@@ -474,6 +474,7 @@ table[data-cf=aprRep] tr.gsep td{background:#E8EEF5;color:#12324F;font-weight:70
 @media (min-width:761px){table[data-cf] td[data-l=Alerta]{max-width:120px}table[data-cf] td[data-l=Alerta] .pill{white-space:normal;border-radius:12px;line-height:1.25}}
 .portalenc{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:2px solid #C9A24A}.portalenc img{height:54px;width:auto;flex-shrink:0;padding-right:16px;border-right:1px solid var(--line)}.portalenc .ptit{font-size:19px;font-weight:700;color:var(--brand)}
 .recbtns{display:inline-flex;gap:6px;margin-left:12px;flex-shrink:0}.recwa{background:#25D366;color:#fff;border-color:#25D366}.recwa:hover{background:#1EBE5A}.prec{flex-wrap:wrap}@media (max-width:760px){.recbtns{width:100%;margin:6px 0 0}.recbtns .btn{flex:1}}
+.gmlist{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 10px}.gmrow{display:flex !important;align-items:center;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line)}.gmrow:last-child{border-bottom:0}.gmmes{width:96px;font-weight:600}.gmgab{flex:1}.gmes{font-size:10.5px;padding:1px 6px}
 .semaf{display:inline-flex;gap:2px;padding:2px 3px;border-radius:7px;background:#1B2230;margin-right:7px;vertical-align:middle}.semaf i{width:7px;height:7px;border-radius:50%;background:#3a4252}.s-r i:nth-child(1){background:#E5484D;box-shadow:0 0 5px #E5484D}.s-a i:nth-child(2){background:#F5B83D;box-shadow:0 0 5px #F5B83D}.s-v i:nth-child(3){background:#30A46C;box-shadow:0 0 5px #30A46C}.s-g i{background:#5b6472}.prec .name{display:flex;align-items:center;flex-wrap:wrap;gap:4px}.pend-r{background:var(--bad-soft);border-radius:10px;padding-left:8px;padding-right:8px}.pend-a{background:var(--warn-soft);border-radius:10px;padding-left:8px;padding-right:8px}.semleg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:8px}
 .t-ok{background:var(--ok-soft);color:var(--ok)}.t-warn{background:var(--warn-soft);color:var(--warn)}.t-bad{background:var(--bad-soft);color:var(--bad)}
 .t-info{background:var(--brand-soft);color:var(--ink)}.t-mute{background:var(--mute-soft);color:var(--muted)}
@@ -811,7 +812,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v122</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v124</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -857,6 +858,8 @@ var KEY = 'bl-compromisos-prototipo-v5';
 var S;
 /* ================= Gabaim permitidos por usuario ================= */
 var GSW = null, GAB_KS = ['donantes', 'compromisos', 'cuotas', 'donativos', 'egresos'];
+function gabQ(q, c){ if(!q) return ''; if(q.gabai != null) return q.gabai; c = c || comp(q.compId); return c ? (c.gabai || '') : ''; }
+function gabPago(p, c){ if(p.gabai != null) return p.gabai; var q0 = p.cubre && p.cubre[0] && S.cuotas.find(function(z){ return z.id === p.cubre[0].qid; }); return q0 ? gabQ(q0, c) : (c ? (c.gabai || '') : ''); }
 function gabPermUsuario(u){ u = u || user(); if(!u || u.rol === 'Dirección' || u.rol === 'Donante') return null; var p = S.permGab && S.permGab[u.id]; return Array.isArray(p) ? p : null; }
 function gabEntrar(){
   if(GSW || typeof LOGUEADO === 'undefined' || !LOGUEADO || !S) return false;
@@ -864,12 +867,14 @@ function gabEntrar(){
   var A = {}; al.forEach(function(g){ A[g] = 1; });
   var okC = {}, conComp = {};
   (S.compromisos || []).forEach(function(c){ conComp[c.donanteId] = 1; if(A[c.gabai || '']) okC[c.id] = 1; });
+  var cmp0 = {}; (S.compromisos || []).forEach(function(c){ cmp0[c.id] = c; });
+  (S.cuotas || []).forEach(function(q){ if(q.gabai != null && A[q.gabai]) okC[q.compId] = 1; });
   var donOk = {}; (S.compromisos || []).forEach(function(c){ if(okC[c.id]) donOk[c.donanteId] = 1; });
   var cmp = {}; (S.compromisos || []).forEach(function(c){ cmp[c.id] = c; });
   (S.donativos || []).forEach(function(p){ var c = cmp[p.compId]; if(c && A[p.gabai != null ? p.gabai : (c.gabai || '')]) donOk[c.donanteId] = 1; });
   var pred = {
     compromisos: function(c){ return okC[c.id]; },
-    cuotas: function(q){ return okC[q.compId]; },
+    cuotas: function(q){ var c = cmp0[q.compId]; return okC[q.compId] && !!A[q.gabai != null ? q.gabai : (c ? (c.gabai || '') : '')]; },
     donativos: function(p){ var c = cmp[p.compId]; return okC[p.compId] || (c && A[p.gabai != null ? p.gabai : '']); },
     donantes: function(d){ return donOk[d.id] || !conComp[d.id]; },
     egresos: function(e){ return !e.gabai || A[e.gabai]; }
@@ -1067,7 +1072,7 @@ function registrarDonativo1(c, o){
   S.recibo = (S.recibo || 0) + 1;
   var rec = 'R-' + String(S.recibo).padStart(4, '0');
   var cubre = o.plan.map(function(p){ p.q.aplicadoC += p.ap; return {qid: p.q.id, num: p.q.num, mes: p.q.mes, ap: p.ap}; });
-  var dv = {id: nid('p'), compId: c.id, gabai: c.gabai || '', comPct: c.comisionPct || 0, tc: o.moneda !== c.moneda ? (o.tc || S.cfg.tc) : null, fecha: o.fecha, montoC: o.montoC, moneda: o.moneda, montoCompC: o.montoCompC, forma: o.forma, caja: o.caja || (o.moneda === c.moneda ? c.caja : cajaDef(o.moneda)), cubre: cubre, obs: o.obs || '', recibo: rec};
+  var dv = {id: nid('p'), compId: c.id, gabai: o.plan && o.plan[0] && o.plan[0].q ? gabQ(o.plan[0].q, c) : (c.gabai || ''), comPct: c.comisionPct || 0, tc: o.moneda !== c.moneda ? (o.tc || S.cfg.tc) : null, fecha: o.fecha, montoC: o.montoC, moneda: o.moneda, montoCompC: o.montoCompC, forma: o.forma, caja: o.caja || (o.moneda === c.moneda ? c.caja : cajaDef(o.moneda)), cubre: cubre, obs: o.obs || '', recibo: rec};
   S.donativos.push(dv);
   return dv;
 }
@@ -2071,7 +2076,7 @@ function ceSave(cid){
   var com = $('ceComent').value.trim(); if(com){ c.notas = c.notas || []; c.notas.push({fecha: hoy(), usuario: user().nombre, texto: com}); cambios.push('comentario'); }
   if($('cePagos').checked){ var np = 0;
     S.donativos.forEach(function(p){ if(p.compId !== c.id) return; var t = false;
-      if(c.gabai !== antes.gabai){ p.gabai = c.gabai; t = true; }
+      if(c.gabai !== antes.gabai){ var ng = gabPago({cubre: p.cubre}, c); if(p.gabai !== ng){ p.gabai = ng; t = true; } }
       if(pct !== antes.pct){ p.comPct = pct; t = true; }
       if(c.forma !== antes.forma && p.forma === antes.forma){ p.forma = c.forma; t = true; }
       if(c.caja !== antes.caja && caja(c.caja).mon === p.moneda){ p.caja = c.caja; t = true; }
@@ -2666,7 +2671,7 @@ function cobFiltradas(conDia){
     return c.anio === Y && (f.mes === 'todo' || q.mes === +f.mes);
   });
   if(f.q){ var s = f.q.toLowerCase(); qs = qs.filter(function(q){ return don(comp(q.compId).donanteId).nombre.toLowerCase().indexOf(s) !== -1; }); }
-  if(f.gab !== 'todos') qs = qs.filter(function(q){ return (comp(q.compId).gabai || '') === f.gab; });
+  if(f.gab !== 'todos') qs = qs.filter(function(q){ return gabQ(q) === f.gab; });
   if(f.caja !== 'todos') qs = qs.filter(function(q){ return planVista(q).caja === f.caja; });
   if((f.cajas || []).length) qs = qs.filter(function(q){ return f.cajas.indexOf(planVista(q).caja) !== -1; });
   if((f.mons || []).length) qs = qs.filter(function(q){ return f.mons.indexOf(planVista(q).mon) !== -1; });
@@ -2742,7 +2747,7 @@ function vBloque(){
         var d = don(r.c.donanteId), cambiado = r.monto !== r.def;
         return '<tr' + (r.on ? '' : ' class="off"') + '><td data-l="Aplicar"><label class="ck"><input type="checkbox" data-bkq="' + r.q.id + '"' + (r.on ? ' checked' : '') + ' aria-label="Aplicar a ' + esc(d.nombre) + '"></label></td>' +
           '<td data-l="Donante" data-noi18n>' + (LANG === 'he' && d.hebreo ? '<b dir="rtl" lang="he">' + esc(d.hebreo) + '</b>' : '<b>' + esc(d.nombre) + '</b>') + '</td>' +
-          '<td data-l="Gabai">' + gabTxt(r.c.gabai) + '</td>' +
+          '<td data-l="Gabai">' + gabTxt(gabQ(r.q, r.c)) + '</td>' +
           '<td data-l="Mes" class="nowrap">' + Mes(r.q.mes) + ' ' + r.c.anio + '</td><td data-l="Alerta">' + pillQ(r.q) + '</td>' +
           '<td class="n" data-l="Acuerdo del mes (USD)"><span class="bklock" title="Cantidad acordada, no se puede cambiar">🔒 ' + mN(falta(r.q)) + '</span>' + (falta(r.q) !== r.q.montoC ? '<div class="sub">de ' + mN(r.q.montoC) + '</div>' : '') + '</td>' +
           '<td data-l="Paga en">' + selMon('data-bkmon', r.q.id, r.mon) + '</td>' +
@@ -2808,7 +2813,7 @@ function vCobranza(){
       qs.map(function(q){
         var c = comp(q.compId), d = don(c.donanteId), e = estadoQ(q), abierta = falta(q) > 0 && !q.pausada, pl = planVista(q);
         return '<tr' + ((ui.cob.sel || {})[q.id] ? ' class="selrow"' : '') + '><td><div class="qtools"><label class="ck"><input type="checkbox" data-qsel="' + q.id + '"' + ((ui.cob.sel || {})[q.id] ? ' checked' : '') + ' aria-label="Seleccionar ' + esc(d.nombre) + ' ' + Mes(q.mes) + '"></label><button type="button" class="ibtn qed" data-a="qEdit" data-id="' + q.id + '" title="Corregir" aria-label="Corregir ' + esc(d.nombre) + ' ' + Mes(q.mes) + '">' + ICO_EDIT + '</button>' + bDel('data-a="qDel" data-id="' + q.id + '"') + '</div></td><td data-l="Donante" data-noi18n><button type="button" class="back" data-a="openComp" data-id="' + c.id + '"><b' + (LANG === 'he' && d.hebreo ? ' dir="rtl" lang="he">' + esc(d.hebreo) : '>' + esc(d.nombre)) + '</b></button></td>' +
-          '<td data-l="Gabai">' + gabTxt(c.gabai) + '</td><td data-l="Mes" class="nowrap">' + Mes(q.mes) + ' ' + c.anio + '</td><td data-l="Alerta">' + pillQ(q) + '</td>' +
+          '<td data-l="Gabai">' + gabTxt(gabQ(q, c)) + (q.gabai != null && q.gabai !== (c.gabai || '') ? ' <span class="pill t-warn gmes" title="Gabai cambiado solo en este mes">mes</span>' : '') + '</td><td data-l="Mes" class="nowrap">' + Mes(q.mes) + ' ' + c.anio + '</td><td data-l="Alerta">' + pillQ(q) + '</td>' +
           '<td class="n" data-l="Monto recibido">' + qLineas(q, function(p){ return '<b>' + money(p.monto, p.moneda) + '</b>'; }) + '</td><td class="n" data-l="Referencia USD">' + qLineas(q, function(p){ return money(p.ref, 'USD'); }) + '</td>' +
           '<td data-l="Paga en">' + pl.mon + '</td><td data-l="Forma">' + esc(pl.forma) + '</td><td data-l="Caja">' + cajaPill(pl.caja) + '</td>' +
           '<td class="n" data-l="Avisos">' + cuentaRecs(q) + '/2</td><td data-l="Nota">' + (q.nota ? esc(q.nota) : '—') + '</td>' +
@@ -3371,13 +3376,13 @@ function vCompDetalle(c){
   return '<div><button type="button" class="back" data-a="compBack">← Seguimientos</button></div>' +
   '<section class="panel"><div class="row" style="justify-content:space-between"><div><h2 style="font-size:22px">' + esc(d.nombre) + '</h2><div class="sub">Compromiso ' + c.anio + ' · ' + (es === 'por confirmar' ? 'Por confirmar (alta por link)' : es === 'activo' ? 'Activo' : es === 'renovado' ? 'Renovado' : 'Terminado') + ' · <span class="pill ' + ed[1] + '">' + ed[0] + '</span> <small>(solo interno)</small></div></div>' +
     '<div class="acts">' + (es === 'por confirmar' ? '<button type="button" class="btn primary" data-a="confirmar" data-id="' + c.id + '">Confirmar compromiso</button>' :
-      '<button type="button" class="btn primary" data-a="pago" data-id="' + c.id + '">Registrar pago</button><button type="button" class="btn ghost" data-a="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn ghost" data-a="ajustar" data-id="' + c.id + '">Ajustar</button>') +
+      '<button type="button" class="btn primary" data-a="pago" data-id="' + c.id + '">Registrar pago</button><button type="button" class="btn ghost" data-a="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn ghost" data-a="ajustar" data-id="' + c.id + '">Ajustar</button><button type="button" class="btn ghost" data-a="gabMes" data-id="' + c.id + '">Gabai por mes</button>') +
       '<button type="button" class="btn ghost" data-a="estadoCuenta" data-id="' + c.id + '">Estado de cuenta</button>' +
       (porRenovar(c) ? '<button type="button" class="btn ghost" data-a="renovar" data-id="' + c.id + '">Renovar ' + (c.anio + 1) + '</button>' : '') + '</div></div>' +
     '<div class="info">' +
       '<div><span>Monto anual</span><b>' + money(c.anualC, c.moneda) + '</b></div><div><span>Cuota mensual</span><b>' + money(c.cuotaC, c.moneda) + '</b></div>' +
       '<div><span>Cuotas</span><b>' + c.n + ' (' + (c.n === 1 ? Mes(c.mesIni) : rangoComp(c)) + ')</b></div><div><span>Vence</span><b>Día ' + c.dia + (c.periodo === 'Trimestral' ? ' cada 3 meses' : c.periodo === 'Bimestral' ? ' cada 2 meses' : ' de cada mes') + '</b></div>' +
-      '<div><span>Asignado (gabai)</span><b>' + gabTxt(c.gabai) + '</b></div>' +
+      '<div><span>Asignado (gabai)</span><b>' + gabTxt(c.gabai) + (cuotasDe(c.id).some(function(q){ return q.gabai != null && q.gabai !== (c.gabai || ''); }) ? ' <span class="pill t-warn">con meses cambiados</span>' : '') + ' <button type="button" class="back" data-a="gabMes" data-id="' + c.id + '">Corregir por mes</button></b></div>' +
       '<div><span>Concepto</span><b>' + esc(c.concepto || '—') + '</b></div><div><span>Modalidad</span><b>' + esc(c.modalidad || 'Recurrente') + '</b></div>' + (c.descripcion ? '<div><span>Descripción</span><b>' + esc(c.descripcion) + '</b></div>' : '') + '<div><span>Dado</span><b>' + money(dado, c.moneda) + '</b></div><div><span>Falta</span><b>' + money(Math.max(0, c.anualC - dado), c.moneda) + '</b></div>' +
     '</div><div><button type="button" class="btn ghost sm" data-a="editDon" data-id="' + d.id + '">Editar datos del donante</button></div></section>' +
   tablaCuotas(c, qs) +
@@ -3442,7 +3447,9 @@ function numLetras(n){
   return ((mm ? (mm === 1 ? 'un millón' : mil(mm) + ' millones') : '') + (r ? (mm ? ' ' : '') + mil(r) : '')).trim();
 }
 function montoLetras(c, mon){ var e = Math.floor(c / 100), ct = Math.round(c % 100); var t = numLetras(e); t = t.charAt(0).toUpperCase() + t.slice(1); return t + (mon === 'USD' ? (e === 1 ? ' dólar' : ' dólares') : (e === 1 ? ' peso' : ' pesos')) + ' ' + pad(ct) + '/100 ' + (mon === 'USD' ? 'USD' : 'M.N.'); }
-function reciboHtml(p){
+function reciboHtml(p, est){
+  est = est || (S.cfg && S.cfg.recEstilo) || 'clasico';
+  if(est !== 'clasico') return reciboHtml2(p, est);
   var c = comp(p.compId) || {}, d = don(c.donanteId) || {nombre: ''}, lg = logoSrc(), cub = (p.cubre || []).map(function(y){ return Mes(y.mes); }).join(', ');
   var fila = function(l, v){ return '<tr><td style="padding:9px 0;color:#5B6472;width:150px;vertical-align:top;font-size:12px;text-transform:uppercase;letter-spacing:.05em">' + l + '</td><td style="padding:9px 0;font-size:14px;color:#1B2230;border-bottom:1px dotted #C9CED6">' + v + '</td></tr>'; };
   var cj = p.caja ? caja(p.caja).nombre : '';
@@ -3459,13 +3466,63 @@ function reciboHtml(p){
         fila('Forma de pago', esc(p.forma || '')) +
         (cj ? fila('Caja', esc(cj)) : '') +
         (c.gabai ? fila('Gabai', '<span dir="rtl">' + esc(c.gabai) + '</span>') : '') +
-        (p.moneda === 'MXN' && p.montoCompC && c.moneda === 'USD' ? fila('Equivalente', money(p.montoCompC, 'USD') + (p.tc ? ' · T.C. ' + p.tc : '')) : '') +
+        (p.moneda === 'MXN' && p.montoCompC && c.moneda === 'USD' ? fila('Equivalente', money(p.montoCompC, 'USD')) : '') +
         (p.obs ? fila('Observaciones', esc(p.obs)) : '') +
       '</table>' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:60px"><div style="font-size:12px;color:#5B6472;max-width:330px;line-height:1.5">Gracias por tu generosidad y por ser parte de Bait Lapletot.<div style="font-size:15px;color:#12324F;margin-top:6px;font-weight:600;text-align:left"><span dir="rtl">תודה רבה ותזכו למצוות</span></div></div>' +
         '<div style="width:250px;text-align:center"><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Recibió</div></div></div>' +
     '</div>' +
     '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:14px">Recibo generado automáticamente el ' + fFecha(hoy()) + ' · Folio ' + esc(p.recibo || '') + '</div></div>';
+}
+function reciboDatos(p){
+  var c = comp(p.compId) || {}, d = don(c.donanteId) || {nombre: ''}, cub = (p.cubre || []).map(function(y){ return Mes(y.mes); }).join(', ');
+  var r = [['Recibimos de', '<b>' + esc(d.nombre) + '</b>' + (d.hebreo && d.idioma === 'he' ? ' · <span dir="rtl">' + esc(d.hebreo) + '</span>' : '')], ['Concepto', esc(c.concepto || 'Donativo') + (c.anio ? ' ' + c.anio : '')]];
+  if(cub) r.push(['Corresponde a', esc(cub)]); r.push(['Forma de pago', esc(p.forma || '')]); if(p.caja) r.push(['Caja', esc(caja(p.caja).nombre)]); if(c.gabai) r.push(['Gabai', '<span dir="rtl">' + esc(c.gabai) + '</span>']);
+  if(p.moneda === 'MXN' && p.montoCompC && c.moneda === 'USD') r.push(['Equivalente', money(p.montoCompC, 'USD')]); if(p.obs) r.push(['Observaciones', esc(p.obs)]);
+  return {c: c, d: d, filas: r, lg: logoSrc(), letras: montoLetras(p.montoC, p.moneda), emisor: c.emisor || 'Bait Lapletot'};
+}
+function reciboHtml2(p, est){
+  var R = reciboDatos(p), F = 'font-family:Inter,Arial,sans-serif;';
+  if(est === 'banda'){
+    return '<div style="width:816px;height:1056px;box-sizing:border-box;background:#fff;' + F + 'color:#1B2230">' +
+      '<div style="background:#12324F;color:#fff;padding:34px 56px 30px;display:flex;align-items:center;gap:22px">' + (R.lg ? '<div style="background:#fff;border-radius:16px;padding:8px 14px"><img src="' + R.lg + '" style="height:60px;width:auto;display:block"></div>' : '') +
+        '<div style="flex:1"><div style="font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#E8C77A">Recibo de donativo</div><div style="font-size:15px;margin-top:4px;opacity:.85">' + esc(R.emisor) + '</div></div>' +
+        '<div style="text-align:right"><div style="font-size:30px;font-weight:800">' + esc(p.recibo || '') + '</div><div style="font-size:13px;opacity:.8">' + fFecha(p.fecha) + '</div></div></div>' +
+      '<div style="height:6px;background:linear-gradient(90deg,#C9A24A,#E8C77A,#C9A24A)"></div>' +
+      '<div style="padding:34px 56px">' +
+        '<div style="text-align:center;padding:26px 0 22px;border-bottom:1px solid #E3E6EB"><div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#5B6472">Cantidad recibida</div><div style="font-size:48px;font-weight:800;color:#12324F;margin:6px 0">' + money(p.montoC, p.moneda) + '</div><div style="font-size:14px;color:#5B6472;font-style:italic">' + esc(R.letras) + '</div></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px">' + R.filas.map(function(f){ return '<div style="background:#F5F7FA;border-radius:12px;padding:12px 16px"><div style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#5B6472">' + f[0] + '</div><div style="font-size:15px;margin-top:3px">' + f[1] + '</div></div>'; }).join('') + '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:56px"><div style="font-size:13px;color:#5B6472">Gracias por tu generosidad.<div style="font-size:17px;color:#12324F;margin-top:6px;font-weight:700"><span dir="rtl">תודה רבה ותזכו למצוות</span></div></div><div style="width:240px;text-align:center"><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#5B6472;letter-spacing:.1em;text-transform:uppercase">Recibió</div></div></div>' +
+      '</div></div>';
+  }
+  if(est === 'elegante'){
+    var G = 'font-family:Georgia,serif;';
+    return '<div style="width:816px;height:1056px;box-sizing:border-box;padding:44px;background:#FBF8F1;' + F + 'color:#2A2A2A">' +
+      '<div style="border:2px solid #B8903C;padding:6px;border-radius:4px"><div style="border:1px solid #D9C08A;padding:40px 52px;text-align:center;min-height:720px;box-sizing:border-box;position:relative">' +
+        (R.lg ? '<img src="' + R.lg + '" style="height:84px;width:auto">' : '') +
+        '<div style="' + G + 'font-size:34px;color:#12324F;margin-top:12px;letter-spacing:.04em">Recibo de Donativo</div>' +
+        '<div style="display:flex;align-items:center;gap:14px;justify-content:center;margin:10px 0 4px;color:#B8903C"><span style="height:1px;width:90px;background:#B8903C"></span>◆<span style="height:1px;width:90px;background:#B8903C"></span></div>' +
+        '<div style="font-size:13px;color:#6B6B6B">Folio <b style="color:#12324F">' + esc(p.recibo || '') + '</b> · ' + fFecha(p.fecha) + ' · ' + esc(R.emisor) + '</div>' +
+        '<div style="' + G + 'font-size:18px;margin-top:34px;color:#444">Recibimos con gratitud de</div><div style="' + G + 'font-size:30px;color:#12324F;margin-top:6px;font-style:italic">' + esc(R.d.nombre) + '</div>' +
+        '<div style="' + G + 'font-size:18px;margin-top:22px;color:#444">la cantidad de</div><div style="font-size:40px;font-weight:700;color:#12324F;margin-top:4px">' + money(p.montoC, p.moneda) + '</div><div style="' + G + 'font-size:15px;color:#6B6B6B;font-style:italic">' + esc(R.letras) + '</div>' +
+        '<table style="margin:30px auto 0;border-collapse:collapse;font-size:14px;text-align:left">' + R.filas.slice(1).map(function(f){ return '<tr><td style="padding:6px 18px;color:#8A7A55;text-transform:uppercase;font-size:11px;letter-spacing:.12em;text-align:right">' + f[0] + '</td><td style="padding:6px 18px">' + f[1] + '</td></tr>'; }).join('') + '</table>' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:54px"><div style="' + G + 'font-size:20px;color:#B8903C"><span dir="rtl">תודה רבה ותזכו למצוות</span></div><div style="width:230px"><div style="border-top:1px solid #2A2A2A;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#8A7A55;letter-spacing:.12em;text-transform:uppercase">Recibió</div></div></div>' +
+      '</div></div></div>';
+  }
+  // 'tarjeta': moderno con franja lateral y sello
+  return '<div style="width:816px;height:1056px;box-sizing:border-box;padding:56px;background:#EEF2F7;' + F + 'color:#1B2230">' +
+    '<div style="background:#fff;border-radius:22px;overflow:hidden;display:flex;box-shadow:0 10px 30px rgba(18,50,79,.12)">' +
+      '<div style="width:16px;background:linear-gradient(180deg,#12324F,#2E6DA4)"></div>' +
+      '<div style="flex:1;padding:36px 40px;position:relative">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' + (R.lg ? '<img src="' + R.lg + '" style="height:62px;width:auto">' : '<b>Bait Lapletot</b>') + '<div style="background:#12324F;color:#fff;border-radius:999px;padding:8px 18px;font-weight:700;font-size:15px">' + esc(p.recibo || '') + '</div></div>' +
+        '<div style="margin-top:26px;font-size:13px;color:#5B6472">Recibo de donativo · ' + fFecha(p.fecha) + ' · ' + esc(R.emisor) + '</div>' +
+        '<div style="display:flex;align-items:baseline;gap:14px;margin-top:8px"><div style="font-size:46px;font-weight:800;color:#12324F;letter-spacing:-.02em;margin-top:6px">' + money(p.montoC, p.moneda) + '</div></div>' +
+        '<div style="font-size:14px;color:#5B6472">' + esc(R.letras) + '</div>' +
+        '<div style="position:absolute;right:44px;top:96px;transform:rotate(-10deg);border:3px solid #1E8E5A;color:#1E8E5A;border-radius:12px;padding:4px 14px;font-weight:800;font-size:19px;letter-spacing:.12em;opacity:.85">RECIBIDO</div>' +
+        '<div style="margin-top:26px;border-top:1px dashed #C9CED6">' + R.filas.map(function(f){ return '<div style="display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px dashed #E3E6EB"><span style="color:#5B6472;font-size:13px">' + f[0] + '</span><span style="font-size:15px;text-align:right">' + f[1] + '</span></div>'; }).join('') + '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:46px"><div style="font-size:13px;color:#5B6472">¡Gracias por tu apoyo!<div style="font-size:17px;color:#12324F;margin-top:6px;font-weight:700"><span dir="rtl">תודה רבה</span></div></div><div style="width:220px;text-align:center"><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#5B6472;letter-spacing:.1em;text-transform:uppercase">Recibió</div></div></div>' +
+      '</div></div>' +
+    '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:14px">Recibo generado automáticamente · Folio ' + esc(p.recibo || '') + '</div></div>';
 }
 async function reciboPdf(pid, wa){
   var p = (S.donativos || []).find(function(x){ return x.id === pid; }); if(!p){ toast('No encontré ese pago.'); return; }
@@ -3878,12 +3935,34 @@ function catNuevoOk(cat, selId){
 }
 
 /* --- ajustar --- */
+/* --- Corregir gabai solo en algunos meses --- */
+function abrirGabMes(cid){
+  var c = comp(cid), qs = cuotasDe(cid).slice().sort(function(a, b){ return (a.venc || '').localeCompare(b.venc || '') || a.num - b.num; });
+  openModal(head('Corregir gabai por mes', esc(don(c.donanteId).nombre) + ' · ' + c.anio + ' · gabai del compromiso: ' + (c.gabai ? '<span dir="auto">' + esc(c.gabai) + '</span>' : 'sin asignar')) +
+    '<div class="sub">Marca solo los meses que quieres cambiar. Los demás se quedan como están. Los pagos de esos meses también cambian de gabai (comisiones y contabilidad).</div>' +
+    '<div class="row" style="gap:8px;margin:8px 0"><button type="button" class="btn ghost sm" data-a="gmTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="gmNinguno">Quitar todos</button></div>' +
+    '<div class="gmlist">' + qs.map(function(q){ var g = gabQ(q, c), dif = q.gabai != null && q.gabai !== (c.gabai || ''); return '<label class="ck gmrow"><input type="checkbox" data-gmq="' + q.id + '"><span class="gmmes">' + Mes(q.mes) + '</span><span class="gmgab" dir="auto">' + (g ? esc(g) : '<span class="sub">Sin gabai</span>') + '</span>' + (dif ? '<span class="pill t-warn">cambiado</span>' : '') + '<span class="pill ' + EST[estadoQ(q)][1] + '">' + EST[estadoQ(q)][0] + '</span></label>'; }).join('') + '</div>' +
+    '<div class="form" style="margin-top:10px"><label class="f">Nuevo gabai para los meses marcados<select id="gmGab">' + optsGabai(c.gabai || '', false) + '</select></label></div>' +
+    '<div class="err" id="gmErr" hidden></div>' +
+    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="gmSave" data-id="' + cid + '">Guardar cambio</button></div>');
+}
+function gabMesSave(cid){
+  var c = comp(cid), ng = $('gmGab').value, sel = [];
+  document.querySelectorAll('[data-gmq]').forEach(function(x){ if(x.checked) sel.push(x.getAttribute('data-gmq')); });
+  if(!sel.length){ var e = $('gmErr'); e.textContent = 'Marca al menos un mes.'; e.hidden = false; return; }
+  var meses = [], np = 0;
+  sel.forEach(function(id){ var q = S.cuotas.find(function(z){ return z.id === id; }); if(!q) return; if(ng === (c.gabai || '')) delete q.gabai; else q.gabai = ng; meses.push(Mes(q.mes)); });
+  S.donativos.forEach(function(p){ if(p.compId !== c.id || !(p.cubre || []).some(function(y){ return sel.indexOf(y.qid) !== -1; })) return; var g2 = gabPago({cubre: p.cubre}, c); if(p.gabai !== g2){ p.gabai = g2; np++; } });
+  c.ajustes = c.ajustes || []; c.ajustes.push({fecha: hoy(), usuario: user().nombre, desc: 'Gabai de ' + meses.join(', ') + ' cambiado a ' + (ng || 'sin gabai') + (np ? ' (' + np + ' pago' + (np === 1 ? '' : 's') + ' actualizado' + (np === 1 ? '' : 's') + ')' : '')});
+  log('Cambió el gabai de ' + meses.join(', ') + ' de ' + don(c.donanteId).nombre + ' a ' + (ng || 'sin gabai'));
+  closeModal(); render(); toast('Gabai actualizado en ' + meses.length + ' mes' + (meses.length === 1 ? '' : 'es'));
+}
 function abrirAjuste(cid){
   var c = comp(cid), qs = cuotasDe(cid), abiertas = qs.filter(function(q){ return q.aplicadoC === 0; });
   openModal(head('Ajustar compromiso', esc(don(c.donanteId).nombre) + ' · ' + c.anio) +
     '<div class="note" style="background:var(--brand-soft);color:var(--ink)">Para subir o bajar la cuota a partir de un mes usa el botón <b>Editar</b>.</div>' +
     '<div><div class="sub" style="margin-bottom:6px">Meses en pausa (solo cuotas sin pagos)</div>' + (abiertas.length ? abiertas.map(function(q){ return '<label class="ck"><input type="checkbox" data-ajq="' + q.id + '"' + (q.pausada ? ' checked' : '') + '>' + Mes(q.mes) + ' · ' + money(q.montoC, c.moneda) + '</label>'; }).join('') : '<div class="sub">No hay cuotas sin pagos.</div>') + '</div>' +
-    '<div class="form"><label class="f">Gabai<select id="ajGab">' + optsGabai(c.gabai || '', false) + '</select></label><label class="f">Porcentaje comisión<input id="ajCom" inputmode="decimal" value="' + (c.comisionPct || 0) + '"></label><label class="f">Concepto<select id="ajCon">' + (S.conceptos || []).concat(S.conceptos.indexOf(c.concepto) === -1 && c.concepto ? [c.concepto] : []).map(function(x){ return '<option' + (x === c.concepto ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></label></div>' +
+    '<div class="sub" style="margin-top:4px">¿Solo algunos meses? <button type="button" class="back" data-a="gabMes" data-id="' + cid + '">Corregir gabai por mes</button></div><div class="form"><label class="f">Gabai (todo el compromiso)<select id="ajGab">' + optsGabai(c.gabai || '', false) + '</select></label><label class="f">Porcentaje comisión<input id="ajCom" inputmode="decimal" value="' + (c.comisionPct || 0) + '"></label><label class="f">Concepto<select id="ajCon">' + (S.conceptos || []).concat(S.conceptos.indexOf(c.concepto) === -1 && c.concepto ? [c.concepto] : []).map(function(x){ return '<option' + (x === c.concepto ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></label></div>' +
     '<label class="f">Motivo *<input id="ajMot" maxlength="200" placeholder="Ej. el donante pidió bajar su cuota"></label>' +
     '<div class="err" id="ajErr" hidden></div>' +
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="ajSave" data-id="' + cid + '">Guardar ajuste</button></div>');
@@ -3950,7 +4029,7 @@ function cobFilasVisibles(){
     var ps = pagosDeCuota(q).filter(function(p){ return p.ref > 0; }), mons = {}; ps.forEach(function(p){ mons[p.moneda] = (mons[p.moneda] || 0) + p.monto; });
     var mk = Object.keys(mons), rec = mk.length === 1 ? mons[mk[0]] / 100 : null, recTxt = mk.map(function(m){ return money(mons[m], m); }).join(' + ');
     var ref = ps.reduce(function(a, p){ return a + p.ref; }, 0);
-    return {nombre: LANG === 'he' && d.hebreo ? d.hebreo : d.nombre, gabai: c.gabai || '', mes: Mes(q.mes) + ' ' + c.anio, alerta: EST[e][0] + extra, tono: EST[e][1].replace('t-', ''),
+    return {nombre: LANG === 'he' && d.hebreo ? d.hebreo : d.nombre, gabai: gabQ(q, c), mes: Mes(q.mes) + ' ' + c.anio, alerta: EST[e][0] + extra, tono: EST[e][1].replace('t-', ''),
       rec: rec, recMon: mk.length === 1 ? mk[0] : '', recTxt: recTxt || '—', ref: ps.length ? ref / 100 : null, paga: pl.mon, forma: pl.forma || '', caja: pl.caja, cajaN: caja(pl.caja).nombre, avisos: cuentaRecs(q) + '/2', nota: q.nota || ''};
   });
 }
@@ -4448,7 +4527,7 @@ function bkEnviarAprob(){
   plan.forEach(function(p){
     var c = p.r.c, d = don(c.donanteId) || {};
     S.porAprobar.push({id: 'pa' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), estado: 'pendiente', creado: new Date().toISOString(), cobradorId: u.id, cobrador: u.nombre,
-      compId: c.id, qid: p.r.q.id, donante: d.nombre, gabai: c.gabai || '', mes: p.r.q.mes, anio: c.anio, fecha: fecha,
+      compId: c.id, qid: p.r.q.id, donante: d.nombre, gabai: gabQ(p.r.q, c), mes: p.r.q.mes, anio: c.anio, fecha: fecha,
       monto: p.r.monto, mon: p.r.mon, ref: p.r.montoC - p.sobra, forma: p.r.forma, caja: p.r.caja, plan: p.plan.map(function(x){ return {qid: x.q.id, ap: x.ap}; })});
   });
   log('Envió ' + plan.length + ' cobro(s) en bloque para aprobación');
@@ -4612,7 +4691,7 @@ function pdfTabla(titulo, sub, headers, rows, widths){
   var np = doc.internal.getNumberOfPages ? doc.internal.getNumberOfPages() : 1; for(var pi = 1; pi <= np; pi++){ if(doc.setPage) doc.setPage(pi); doc.setFontSize(8); doc.setTextColor(120); doc.text('Bait Lapletot · Página ' + pi + ' de ' + np, W - 40, H - 16, {align: 'right'}); }
   return doc.output('arraybuffer');
 }
-function filasCob(){ return cobFiltradas(true).map(function(q){ var c = comp(q.compId); return [don(c.donanteId).nombre, c.gabai || '', caja(c.caja).nombre, Mes(q.mes) + ' ' + c.anio, fFecha(q.venc), money(q.montoC, c.moneda), money(q.aplicadoC, c.moneda), EST[estadoQ(q)][0] + (falta(q) && q.aplicadoC ? ' (falta ' + money(falta(q), c.moneda) + ')' : ''), c.forma]; }); }
+function filasCob(){ return cobFiltradas(true).map(function(q){ var c = comp(q.compId); return [don(c.donanteId).nombre, gabQ(q, c), caja(c.caja).nombre, Mes(q.mes) + ' ' + c.anio, fFecha(q.venc), money(q.montoC, c.moneda), money(q.aplicadoC, c.moneda), EST[estadoQ(q)][0] + (falta(q) && q.aplicadoC ? ' (falta ' + money(falta(q), c.moneda) + ')' : ''), c.forma]; }); }
 
 /* ================= eventos ================= */
 ['click', 'change', 'input', 'submit', 'keydown'].forEach(function(t){ document.addEventListener(t, function(){ gabEntrar(); }, true); window.addEventListener(t, function(){ gabSalir(); }); });
@@ -4742,6 +4821,9 @@ document.addEventListener('click', function(ev){
     log('Concilió ' + n + ' cargo(s) recurrente(s)'); render(); toast(n + ' cuota(s) marcadas pagadas al conciliar');
   }
   else if(a === 'ajustar') abrirAjuste(id);
+  else if(a === 'gabMes'){ closeModal(); abrirGabMes(id); }
+  else if(a === 'gmSave') gabMesSave(id);
+  else if(a === 'gmTodos' || a === 'gmNinguno'){ document.querySelectorAll('[data-gmq]').forEach(function(x){ x.checked = a === 'gmTodos'; }); }
   else if(a === 'editar') abrirEditar(id);
   else if(a === 'edMes'){ ED.desde = +b.getAttribute('data-m'); document.querySelectorAll('[data-a=edMes]').forEach(function(x){ x.classList.toggle('on', x === b); }); edPrev(); }
   else if(a === 'edSave') edSave();
