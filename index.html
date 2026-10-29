@@ -813,7 +813,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v126</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v127</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3473,6 +3473,50 @@ function reciboHtml(p, est){
     recLeyenda() + '</div>' +
     '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:14px">Recibo generado automáticamente el ' + fFecha(hoy()) + ' · Folio ' + esc(p.recibo || '') + '</div></div>';
 }
+/* --- Estado de cuenta (formato A) y recibo con el mismo formato --- */
+function edoSem(k){ return '<span style="display:inline-flex;gap:2px;padding:2px 3px;border-radius:7px;background:#1B2230;margin-right:7px;vertical-align:middle">' + [0, 1, 2].map(function(i){ return '<i style="width:7px;height:7px;border-radius:50%;display:inline-block;background:' + ((k === 'r' && i === 0) ? '#E5484D' : (k === 'a' && i === 1) ? '#F5B83D' : (k === 'v' && i === 2) ? '#30A46C' : '#3a4252') + '"></i>'; }).join('') + '</span>'; }
+function edoEnc(titulo, sub, derecha){ var lg = logoSrc(); return '<div style="display:flex;align-items:center;gap:18px;padding-bottom:12px;border-bottom:2.5px solid #C9A24A">' + (lg ? '<img src="' + lg + '" style="height:58px">' : '') + '<div style="flex:1;border-left:1px solid #E3E6EB;padding-left:16px"><div style="font-size:21px;font-weight:700;color:#12324F">' + titulo + '</div><div style="color:#5B6472;font-size:12px;margin-top:3px">' + sub + '</div></div><div style="text-align:right;font-size:11px;color:#5B6472">' + derecha + '</div></div>'; }
+function edoKpis(arr){ return '<div style="display:flex;gap:12px;margin:16px 0">' + arr.map(function(k){ return '<div style="flex:1;border:1px solid #E3E6EB;border-radius:10px;padding:10px 14px"><div style="font-size:11px;color:#5B6472;text-transform:uppercase;letter-spacing:.05em">' + k[0] + '</div><div style="font-size:18px;font-weight:700;color:' + (k[2] || '#12324F') + '">' + k[1] + '</div></div>'; }).join('') + '</div>'; }
+var EDO_TH = 'padding:9px 10px;background:#12324F;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.05em;text-align:left', EDO_TD = 'padding:9px 8px;border-bottom:1px solid #E3E6EB;font-size:12.5px;white-space:nowrap';
+function edoM(x, mon){ return x ? money(x, mon) : '<span style="color:#B0B6C0">—</span>'; }
+function edoPill(st){ return '<span style="padding:3px 10px;border-radius:10px;font-size:11.5px;font-weight:600;background:' + st[2] + ';color:' + st[1] + '">' + st[0] + '</span>'; }
+function edoEst(q){ var e = estadoQ(q); return e === 'pagada' || e === 'adelantada' ? ['Recibida', '#1E6B45', '#E6F4EC', 'v'] : e === 'pausada' || e === 'cancelada' ? ['En pausa', '#5B6472', '#EEF0F3', 'g'] : (e === 'vencida' || e === 'conciliar') ? ['Pendiente', '#B42318', '#FDECEA', 'r'] : q.aplicadoC > 0 ? ['Recibida en parte', '#8A5A00', '#FFF4DB', 'a'] : q.venc.slice(0, 7) <= hoy().slice(0, 7) ? ['Pendiente del mes', '#8A5A00', '#FFF4DB', 'a'] : ['Por aportar', '#1F4E79', '#E7F0FA', 'g']; }
+function estadoHtml(c){
+  var d = don(c.donanteId) || {nombre: ''}, qs = cuotasDe(c.id).slice().sort(function(a, b){ return (a.venc || '').localeCompare(b.venc || '') || a.num - b.num; }), ps = S.donativos.filter(function(x){ return x.compId === c.id; }), tM = 0, tU = 0, dado = dadoComp(c);
+  var rows = qs.map(function(q){ var mx = 0, us = 0; ps.forEach(function(x){ var cub = x.cubre || [], tot = cub.reduce(function(a, y){ return a + (y.ap || 0); }, 0) || 1; cub.forEach(function(y){ if(y.qid === q.id){ var part = Math.round(x.montoC * (y.ap || 0) / tot); if(x.moneda === 'MXN') mx += part; else us += part; } }); }); tM += mx; tU += us; return {q: q, mx: mx, us: us, st: edoEst(q)}; });
+  var tb = '<table style="width:100%;border-collapse:collapse"><thead><tr>' + ['Mes', 'Cuota', 'Recibido MXN', 'Recibido USD', 'Estado'].map(function(x, i){ return '<th style="' + EDO_TH + (i >= 1 && i <= 3 ? ';text-align:right' : '') + '">' + x + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    rows.map(function(r, i){ return '<tr style="background:' + (i % 2 ? '#F8F9FB' : '#fff') + '"><td style="' + EDO_TD + '">' + edoSem(r.st[3]) + Mes(r.q.mes) + '</td><td style="' + EDO_TD + ';text-align:right">' + money(r.q.montoC, c.moneda) + '</td><td style="' + EDO_TD + ';text-align:right;font-weight:600">' + edoM(r.mx, 'MXN') + '</td><td style="' + EDO_TD + ';text-align:right;font-weight:600">' + edoM(r.us, 'USD') + '</td><td style="' + EDO_TD + '">' + edoPill(r.st) + '</td></tr>'; }).join('') +
+    '<tr style="background:#EEF2F6;font-weight:700"><td style="' + EDO_TD + '">Total</td><td style="' + EDO_TD + ';text-align:right">' + money(c.anualC, c.moneda) + '</td><td style="' + EDO_TD + ';text-align:right">' + money(tM, 'MXN') + '</td><td style="' + EDO_TD + ';text-align:right">' + money(tU, 'USD') + '</td><td style="' + EDO_TD + '"></td></tr></tbody></table>';
+  var leg = '<div style="margin-top:14px;font-size:11px;color:#5B6472;display:flex;gap:16px;align-items:center">' + edoSem('v') + 'Recibida ' + edoSem('a') + 'En curso / en parte ' + edoSem('r') + 'Pendiente</div>';
+  return '<div style="width:816px;min-height:1056px;box-sizing:border-box;padding:40px;background:#fff;font-family:Inter,Arial,sans-serif;color:#1B2230">' +
+    edoEnc('Estado de cuenta ' + c.anio, esc(d.nombre) + (c.concepto ? ' · ' + esc(c.concepto) : ''), '<b style="color:#12324F;font-size:12px">Bait Lapletot</b><br>Al ' + fFecha(hoy())) +
+    edoKpis([['Compromiso', money(c.anualC, c.moneda)], ['Llevas dado', money(dado, c.moneda)], ['Falta', money(Math.max(0, c.anualC - dado), c.moneda), Math.max(0, c.anualC - dado) ? '#B42318' : '#12324F']]) + tb + leg +
+    '<div style="margin-top:22px;text-align:center;font-size:10.5px;color:#8A93A3">Gracias por tu apoyo a Bait Lapletot · <span dir="rtl">תודה רבה</span></div></div>';
+}
+function reciboEstadoHtml(p){
+  var R = reciboDatos(p), c = R.c, cub = (p.cubre || []), tot = cub.reduce(function(a, y){ return a + (y.ap || 0); }, 0) || 1;
+  var filas = (cub.length ? cub : [{mes: null, ap: 1}]).map(function(y){ var part = Math.round(p.montoC * (y.ap || 0) / tot); return {mes: y.mes ? Mes(y.mes) + (c.anio ? ' ' + c.anio : '') : '—', mx: p.moneda === 'MXN' ? part : 0, us: p.moneda === 'USD' ? part : 0}; });
+  var tb = '<table style="width:100%;border-collapse:collapse"><thead><tr>' + ['Mes que cubre', 'Concepto', 'Forma de pago', 'Recibido MXN', 'Recibido USD'].map(function(x, i){ return '<th style="' + EDO_TH + (i >= 3 ? ';text-align:right' : '') + '">' + x + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    filas.map(function(f, i){ return '<tr style="background:' + (i % 2 ? '#F8F9FB' : '#fff') + '"><td style="' + EDO_TD + '">' + edoSem('v') + esc(f.mes) + '</td><td style="' + EDO_TD + '">' + esc(c.concepto || 'Donativo') + '</td><td style="' + EDO_TD + '">' + esc(p.forma || '') + '</td><td style="' + EDO_TD + ';text-align:right;font-weight:600">' + edoM(f.mx, 'MXN') + '</td><td style="' + EDO_TD + ';text-align:right;font-weight:600">' + edoM(f.us, 'USD') + '</td></tr>'; }).join('') +
+    '<tr style="background:#EEF2F6;font-weight:700"><td style="' + EDO_TD + '" colspan="3">Total recibido</td><td style="' + EDO_TD + ';text-align:right">' + edoM(p.moneda === 'MXN' ? p.montoC : 0, 'MXN') + '</td><td style="' + EDO_TD + ';text-align:right">' + edoM(p.moneda === 'USD' ? p.montoC : 0, 'USD') + '</td></tr></tbody></table>';
+  var kp = [['Recibimos de', '<span style="font-size:16px">' + esc(R.d.nombre) + '</span>'], ['Monto recibido', money(p.montoC, p.moneda)]];
+  if(p.moneda === 'MXN' && p.montoCompC && c.moneda === 'USD') kp.push(['Equivalente', money(p.montoCompC, 'USD')]); else kp.push(['Fecha', fFecha(p.fecha)]);
+  return '<div style="width:816px;height:1056px;box-sizing:border-box;padding:40px;background:#fff;font-family:Inter,Arial,sans-serif;color:#1B2230">' +
+    edoEnc('Recibo de donativo', esc(R.emisor), '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em">Folio</div><div style="font-size:20px;font-weight:800;color:#B42318">' + esc(p.recibo || '') + '</div><div>' + fFecha(p.fecha) + '</div>') +
+    edoKpis(kp) +
+    '<div style="margin:-4px 0 14px;font-size:12.5px;color:#5B6472;font-style:italic">Cantidad con letra: ' + esc(R.letras) + '</div>' + tb +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:56px"><div style="font-size:12px;color:#5B6472">Gracias por tu generosidad y por ser parte de Bait Lapletot.<div style="font-size:15px;color:#12324F;margin-top:6px;font-weight:600"><span dir="rtl">תודה רבה ותזכו למצוות</span></div></div><div style="width:240px;text-align:center"><div style="border-top:1.4px solid #1B2230;padding-top:6px;font-size:12px;font-weight:700">Bait Lapletot</div><div style="font-size:10px;color:#5B6472;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Recibió</div></div></div>' +
+    recLeyenda() + '<div style="text-align:center;font-size:10px;color:#8A93A3;margin-top:12px">Recibo generado automáticamente · Folio ' + esc(p.recibo || '') + '</div></div>';
+}
+async function htmlPdf(html, nombre){
+  var J = window.jspdf && window.jspdf.jsPDF; if(!J){ toast('No se pudo preparar el PDF. Recarga la página.'); return; }
+  toast('Preparando PDF…');
+  try{ await cargarJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', function(){ return !!window.html2canvas; }); }catch(e){ toast('No se pudo preparar el PDF. Revisa tu conexión.'); return; }
+  var box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-20000px;top:0;z-index:-1;background:#fff'; box.innerHTML = html; document.body.appendChild(box);
+  var el = box.firstChild, doc = new J({unit: 'pt', format: 'letter', orientation: 'portrait'}), dw = doc.internal.pageSize.getWidth(), dh = doc.internal.pageSize.getHeight();
+  try{ var cv = await html2canvas(el, {scale: 2, backgroundColor: '#ffffff', logging: false}); var hh = Math.min(dh * 1.6, dw * cv.height / cv.width); doc.addImage(cv.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, dw * Math.min(1, dh / hh), Math.min(dh, hh)); }catch(e){ box.remove(); toast('No se pudo generar el PDF.'); return; }
+  box.remove(); guardar(nombre, doc.output('arraybuffer'));
+}
 var REC_LEYENDA = 'Este recibo no es deducible de impuestos; es solo un comprobante de pago.';
 function recLeyenda(col){ return '<div style="margin-top:26px;padding:10px 14px;border-radius:8px;background:rgba(18,50,79,.05);text-align:center;font-size:11.5px;color:' + (col || '#5B6472') + '">' + REC_LEYENDA + '</div>'; }
 function reciboDatos(p){
@@ -3483,6 +3527,7 @@ function reciboDatos(p){
   return {c: c, d: d, filas: r, lg: logoSrc(), letras: montoLetras(p.montoC, p.moneda), emisor: c.emisor || 'Bait Lapletot'};
 }
 function reciboHtml2(p, est){
+  if(est === 'estado') return reciboEstadoHtml(p);
   var R = reciboDatos(p), F = 'font-family:Inter,Arial,sans-serif;';
   if(est === 'banda'){
     return '<div style="width:816px;height:1056px;box-sizing:border-box;background:#fff;' + F + 'color:#1B2230">' +
@@ -3585,7 +3630,7 @@ function vPortal(){
     '<h2>Tus aportaciones</h2><div class="tw cards"><table><thead><tr><th>Mes</th><th class="n">Monto</th><th>Estado</th></tr></thead><tbody>' +
       qs.map(function(q){ var x = etq(q); return '<tr><td data-l="Mes">' + sem(x[2]) + Mes(q.mes) + '</td><td class="n" data-l="Monto">' + money(q.montoC, c.moneda) + '</td><td data-l="Estado"><span class="pill ' + x[1] + '">' + x[0] + '</span></td></tr>'; }).join('') +
     '</tbody></table></div>' +
-    '<div class="row" style="justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px"><h2>Tus recibos</h2>' + (!esDonante() && user().rol === 'Dirección' ? '<label class="f" style="max-width:220px">Estilo del recibo<select id="recEstilo">' + [['clasico', '1 · Clásico'], ['banda', '2 · Banda azul'], ['elegante', '3 · Elegante'], ['tarjeta', '4 · Tarjeta moderna']].map(function(o){ return '<option value="' + o[0] + '"' + (((S.cfg && S.cfg.recEstilo) || 'clasico') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' : '') + '</div>' + (npend ? '<div class="sub">' + sem('r') + npend + (npend === 1 ? ' mes pendiente' : ' meses pendientes') + '</div>' : '') + (filasRec.length ? '<div class="list">' + filasRec.join('') + '</div>' : '<div class="sub">Aún no hay recibos.</div>') +
+    '<div class="row" style="justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px"><h2>Tus recibos</h2>' + (!esDonante() && user().rol === 'Dirección' ? '<label class="f" style="max-width:220px">Estilo del recibo<select id="recEstilo">' + [['clasico', '1 · Clásico'], ['banda', '2 · Banda azul'], ['elegante', '3 · Elegante'], ['tarjeta', '4 · Tarjeta moderna'], ['estado', '5 · Como estado de cuenta']].map(function(o){ return '<option value="' + o[0] + '"' + (((S.cfg && S.cfg.recEstilo) || 'clasico') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' : '') + '</div>' + (npend ? '<div class="sub">' + sem('r') + npend + (npend === 1 ? ' mes pendiente' : ' meses pendientes') + '</div>' : '') + (filasRec.length ? '<div class="list">' + filasRec.join('') + '</div>' : '<div class="sub">Aún no hay recibos.</div>') +
     '<div class="semleg">' + sem('v') + 'Recibida ' + sem('a') + 'En curso / en parte ' + sem('r') + 'Pendiente vencido</div>' +
     (esDonante() ? '' : '<div class="note">Link personal con token: ' + esc(link('portal', c)) + ' · válido hasta ' + fFecha(addDias(hoy(), 30)) + '</div>') +
     '<div class="acts"><button type="button" class="btn primary" data-a="portalSend" data-id="' + c.id + '">Enviar por WhatsApp o correo</button><button type="button" class="btn ghost" data-a="portalPdf" data-id="' + c.id + '">Descargar PDF</button></div></section>';
@@ -4965,12 +5010,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'donSave') donSave(id);
   else if(a === 'linkOtro'){ ui.link.done = null; render(); }
   else if(a === 'portalSend'){ abrirMensaje('portal', comp(id), [], null, ''); }
-  else if(a === 'portalPdf'){
-    var c5 = comp(id), d5 = don(c5.donanteId), dado = dadoComp(c5);
-    var data = pdfTabla('Estado de cuenta · Bait Lapletot', d5.nombre + ' · compromiso ' + c5.anio + ' · dado ' + money(dado, c5.moneda) + ' de ' + money(c5.anualC, c5.moneda) + ' · al ' + fFecha(hoy()),
-      ['Mes', 'Monto', 'Recibido', 'Estado'], cuotasDe(c5.id).slice().sort(function(x, y){ return (x.venc || '').localeCompare(y.venc || '') || x.num - y.num; }).map(function(q){ var e = estadoQ(q); return [Mes(q.mes), money(q.montoC, c5.moneda), money(q.aplicadoC, c5.moneda), e === 'pagada' || e === 'adelantada' ? 'Recibida' : e === 'pausada' ? 'En pausa' : (e === 'vencida' || e === 'conciliar') ? 'PENDIENTE (vencido)' : q.aplicadoC ? 'Recibida en parte' : 'Por aportar']; }), [2, 2, 2, 2]);
-    if(data) guardar('Estado de cuenta ' + d5.nombre + ' ' + c5.anio + '.pdf', data);
-  }
+  else if(a === 'portalPdf'){ var c5 = comp(id), d5 = don(c5.donanteId); htmlPdf(estadoHtml(c5), 'Estado de cuenta ' + d5.nombre + ' ' + c5.anio + '.pdf'); }
   else if(a === 'expCobXls'){
     xlsHojas('Cobranza ' + hoy() + '.xlsx', [{nombre: 'Cobranza', titulo: 'Cobranza', sub: cobMesTxt(), hdr: ['Donante', 'Gabai', 'Caja', 'Mes', 'Vence', 'Monto', 'Aplicado', 'Estado', 'Forma'], filas: filasCob()}]);
   }
