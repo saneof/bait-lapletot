@@ -810,7 +810,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v120</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v121</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1444,7 +1444,9 @@ function renderNav(){
       (v[0] === 'avisos' && pend ? '<span class="cnt">' + pend + '</span>' : '') + (v[0] === 'aprobar' && porAprobar().length ? '<span class="cnt">' + porAprobar().length + '</span>' : '') + '</button>';
   };
   var usados = {}, cerr = (S.cfg && S.cfg.navCerr) || {};
-  var grupos = NAV_GRUPOS.map(function(g){ var it = todas.filter(function(v){ return g[2].indexOf(v[0]) !== -1; }); it.forEach(function(v){ usados[v[0]] = 1; }); return {id: g[0], nombre: g[1], it: it}; });
+  var esDir = user() && user().rol === 'Dirección', NG = esDir ? NAV_GRUPOS : NAV_GRUPOS.map(function(g){ return g[0] === 'cob' ? [g[0], g[1], g[2].concat(['portal'])] : g[0] === 'aju' ? [g[0], g[1], g[2].filter(function(x){ return x !== 'portal'; })] : g; });
+  document.querySelectorAll('[data-a=sugAbrir],[data-a=pruebaOn]').forEach(function(x){ x.style.display = esDir || esDonante() ? '' : 'none'; });
+  var grupos = NG.map(function(g){ var it = todas.filter(function(v){ return g[2].indexOf(v[0]) !== -1; }); it.forEach(function(v){ usados[v[0]] = 1; }); return {id: g[0], nombre: g[1], it: it}; });
   var otros = todas.filter(function(v){ return !usados[v[0]]; }); if(otros.length) grupos.push({id: 'otr', nombre: 'Otros', it: otros});
   grupos = grupos.filter(function(g){ return g.it.length; });
   var solo = grupos.length === 1;
@@ -3434,7 +3436,14 @@ function vPortal(){
   var d = don(ui.portal.d);
   var cs = S.compromisos.filter(function(c){ return c.donanteId === d.id && c.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; });
   var c = cs[0];
-  var sel = '<label class="f" style="max-width:360px">Ver como donante (prototipo)<select id="portalSel">' + S.donantes.map(function(x){ return '<option value="' + x.id + '"' + (x.id === d.id ? ' selected' : '') + '>' + esc(x.nombre) + '</option>'; }).join('') + '</select></label>';
+  var chip = function(a, v, on, txt){ return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="' + a + '" data-v="' + esc(v) + '">' + txt + '</button>'; };
+  var pgabs = gabPermUsuario() || S.gabaim, pg = ui.portal.gab && pgabs.indexOf(ui.portal.gab) !== -1 ? ui.portal.gab : '';
+  var gabDe = function(x){ var cc = S.compromisos.filter(function(z){ return z.donanteId === x.id && z.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; })[0]; return cc ? (cc.gabai || '') : ''; };
+  var lista = S.donantes.filter(function(x){ return !pg || gabDe(x) === pg; }).sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); });
+  if(pg && lista.length && !lista.some(function(x){ return x.id === d.id; })){ ui.portal.d = lista[0].id; d = lista[0]; cs = S.compromisos.filter(function(c){ return c.donanteId === d.id && c.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; }); c = cs[0]; }
+  var cnt = function(g){ return S.donantes.filter(function(x){ return gabDe(x) === g; }).length; };
+  var sel = (esDonante() ? '' : '<div class="sblock"><div class="sub">Gabai' + (gabPermUsuario() ? ' (los que tienes asignados)' : '') + '</div><div class="chips">' + chip('portalGab', '', !pg, 'Todos <b>' + S.donantes.length + '</b>') + pgabs.map(function(g){ return chip('portalGab', g, pg === g, '<span dir="auto">' + esc(g) + '</span> <b>' + cnt(g) + '</b>'); }).join('') + '</div></div>') +
+    '<label class="f" style="max-width:360px">Ver como donante (' + lista.length + ')<select id="portalSel">' + lista.map(function(x){ return '<option value="' + x.id + '"' + (x.id === d.id ? ' selected' : '') + '>' + esc(x.nombre) + '</option>'; }).join('') + '</select></label>';
   if(!c) return sel + '<section class="panel portal"><div class="empty">Este donante todavía no tiene un compromiso confirmado.</div></section>';
   var dado = dadoComp(c), p = c.anualC ? Math.round(dado / c.anualC * 100) : 0;
   var recs = S.donativos.filter(function(x){ return x.compId === c.id; }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha); });
@@ -4690,6 +4699,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'egSave') egSave();
   else if(a === 'respBajar'){ log('Descargó un respaldo completo'); save(); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: new Date().toISOString(), version: 5, datos: estadoGuardable()}, null, 1); guardar(respNombre() + '.json', new TextEncoder().encode(txt)); }
   else if(a === 'respOk') respAplicar();
+  else if(a === 'portalGab'){ ui.portal.gab = b.getAttribute('data-v') || ''; render(); }
   else if(a === 'respComb'){ if(!RESP) return; var rs = RESP; RESP = null; migrar(rs); var nn = combinarDatos(rs); save(); closeModal(); if(LOGUEADO){ log('Combinó un respaldo: agregó ' + nn + ' donadores'); render(); } else mostrarLogin(); toast(nn ? 'Se agregaron ' + nn + ' donadores que faltaban (lo demás se conservó)' : 'No faltaba nada: todo ya estaba'); }
   else if(a === 'resgRec'){ var rf2 = resgFuente(); if(!rf2) return; var nn2 = combinarDatos(rf2.s); save(); log('Recuperó ' + nn2 + ' donadores desde la copia guardada'); render(); toast('Se recuperaron ' + nn2 + ' donadores'); }
   else if(a === 'respXls'){
