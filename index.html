@@ -4383,13 +4383,15 @@ function pruebaBarra(){
 }
 function pruebaEntrar(){
   try{ localStorage.setItem(PRUEBA_KEY, JSON.stringify(estadoGuardable())); }catch(e){ toast('No se pudo activar el modo prueba.'); return; }
-  pruebaBarra(); toast('Modo prueba activado: lo que cambies no se guardará al salir.');
+  pruebaBarra(); if(NUBE_ON && NB.listo) nbEst('off', '🧪 Modo prueba: no se sube a la nube'); toast('Modo prueba activado: lo que cambies no se sube a la nube ni se guarda al salir.');
 }
 function pruebaSalir(conservar){
   var o = null; try{ o = localStorage.getItem(PRUEBA_KEY); }catch(e){}
   if(!o) return;
-  if(!conservar){ var yo = S.user; S = JSON.parse(o); S.user = yo; save(); }
+  var enNube = NUBE_ON && NB.listo && NB.base;
   try{ localStorage.removeItem(PRUEBA_KEY); }catch(e){}
+  if(!conservar){ var yo = S.user, yoId = (user() || {}).id; S = enNube ? nbClon(NB.base) : JSON.parse(o); migrar(S); var kk = S.usuarios.findIndex(function(u){ return u.id === yoId; }); S.user = kk !== -1 ? kk : yo; try{ localStorage.setItem(KEY, JSON.stringify(Object.assign({}, S, {user: 0}))); }catch(e){} if(enNube){ nbEst('ok'); setTimeout(nbRevisar, 300); } else save(); }
+  else if(enNube){ save(); nbProgramar(); }
   SUG.lista.filter(function(x){ return x.estado === 'prueba'; }).forEach(function(x){ sugSet(x.id, conservar ? {estado: 'aplicada'} : {estado: 'pendiente', cambios: [], resultado: (x.resultado ? 'Probado y descartado. ' + x.resultado : '')}, true).catch(function(){}); });
   closeModal(); render(); pruebaBarra();
   toast(conservar ? 'Cambios de prueba guardados como reales.' : 'Prueba descartada: todo volvió como estaba.');
@@ -5478,7 +5480,7 @@ function nbUnir(base, loc, rem){
   return out;
 }
 async function nbRevisar(){
-  if(!NB.listo || NB.sube) return;
+  if(!NB.listo || NB.sube || enPrueba()) return;
   var fila = null; try{ fila = await nbBajarFila(); }catch(e){ nbEst('err'); return; }
   if(!fila || fila.updated_at === NB.at){ if(NB.estado === 'err') nbEst('ok'); return; }
   var loc = JSON.parse(JSON.stringify(estadoGuardable())); loc.user = 0;
@@ -5490,6 +5492,7 @@ async function nbRevisar(){
 }
 function nbProgramar(){
   if(!NUBE_ON || !NB.listo || !NB.sb) return;
+  if(enPrueba()){ nbEst('off', '🧪 Modo prueba: no se sube a la nube'); return; }
   nbEst('sube'); clearTimeout(NB.t); NB.t = setTimeout(nbSubir, 1500);
 }
 async function nbSubir(){
