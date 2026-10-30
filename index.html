@@ -657,7 +657,29 @@ function aplicarRopa(){
   if(hechos) save();
   return hechos;
 }
-function aplicarIngresosNuevos(){ recEstiloFix(); fixAdopcionNina(); aplicarRopa();
+/* Donativos únicos de donadores nuevos (del Excel). Se aplican una sola vez. */
+var DONATIVOS_NUEVOS = [
+  {nombre: 'Elias Mizrahi Cojab', nom: 'Elias', ape: 'Mizrahi Cojab', gabai: 'שלומה נחמד', pct: 12, f: '2026-10-30', monto: 10000000, mon: 'MXN', tc: 18, concepto: 'Donativo Unico'}
+];
+function aplicarDonativosNuevos(){
+  if(!S || !S.donativos) return 0; S.fixes = S.fixes || {}; var hechos = 0;
+  DONATIVOS_NUEVOS.forEach(function(x){
+    var key = 'donu|' + x.nombre + '|' + x.f + '|' + x.monto; if(S.fixes[key]) return;
+    var d = S.donantes.find(function(z){ return sinAcento(z.nombre) === sinAcento(x.nombre); });
+    if(!d){ d = {id: nid('d'), nom: x.nom, ape: x.ape, nombre: x.nombre, hebreo: '', tel: '', correo: '', idioma: 'es', dir: '', notas: 'Donador nuevo (donativo único)', noEnviar: false}; S.donantes.push(d); }
+    S.fixes[key] = true;
+    if(S.conceptos && S.conceptos.indexOf(x.concepto) === -1) S.conceptos.push(x.concepto);
+    var mes = +x.f.slice(5, 7), cj = x.mon === 'MXN' ? 'MXN' : cajaUsd(x.gabai);
+    var c = crearCompromiso({donanteId: d.id, anio: +x.f.slice(0, 4), modalidad: 'Pago directo', mesIni: mes, anualC: x.monto, cuotaC: x.monto, moneda: x.mon, monPago: x.mon, forma: 'Efectivo', caja: cj, gabai: x.gabai, emisor: x.mon === 'MXN' ? 'Bait Lapletot México' : (cj === 'NY' ? 'Bait Lapletot USA' : (S.emisores || [''])[0]), concepto: x.concepto, comisionPct: x.pct, descripcion: ''});
+    c.estatus = 'activo'; c.fechaInicio = x.f;
+    var q = S.cuotas.find(function(z){ return z.compId === c.id; });
+    var dv = registrarDonativo(c, {fecha: x.f, montoC: x.monto, moneda: x.mon, montoCompC: x.monto, forma: 'Efectivo', caja: cj, plan: q ? [{q: q, ap: x.monto}] : [], obs: x.tc ? 'TC ' + x.tc + ' (≈ ' + money(Math.round(x.monto / x.tc), 'USD') + ')' : ''});
+    hechos++;
+  });
+  if(hechos) save();
+  return hechos;
+}
+function aplicarIngresosNuevos(){ recEstiloFix(); fixAdopcionNina(); aplicarRopa(); aplicarDonativosNuevos();
   if(!S || !S.donativos) return; S.fixes = S.fixes || {}; var hechos = 0;
   INGRESOS_NUEVOS.forEach(function(x){
     var k = 'ing|' + x.n + '|' + x.f + '|' + x.mx + '|' + x.usd; if(S.fixes[k]) return; S.fixes[k] = true;
