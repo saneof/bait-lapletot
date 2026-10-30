@@ -192,6 +192,7 @@ html.nologin .app{display:none}
 .lhead{display:flex;justify-content:center;margin-top:-62px}.lhead .lcard{height:76px;padding:8px 18px;box-shadow:0 8px 20px rgba(0,0,0,.18)}.lhead .lcard img{height:58px}
 .nbest{position:relative;padding-inline:10px}.nbdot{position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-radius:50%;background:#9aa4b2;border:1.5px solid var(--surface,#fff)}.nbest[data-e=ok] .nbdot{background:#1f9d55}.nbest[data-e=sube] .nbdot{background:#d29b00}.nbest[data-e=err] .nbdot{background:#c62828}.lbox .nbnote{font-size:13px;color:var(--muted,#667);text-align:center}
 @media (min-width:900px){main>.top{position:relative;padding-top:40px}main>.top>.row>#whoBox{position:absolute;top:0;right:0;flex-wrap:nowrap}}
+.busca{position:relative;width:100%;min-width:220px}.busca input{width:100%}.buscaLista{position:absolute;z-index:60;left:0;right:0;top:calc(100% + 4px);background:var(--surface,#fff);border:1px solid var(--line,#dde);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:300px;overflow:auto;padding:4px}.buscaLista button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;color:inherit;cursor:pointer}.buscaLista button:hover,.buscaLista button.act{background:var(--brand-soft,#e8eef6)}.buscaLista b{color:var(--brand,#12324F)}.buscaLista .vacio{padding:9px 12px;color:var(--muted,#667)}
 .lbox h1{font-size:24px;text-align:center;margin:4px 0 0}.lgo{min-height:48px;font-size:16px}
 .pwrow{display:flex;gap:8px;align-items:center}.pwrow input{flex:1;min-width:0}
 .lbox .langs{align-self:center}.lbox .langs button[aria-pressed=true]{background:var(--brand);color:#fff}
@@ -5609,6 +5610,48 @@ document.addEventListener('click', function(ev){
   else if(a === 'nbCerrar'){ closeModal(); log('Salió del sistema'); save(); sesionBorrar(); nbSalir(); }
 });
 document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && (ev.target.id === 'nbPw' || ev.target.id === 'nbMail')){ ev.preventDefault(); nbEntrar(); } else if(ev.key === 'Enter' && ev.target.id === 'nbN2' && !$('login').hidden){ ev.preventDefault(); nbGuardaPw(); } });
+
+/* ================= Buscador con sugerencias en las listas de donadores ================= */
+var BUSCA_IDS = ['portalSel', 'donSel', 'segDon', 'cclDon', 'ccDon', 'comDon', 'contDon', 'aprDon', 'bkDon', 'rgDon'];
+function buscaNorm(t){ return sinAcento(String(t || '')).toLowerCase(); }
+function buscaMejorar(){
+  BUSCA_IDS.forEach(function(id){
+    var sel = document.getElementById(id); if(!sel || sel.getAttribute('data-busca')) return;
+    sel.setAttribute('data-busca', '1');
+    var vacia = Array.prototype.find.call(sel.options, function(o){ return o.value === ''; });
+    var w = document.createElement('div'); w.className = 'busca';
+    var inp = document.createElement('input'); inp.type = 'search'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('data-noi18n', '');
+    inp.placeholder = '🔎 Escribe un nombre…' + (vacia ? ' (' + vacia.text.replace(/^—\s*|\s*—$/g, '') + ')' : '');
+    var lst = document.createElement('div'); lst.className = 'buscaLista'; lst.hidden = true; lst.setAttribute('data-noi18n', '');
+    w.appendChild(inp); w.appendChild(lst); sel.parentNode.insertBefore(w, sel); sel.style.display = 'none';
+    var actual = function(){ var o = sel.options[sel.selectedIndex]; return o && o.value !== '' ? o.text : ''; };
+    inp.value = actual();
+    var act = -1, items = [];
+    var elegir = function(v){ lst.hidden = true; if(sel.value !== v){ sel.value = v; sel.dispatchEvent(new Event('change', {bubbles: true})); } inp.value = actual(); };
+    var pintar = function(){
+      var q = buscaNorm(inp.value).trim(), pal = q ? q.split(/\s+/) : [];
+      items = Array.prototype.filter.call(sel.options, function(o){ if(o.value === '') return !q; var t = buscaNorm(o.text); return pal.every(function(p){ return t.indexOf(p) !== -1; }); }).slice(0, 60);
+      act = items.length ? 0 : -1;
+      lst.innerHTML = items.length ? items.map(function(o, k){
+        var t = esc(o.text); if(pal.length){ var n = buscaNorm(o.text), i = n.indexOf(pal[0]); if(i !== -1) t = esc(o.text.slice(0, i)) + '<b>' + esc(o.text.slice(i, i + pal[0].length)) + '</b>' + esc(o.text.slice(i + pal[0].length)); }
+        return '<button type="button" data-k="' + k + '"' + (k === act ? ' class="act"' : '') + '>' + t + '</button>';
+      }).join('') : '<div class="vacio">No hay donadores con “' + esc(inp.value) + '”</div>';
+      lst.hidden = false;
+    };
+    inp.addEventListener('focus', function(){ inp.select(); pintar(); });
+    inp.addEventListener('input', function(e){ e.stopPropagation(); pintar(); });
+    inp.addEventListener('change', function(e){ e.stopPropagation(); });
+    inp.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); if(!items.length) return; act = (act + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length; Array.prototype.forEach.call(lst.children, function(b, k){ b.classList.toggle('act', k === act); if(k === act) b.scrollIntoView({block: 'nearest'}); }); }
+      else if(e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); if(act >= 0 && items[act]) elegir(items[act].value); }
+      else if(e.key === 'Escape'){ lst.hidden = true; inp.value = actual(); inp.blur(); }
+    });
+    lst.addEventListener('mousedown', function(e){ e.preventDefault(); });
+    lst.addEventListener('click', function(e){ e.stopPropagation(); var b = e.target.closest('button[data-k]'); if(b) elegir(items[+b.getAttribute('data-k')].value); });
+    inp.addEventListener('blur', function(){ setTimeout(function(){ lst.hidden = true; if(!inp.value.trim() && vacia && sel.value !== ''){ elegir(''); } else inp.value = actual(); }, 120); });
+  });
+}
+(function(){ var pend = false; new MutationObserver(function(){ if(pend) return; pend = true; Promise.resolve().then(function(){ pend = false; buscaMejorar(); }); }).observe(document.body, {childList: true, subtree: true}); })();
 
 /* ================= inicio ================= */
 S = load() || seed();
