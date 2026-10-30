@@ -190,7 +190,7 @@ html.nologin .app{display:none}
 .login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:linear-gradient(180deg,var(--brand) 0 38%,var(--bg) 38%)}
 .lbox{width:100%;max-width:400px;background:var(--surface);border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.18);padding:26px 22px;display:flex;flex-direction:column;gap:14px}
 .lhead{display:flex;justify-content:center;margin-top:-62px}.lhead .lcard{height:76px;padding:8px 18px;box-shadow:0 8px 20px rgba(0,0,0,.18)}.lhead .lcard img{height:58px}
-.nbest[data-e=ok]{color:#1f7a4d}.nbest[data-e=sube]{color:#9a6a00}.nbest[data-e=err]{color:#b3261e}.lbox .nbnote{font-size:13px;color:var(--muted,#667);text-align:center}
+.nbest{position:relative;padding-inline:10px}.nbdot{position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-radius:50%;background:#9aa4b2;border:1.5px solid var(--surface,#fff)}.nbest[data-e=ok] .nbdot{background:#1f9d55}.nbest[data-e=sube] .nbdot{background:#d29b00}.nbest[data-e=err] .nbdot{background:#c62828}.lbox .nbnote{font-size:13px;color:var(--muted,#667);text-align:center}
 .lbox h1{font-size:24px;text-align:center;margin:4px 0 0}.lgo{min-height:48px;font-size:16px}
 .pwrow{display:flex;gap:8px;align-items:center}.pwrow input{flex:1;min-width:0}
 .lbox .langs{align-self:center}.lbox .langs button[aria-pressed=true]{background:var(--brand);color:#fff}
@@ -200,7 +200,7 @@ html.nologin .app{display:none}
 .lcard{display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:10px;padding:4px 10px;height:46px;box-shadow:0 1px 2px rgba(0,0,0,.15)}.lcard img{height:36px;width:auto;display:block}
 .logo{flex-direction:row!important;align-items:center;gap:10px}.ltxt{display:flex;flex-direction:column;gap:2px}
 .upill{display:none;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;padding:4px 14px 4px 4px;font:inherit;font-size:15px;font-weight:500;cursor:pointer;max-width:60vw}
-.upill span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.av{font-style:normal;width:32px;height:32px;border-radius:50%;background:#F2C230;color:#12324F;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.upill span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.av{font-style:normal;width:32px;height:32px;border-radius:50%;background:#DCE6F2;color:#12324F;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
 .ttl{display:flex;flex-direction:column;gap:2px;min-width:0}.kick{font-size:12.5px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
 .nlink{border:none;background:none;padding:0;font:inherit;font-weight:700;color:var(--ink);cursor:pointer;text-align:left}.nlink:hover{color:var(--brand-2);text-decoration:underline}
 .tabbar{display:none}
@@ -487,7 +487,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
   <main>
     <div class="top">
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
-      <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" hidden>☁️ <span>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
+      <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
     <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v155</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
@@ -4992,7 +4992,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'lgBoot') lgBoot();
   else if(a === 'lgVer'){ var pe = $('lgPw'); pe.type = pe.type === 'password' ? 'text' : 'password'; }
   else if(a === 'lgLang'){ LANG = b.getAttribute('data-l'); try{ localStorage.setItem('bl-ui-lang', LANG); }catch(e){} applyLang(); var uv = $('lgUser') ? $('lgUser').value : ''; mostrarLogin(); if($('lgUser')) $('lgUser').value = uv; }
-  else if(a === 'salir') cerrarSesion();
+  else if(a === 'salir') openModal(head('¿Cerrar sesión?', 'Tendrás que volver a escribir tu usuario y contraseña para entrar.') + '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="salirOk">Sí, cerrar sesión</button></div>');
+  else if(a === 'salirOk'){ closeModal(); cerrarSesion(); }
   else if(a === 'pwMia'){ cerrarMas(); abrirClave(S.user); }
   else if(a === 'pwAsignar') abrirClave(+b.getAttribute('data-k'));
   else if(a === 'pwSave') pwSave(+b.getAttribute('data-k'));
@@ -5277,14 +5278,14 @@ function donSave(did){
 }
 
 /* ================= Nube (Supabase) ================= */
-var NUBE_ON = /vercel\.app$/.test(location.hostname) || /[?&]nube=1/.test(location.search); /* página publicada: con nube */
+var NUBE_ON = /[?&]nube=1/.test(location.search); /* nube apagada: solo con ?nube=1 */
 var SB_URL = 'https://gkqngjxdrjbuaqcxctsi.supabase.co', SB_KEY = 'sb_publishable_TW5O7eRrXgDWuKU_-BGSmQ_AYDI1rMk', NB_ID = 'principal';
 var NB = {sb: null, email: '', uid: '', base: null, at: null, t: null, sube: false, pend: false, listo: false, estado: '', ult: null, canal: null, poll: null};
 var NB_CORREOS = {'saneof27@gmail.com': {rol: 'Dirección'}, 'isaacabud36@gmail.com': {nombre: /isaac/i}};
 function nbClon(x){ return x == null ? x : JSON.parse(JSON.stringify(x)); }
 function nbEst(e, txt){
   NB.estado = e; var b = $('nbEst'); if(!b) return; b.hidden = !NUBE_ON; b.setAttribute('data-e', e);
-  b.querySelector('span').textContent = txt || ({ok: 'Sincronizado', sube: 'Guardando…', err: 'Sin conexión', off: 'Nube'})[e] || 'Nube';
+  b.title = '☁️ ' + (txt || ({ok: 'Sincronizado', sube: 'Guardando…', err: 'Sin conexión', off: 'Nube'})[e] || 'Nube'); b.querySelector('.nbtx').textContent = b.title.replace('☁️ ', ''); b.setAttribute('aria-label', b.title);
 }
 function nbLib(){
   return new Promise(function(ok, no){
@@ -5482,7 +5483,7 @@ async function nbSalir(){
 function nbInfo(){
   var cuando = NB.ult ? new Date(NB.ult).toLocaleString('es-MX') : '—';
   openModal(head('☁️ Nube', 'Tus datos se guardan en la nube y se sincronizan solos') +
-    '<div class="kpis"><div class="kpi"><span>Sesión</span><strong style="font-size:15px">' + esc(NB.email || '—') + '</strong></div><div class="kpi"><span>Estado</span><strong style="font-size:15px">' + esc(($('nbEst') || {textContent: ''}).textContent.replace('☁️', '').trim()) + '</strong></div><div class="kpi"><span>Último guardado</span><strong style="font-size:15px">' + esc(cuando) + '</strong></div></div>' +
+    '<div class="kpis"><div class="kpi"><span>Sesión</span><strong style="font-size:15px">' + esc(NB.email || '—') + '</strong></div><div class="kpi"><span>Estado</span><strong style="font-size:15px">' + esc(($('nbEst') || {title: ''}).title.replace('☁️', '').trim()) + '</strong></div><div class="kpi"><span>Último guardado</span><strong style="font-size:15px">' + esc(cuando) + '</strong></div></div>' +
     '<div class="note">Cada cambio se sube a la nube en 1-2 segundos. Si otra persona cambia algo, aquí se actualiza solo. Si dos personas cambian cosas distintas al mismo tiempo, se juntan ambos cambios.</div>' +
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cerrar</button><button type="button" class="btn ghost" data-a="nbCambiarPw">🔑 Cambiar mi contraseña</button><button type="button" class="btn ghost" data-a="nbAhora">⟳ Sincronizar ahora</button><button type="button" class="btn danger" data-a="nbCerrar">Cerrar sesión de la nube</button></div>');
 }
