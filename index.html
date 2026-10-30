@@ -608,10 +608,15 @@ function egresosEjemplo(s){
 var INGRESOS_NUEVOS = [
   {n: 'Fabiana Elabos', f: '2026-10-28', mes: 10, mx: 6000000, usd: 300000},
   {n: 'Alfonso Cassab', f: '2026-10-28', mes: 10, mx: 1000000, usd: 50000},
-  {n: 'Arie Chicurel', f: '2026-10-28', mes: 10, mx: 2000000, usd: 100000}
+  {n: 'Arie Chicurel', f: '2026-10-28', mes: 10, mx: 2000000, usd: 100000},
+  {n: 'Alberto Shemaria', f: '2026-10-29', mes: 10, mx: 0, usd: 100000},
+  {n: 'Fred Ashkenazi', f: '2026-10-29', mes: 10, mx: 380000, usd: 20000},
+  {n: 'Eduardo/Mauricio Atri', f: '2026-10-30', mes: 10, mx: 10800000, usd: 600000},
+  {n: 'Beto Shamosh', f: '2026-10-30', mes: 10, mx: 5100000, usd: 255000}
 ];
 function recEstiloFix(){ if(!S) return; S.fixes = S.fixes || {}; if(S.fixes.recEst1) return; S.fixes.recEst1 = true; S.cfg = S.cfg || {}; S.cfg.recEstilo = 'estado'; }
 var ROPA_NUEVOS = [
+  ['Daniel/Aaron Achar', 'יצחק עבוד', '2026-10-27', 500000, null, 'MXN'],
   ['Jack Skaba', 'רפה - יצחק עבוד', '2026-03-26', 48000, null], ['Eduardo Zaga', 'כרטיסי- רפה', '2026-09-29', 35000, 0], ['Brian Tulstanu', 'יחידים', '2026-09-29', 35000, 0], ['Leon Rabinovitz', 'יחידים', '2026-09-29', 35000, 0],
   ['Salomon Romano Metta', 'יחידים', '2026-09-29', 35000, 0], ['David Cherem Ades', 'שלומה נחמד', '2026-09-29', 35000, 12], ['Beto Galante', 'כרטיסי- רפה', '2026-09-29', 35000, 0], ['Mony/Eduardo Zaga', 'כרטיסי- רפה', '2026-09-29', 35000, 0],
   ['Isaac Credi', 'כרטיס- יצחק עבוד', '2026-09-29', 35000, 0], ['Isaac Eskenazi', 'כרטיס- יצחק עבוד', '2026-09-29', 35000, 0], ['Jose Chacalo Hilu', 'שלומה נחמד', '2026-09-29', 70000, 12], ['Moy Romano', 'כרטיסי- רפה', '2026-09-29', 50000, 0],
@@ -655,10 +660,10 @@ function aplicarIngresosNuevos(){ recEstiloFix(); fixAdopcionNina(); aplicarRopa
     var d = S.donantes.find(function(z){ return z.nombre === x.n; }); if(!d) return;
     var y = +x.f.slice(0, 4), c = S.compromisos.find(function(z){ return z.donanteId === d.id && z.anio === y && z.origen === 'importado'; }) || S.compromisos.find(function(z){ return z.donanteId === d.id && z.anio === y; }); if(!c) return;
     var ya = S.donativos.some(function(p){ return p.compId === c.id && p.fecha === x.f && p.montoC === (x.mx || x.usd); }); if(ya) return;
-    var q = S.cuotas.find(function(z){ return z.compId === c.id && z.mes === x.mes; });
-    var ap = q ? Math.min(x.usd, Math.max(0, falta(q))) : 0;
+    var qs = S.cuotas.filter(function(z){ return z.compId === c.id && z.mes >= x.mes && falta(z) > 0 && !z.pausada; }).sort(function(a, b){ return a.mes - b.mes; });
+    var rest = x.usd, plan = []; qs.forEach(function(z){ if(rest <= 0) return; var a = Math.min(rest, falta(z)); plan.push({q: z, ap: a}); rest -= a; });
     var o = x.mx ? {fecha: x.f, montoC: x.mx, moneda: 'MXN', montoCompC: x.usd, tc: Math.round(x.mx / x.usd * 10000) / 10000, forma: 'Efectivo', caja: 'MXN'} : {fecha: x.f, montoC: x.usd, moneda: 'USD', montoCompC: x.usd, forma: 'Efectivo', caja: cajaUsd(c.gabai)};
-    o.plan = q && ap > 0 ? [{q: q, ap: ap}] : []; o.obs = '';
+    o.plan = plan; o.obs = '';
     var dv = registrarDonativo(c, o); if(dv && !dv.todos) dv.mesCorr = x.mes; hechos++;
   });
   if(hechos){ save(); try{ log('Se agregaron ' + hechos + ' ingreso(s) nuevos del Excel'); }catch(e){} }
@@ -5392,16 +5397,16 @@ function nbIncluido(loc, rem){
 }
 /* Junta dos versiones sin perder nada: lo de este dispositivo gana si el mismo registro está en los dos */
 function nbUnion(loc, rem){
-  var out = Object.assign({}, rem, loc), J = JSON.stringify;
+  var out = Object.assign({}, loc, rem), J = JSON.stringify;
   Object.keys(out).forEach(function(k){
     var l = loc[k], r = rem[k];
     if(Array.isArray(l) && Array.isArray(r)){
       var conId = l.concat(r).every(function(x){ return x && typeof x === 'object' && x.id != null; });
-      if(conId){ var m = {}, ord = []; r.concat(l).forEach(function(x){ if(!(x.id in m)) ord.push(x.id); m[x.id] = x; }); out[k] = ord.map(function(id){ return m[id]; }); }
+      if(conId){ var m = {}, ord = []; l.concat(r).forEach(function(x){ if(!(x.id in m)) ord.push(x.id); m[x.id] = x; }); out[k] = ord.map(function(id){ return m[id]; }); }
       else if(k === 'bitacora'){ var v = {}, lst = []; l.concat(r).forEach(function(x){ var q = J(x); if(!v[q]){ v[q] = 1; lst.push(x); } }); lst.sort(function(a, c){ return String(c.fecha || '').localeCompare(String(a.fecha || '')); }); out[k] = lst.slice(0, 3000); }
       else { var v2 = {}, l2 = []; l.concat(r).forEach(function(x){ var q = J(x); if(!v2[q]){ v2[q] = 1; l2.push(x); } }); out[k] = l2; }
     } else if(k === 'seq' || k === 'recibo' || k === 'folioEg'){ out[k] = Math.max(+l || 0, +r || 0); }
-    else if(l && r && typeof l === 'object' && typeof r === 'object' && !Array.isArray(l)){ out[k] = Object.assign({}, r, l); }
+    else if(l && r && typeof l === 'object' && typeof r === 'object' && !Array.isArray(l)){ out[k] = Object.assign({}, l, r); }
   });
   return out;
 }
@@ -5429,6 +5434,7 @@ async function nbDespuesLogin(){
   var u = nbUsuario();
   if(u){ document.documentElement.classList.remove('nologin'); entrarComo(u, true); nbEst(NB.at ? 'ok' : 'off', NB.at ? null : 'Nube vacía'); }
   else { mostrarLogin(fila ? 'Tu correo de la nube (' + NB.email + ') no está ligado a un usuario del sistema. Entra con tu usuario y contraseña del sistema.' : ''); }
+  if(fila){ try{ var fx0 = JSON.stringify(S.fixes || {}); aplicarIngresosNuevos(); if(JSON.stringify(S.fixes || {}) !== fx0) subirUnion = true; }catch(e){} }
   if(subirUnion && u){ setTimeout(function(){ nbProgramar(); toast('☁️ Juntando los datos de este dispositivo con la nube…'); }, 400); }
   else if(!fila && u && S.donantes.length){ setTimeout(function(){ nbProgramar(); toast('☁️ Subiendo tus datos a la nube por primera vez…'); }, 400); }
   else if(!fila) setTimeout(function(){ toast('La nube está vacía: carga tu respaldo para subir tus datos.'); }, 600);
@@ -5615,7 +5621,7 @@ function tomarEstado(n){
   S = n; var k = yo ? S.usuarios.findIndex(function(u){ return u.id === yo.id; }) : -1; if(k !== -1) S.user = k;
   if(LOGUEADO){ if(k === -1){ sesionBorrar(); mostrarLogin(); return; } var ae = document.activeElement, editando = ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && $('view').contains(ae); if(!modal && !editando) render(); else if(editando){ var rr = function(){ ae.removeEventListener('blur', rr); setTimeout(function(){ var a3 = document.activeElement; if(!(a3 && /^(INPUT|SELECT|TEXTAREA)$/.test(a3.tagName) && $('view').contains(a3)) && $('modal').hidden) render(); }, 300); }; ae.addEventListener('blur', rr); } }
 }
-aplicarIngresosNuevos();
+if(!NUBE_ON) aplicarIngresosNuevos();
 if(NUBE_ON) nbIniciar(); else (function(){ var ses = sesionLeer(), u = ses && S.usuarios.find(function(x){ return x.id === ses.uid; });
   if(u && u.pw && !u.inactivo){ S.user = S.usuarios.indexOf(u); LOGUEADO = true; render(); } else { applyLang(); mostrarLogin(); } })();
 })();
