@@ -5277,7 +5277,7 @@ function donSave(did){
 }
 
 /* ================= Nube (Supabase) ================= */
-var NUBE_ON = false; /* la página de prueba lo enciende */
+var NUBE_ON = /vercel\.app$/.test(location.hostname) || /[?&]nube=1/.test(location.search); /* página publicada: con nube */
 var SB_URL = 'https://gkqngjxdrjbuaqcxctsi.supabase.co', SB_KEY = 'sb_publishable_TW5O7eRrXgDWuKU_-BGSmQ_AYDI1rMk', NB_ID = 'principal';
 var NB = {sb: null, email: '', uid: '', base: null, at: null, t: null, sube: false, pend: false, listo: false, estado: '', ult: null, canal: null, poll: null};
 var NB_CORREOS = {'saneof27@gmail.com': {rol: 'Dirección'}, 'isaacabud36@gmail.com': {nombre: /isaac/i}};
@@ -5295,9 +5295,12 @@ function nbLib(){
 }
 async function nbIniciar(){
   applyLang();
-  try{ await nbLib(); }catch(e){ nbLoginPantalla('No se pudo conectar con la nube. Revisa tu internet y vuelve a abrir la página.'); return; }
-  NB.sb = window.supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: true, autoRefreshToken: true}});
+  try{ await nbLib(); }catch(e){ NB.sb = null; mostrarLogin('Sin conexión con la nube: entras solo con los datos de este dispositivo. Al regresar el internet, vuelve a abrir la página.'); return; }
+  var esRec = /type=recovery/.test(location.hash) || /type=recovery/.test(location.search);
+  NB.sb = window.supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
+  NB.sb.auth.onAuthStateChange(function(ev){ if(ev === 'PASSWORD_RECOVERY') nbNuevaPantalla(); });
   var r = await NB.sb.auth.getSession(); var ses = r && r.data && r.data.session;
+  if(esRec && ses && ses.user){ NB.email = (ses.user.email || '').toLowerCase(); NB.uid = ses.user.id; nbNuevaPantalla(); return; }
   if(ses && ses.user){ NB.email = (ses.user.email || '').toLowerCase(); NB.uid = ses.user.id; await nbDespuesLogin(); }
   else nbLoginPantalla();
 }
@@ -5305,20 +5308,72 @@ function nbLoginPantalla(msg){
   LOGUEADO = false;
   $('login').innerHTML = '<div class="lbox"><div class="lhead"><span class="lcard">' + document.querySelector('.lcard').innerHTML + '</span></div>' +
     '<h1>Entrar</h1><div class="nbnote">☁️ Versión en la nube · tus datos se sincronizan entre tus dispositivos</div>' +
-    '<label class="f">Correo<input id="nbMail" type="email" autocomplete="username" autocapitalize="none" spellcheck="false"></label>' +
+    '<label class="f">Usuario o correo<input id="nbMail" type="text" autocomplete="username" autocapitalize="none" spellcheck="false"></label>' +
     '<label class="f">Contraseña<span class="pwrow"><input id="nbPw" type="password" autocomplete="current-password"><button type="button" class="back" data-a="nbVer">Ver</button></span></label>' +
     '<div class="err" id="nbErr"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</div>' +
-    '<button type="button" class="btn primary lgo" data-a="nbEntrar">Entrar</button></div>';
+    '<button type="button" class="btn primary lgo" data-a="nbEntrar">Entrar</button>' +
+    '<button type="button" class="btn ghost" data-a="nbOlvide">¿Olvidaste tu contraseña?</button></div>';
   document.documentElement.classList.add('nologin'); $('login').hidden = false;
   setTimeout(function(){ if($('nbMail')) $('nbMail').focus(); }, 30);
 }
+
+function nbNuevaPantalla(msg){
+  LOGUEADO = false;
+  $('login').innerHTML = '<div class="lbox"><div class="lhead"><span class="lcard">' + document.querySelector('.lcard').innerHTML + '</span></div>' +
+    '<h1>Crea tu contraseña</h1><div class="nbnote">' + esc(NB.email || '') + '</div>' +
+    '<label class="f">Nueva contraseña<input id="nbN1" type="password" autocomplete="new-password"></label>' +
+    '<label class="f">Repite la contraseña<input id="nbN2" type="password" autocomplete="new-password"></label>' +
+    '<div class="err" id="nbErr"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</div>' +
+    '<button type="button" class="btn primary lgo" data-a="nbGuardaPw">Guardar y entrar</button></div>';
+  document.documentElement.classList.add('nologin'); $('login').hidden = false;
+  try{ history.replaceState(null, '', location.pathname); }catch(e){}
+  setTimeout(function(){ if($('nbN1')) $('nbN1').focus(); }, 30);
+}
+function nbPwValida(a, b){ if((a || '').length < 8) return 'Mínimo 8 caracteres.'; if(a !== b) return 'Las contraseñas no coinciden.'; return ''; }
+async function nbGuardaPw(){
+  var a = $('nbN1').value, b2 = $('nbN2').value, err = $('nbErr'), m = nbPwValida(a, b2);
+  if(m){ err.textContent = m; err.hidden = false; return; }
+  var r = await NB.sb.auth.updateUser({password: a});
+  if(r.error){ err.textContent = 'No se pudo guardar: ' + r.error.message; err.hidden = false; return; }
+  var u = r.data && r.data.user; if(u){ NB.email = (u.email || NB.email).toLowerCase(); NB.uid = u.id; }
+  toast('Contraseña guardada 🔑'); await nbDespuesLogin();
+}
+async function nbOlvide(){
+  var m = nbCorreoDe($('nbMail').value), err = $('nbErr');
+  if(!m || m.indexOf('@') < 1){ err.textContent = 'Escribe arriba tu usuario o correo y vuelve a picar "¿Olvidaste tu contraseña?".'; err.hidden = false; $('nbMail').focus(); return; }
+  var r = await NB.sb.auth.resetPasswordForEmail(m, {redirectTo: location.origin + location.pathname});
+  if(r.error){ err.textContent = /rate|seconds/i.test(r.error.message) ? 'Ya se mandó un correo hace poco. Espera unos minutos y revisa tu bandeja (y spam).' : 'No se pudo mandar el correo: ' + r.error.message; err.hidden = false; return; }
+  err.hidden = true; $('login').querySelector('.nbnote').innerHTML = '📧 Te mandamos un correo a <b>' + esc(m) + '</b>. Ábrelo en este dispositivo y pica el enlace para crear tu nueva contraseña. Revisa también spam.';
+  toast('Correo enviado a ' + m);
+}
+function nbCambiarPw(){
+  openModal(head('🔑 Cambiar mi contraseña', NB.email) +
+    '<label class="f">Nueva contraseña<input id="nbN1" type="password" autocomplete="new-password"></label><label class="f">Repite la contraseña<input id="nbN2" type="password" autocomplete="new-password"></label>' +
+    '<div class="err" id="nbErr" hidden></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="nbCambiaOk">Guardar contraseña</button></div>');
+}
+async function nbCambiaOk(){
+  var a = $('nbN1').value, b2 = $('nbN2').value, err = $('nbErr'), m = nbPwValida(a, b2);
+  if(m){ err.textContent = m; err.hidden = false; return; }
+  var r = await NB.sb.auth.updateUser({password: a});
+  if(r.error){ err.textContent = 'No se pudo guardar: ' + r.error.message; err.hidden = false; return; }
+  closeModal(); toast('Contraseña cambiada 🔑');
+}
+function nbCorreoDe(t){
+  t = (t || '').trim().toLowerCase(); if(!t || t.indexOf('@') > 0) return t;
+  var u = (S.usuarios || []).find(function(x){ return loginDe(x) === sinAcento(t) || sinAcento(x.nombre || '') === sinAcento(t); });
+  if(u && u.email) return u.email.toLowerCase();
+  var hit = ''; Object.keys(NB_CORREOS).forEach(function(c){ var r = NB_CORREOS[c]; if(u && ((r.rol && u.rol === r.rol) || (r.nombre && r.nombre.test(u.nombre || '')))) hit = c; });
+  if(!hit && /^salo/.test(t)) hit = 'saneof27@gmail.com'; if(!hit && /isaac/.test(t)) hit = 'isaacabud36@gmail.com';
+  return hit;
+}
 async function nbEntrar(){
-  var m = ($('nbMail').value || '').trim().toLowerCase(), pw = $('nbPw').value, err = $('nbErr'), bt = document.querySelector('[data-a=nbEntrar]');
+  var m = nbCorreoDe($('nbMail').value), pw = $('nbPw').value, err = $('nbErr'), bt = document.querySelector('[data-a=nbEntrar]');
   var fallo = function(t){ err.textContent = t; err.hidden = false; if(bt){ bt.disabled = false; bt.textContent = 'Entrar'; } };
-  if(!m || !pw) return fallo('Escribe tu correo y contraseña.');
+  if(!$('nbMail').value.trim() || !pw) return fallo('Escribe tu usuario y contraseña.');
+  if(!m) return fallo('Ese usuario no está ligado a un correo. Escribe tu correo.');
   if(bt){ bt.disabled = true; bt.textContent = 'Entrando…'; }
   var r = await NB.sb.auth.signInWithPassword({email: m, password: pw});
-  if(r.error) return fallo(/invalid/i.test(r.error.message) ? 'Correo o contraseña incorrectos.' : 'No se pudo entrar: ' + r.error.message);
+  if(r.error) return fallo(/invalid/i.test(r.error.message) ? 'Usuario o contraseña incorrectos. Si no la recuerdas, pica "¿Olvidaste tu contraseña?".' : 'No se pudo entrar: ' + r.error.message);
   NB.email = (r.data.user.email || m).toLowerCase(); NB.uid = r.data.user.id; await nbDespuesLogin();
 }
 async function nbBajarFila(){
@@ -5338,7 +5393,8 @@ async function nbDespuesLogin(){
   var u = nbUsuario();
   if(u){ document.documentElement.classList.remove('nologin'); entrarComo(u, true); nbEst(NB.at ? 'ok' : 'off', NB.at ? null : 'Nube vacía'); }
   else { mostrarLogin(fila ? 'Tu correo de la nube (' + NB.email + ') no está ligado a un usuario del sistema. Entra con tu usuario y contraseña del sistema.' : ''); }
-  if(!fila) setTimeout(function(){ toast('La nube está vacía: carga tu respaldo para subir tus datos.'); }, 600);
+  if(!fila && u && S.donantes.length){ setTimeout(function(){ nbProgramar(); toast('☁️ Subiendo tus datos a la nube por primera vez…'); }, 400); }
+  else if(!fila) setTimeout(function(){ toast('La nube está vacía: carga tu respaldo para subir tus datos.'); }, 600);
 }
 function nbUsuario(forzar){
   var us = (S.usuarios || []).filter(function(u){ return !u.inactivo; });
@@ -5428,17 +5484,21 @@ function nbInfo(){
   openModal(head('☁️ Nube', 'Tus datos se guardan en la nube y se sincronizan solos') +
     '<div class="kpis"><div class="kpi"><span>Sesión</span><strong style="font-size:15px">' + esc(NB.email || '—') + '</strong></div><div class="kpi"><span>Estado</span><strong style="font-size:15px">' + esc(($('nbEst') || {textContent: ''}).textContent.replace('☁️', '').trim()) + '</strong></div><div class="kpi"><span>Último guardado</span><strong style="font-size:15px">' + esc(cuando) + '</strong></div></div>' +
     '<div class="note">Cada cambio se sube a la nube en 1-2 segundos. Si otra persona cambia algo, aquí se actualiza solo. Si dos personas cambian cosas distintas al mismo tiempo, se juntan ambos cambios.</div>' +
-    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cerrar</button><button type="button" class="btn ghost" data-a="nbAhora">⟳ Sincronizar ahora</button><button type="button" class="btn danger" data-a="nbCerrar">Cerrar sesión de la nube</button></div>');
+    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cerrar</button><button type="button" class="btn ghost" data-a="nbCambiarPw">🔑 Cambiar mi contraseña</button><button type="button" class="btn ghost" data-a="nbAhora">⟳ Sincronizar ahora</button><button type="button" class="btn danger" data-a="nbCerrar">Cerrar sesión de la nube</button></div>');
 }
 document.addEventListener('click', function(ev){
   var b = ev.target.closest && ev.target.closest('[data-a]'); if(!b) return; var a = b.getAttribute('data-a');
   if(a === 'nbEntrar'){ ev.preventDefault(); nbEntrar(); }
   else if(a === 'nbVer'){ var i = $('nbPw'); if(i){ i.type = i.type === 'password' ? 'text' : 'password'; b.textContent = i.type === 'password' ? 'Ver' : 'Ocultar'; } }
   else if(a === 'nbInfo'){ nbInfo(); }
+  else if(a === 'nbOlvide'){ ev.preventDefault(); nbOlvide(); }
+  else if(a === 'nbGuardaPw'){ ev.preventDefault(); nbGuardaPw(); }
+  else if(a === 'nbCambiarPw'){ nbCambiarPw(); }
+  else if(a === 'nbCambiaOk'){ nbCambiaOk(); }
   else if(a === 'nbAhora'){ closeModal(); nbRevisar().then(function(){ nbProgramar(); toast('Sincronizado'); }); }
   else if(a === 'nbCerrar'){ closeModal(); log('Salió del sistema'); save(); sesionBorrar(); nbSalir(); }
 });
-document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && (ev.target.id === 'nbPw' || ev.target.id === 'nbMail')){ ev.preventDefault(); nbEntrar(); } });
+document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && (ev.target.id === 'nbPw' || ev.target.id === 'nbMail')){ ev.preventDefault(); nbEntrar(); } else if(ev.key === 'Enter' && ev.target.id === 'nbN2' && !$('login').hidden){ ev.preventDefault(); nbGuardaPw(); } });
 
 /* ================= inicio ================= */
 S = load() || seed();
