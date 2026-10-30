@@ -191,6 +191,7 @@ html.nologin .app{display:none}
 .lbox{width:100%;max-width:400px;background:var(--surface);border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.18);padding:26px 22px;display:flex;flex-direction:column;gap:14px}
 .lhead{display:flex;justify-content:center;margin-top:-62px}.lhead .lcard{height:76px;padding:8px 18px;box-shadow:0 8px 20px rgba(0,0,0,.18)}.lhead .lcard img{height:58px}
 .nbest{position:relative;padding-inline:10px}.nbdot{position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-radius:50%;background:#9aa4b2;border:1.5px solid var(--surface,#fff)}.nbest[data-e=ok] .nbdot{background:#1f9d55}.nbest[data-e=sube] .nbdot{background:#d29b00}.nbest[data-e=err] .nbdot{background:#c62828}.lbox .nbnote{font-size:13px;color:var(--muted,#667);text-align:center}
+@media (min-width:900px){main>.top{position:relative;padding-top:40px}main>.top>.row>#whoBox{position:absolute;top:0;right:0;flex-wrap:nowrap}}
 .lbox h1{font-size:24px;text-align:center;margin:4px 0 0}.lgo{min-height:48px;font-size:16px}
 .pwrow{display:flex;gap:8px;align-items:center}.pwrow input{flex:1;min-width:0}
 .lbox .langs{align-self:center}.lbox .langs button[aria-pressed=true]{background:var(--brand);color:#fff}
@@ -5278,7 +5279,7 @@ function donSave(did){
 }
 
 /* ================= Nube (Supabase) ================= */
-var NUBE_ON = /[?&]nube=1/.test(location.search); /* nube apagada: solo con ?nube=1 */
+var NUBE_ON = /vercel\.app$/.test(location.hostname) || /[?&]nube=1/.test(location.search); /* página publicada: con nube */
 var SB_URL = 'https://gkqngjxdrjbuaqcxctsi.supabase.co', SB_KEY = 'sb_publishable_TW5O7eRrXgDWuKU_-BGSmQ_AYDI1rMk', NB_ID = 'principal';
 var NB = {sb: null, email: '', uid: '', base: null, at: null, t: null, sube: false, pend: false, listo: false, estado: '', ult: null, canal: null, poll: null};
 var NB_CORREOS = {'saneof27@gmail.com': {rol: 'Dirección'}, 'isaacabud36@gmail.com': {nombre: /isaac/i}};
@@ -5377,6 +5378,30 @@ async function nbEntrar(){
   if(r.error) return fallo(/invalid/i.test(r.error.message) ? 'Usuario o contraseña incorrectos. Si no la recuerdas, pica "¿Olvidaste tu contraseña?".' : 'No se pudo entrar: ' + r.error.message);
   NB.email = (r.data.user.email || m).toLowerCase(); NB.uid = r.data.user.id; await nbDespuesLogin();
 }
+
+function nbTieneAlgo(x){ return x && ['donantes', 'compromisos', 'donativos', 'cuotas', 'egresos'].some(function(k){ return Array.isArray(x[k]) && x[k].length; }); }
+/* ¿Todo lo de este dispositivo ya está en la nube? (mismos ids) */
+function nbIncluido(loc, rem){
+  return ['donantes', 'compromisos', 'cuotas', 'donativos', 'egresos', 'reglas', 'usuarios'].every(function(k){
+    var ids = {}; (rem[k] || []).forEach(function(x){ if(x && x.id != null) ids[x.id] = JSON.stringify(x); });
+    return (loc[k] || []).every(function(x){ return !x || x.id == null || ids[x.id] === JSON.stringify(x); });
+  });
+}
+/* Junta dos versiones sin perder nada: lo de este dispositivo gana si el mismo registro está en los dos */
+function nbUnion(loc, rem){
+  var out = Object.assign({}, rem, loc), J = JSON.stringify;
+  Object.keys(out).forEach(function(k){
+    var l = loc[k], r = rem[k];
+    if(Array.isArray(l) && Array.isArray(r)){
+      var conId = l.concat(r).every(function(x){ return x && typeof x === 'object' && x.id != null; });
+      if(conId){ var m = {}, ord = []; r.concat(l).forEach(function(x){ if(!(x.id in m)) ord.push(x.id); m[x.id] = x; }); out[k] = ord.map(function(id){ return m[id]; }); }
+      else if(k === 'bitacora'){ var v = {}, lst = []; l.concat(r).forEach(function(x){ var q = J(x); if(!v[q]){ v[q] = 1; lst.push(x); } }); lst.sort(function(a, c){ return String(c.fecha || '').localeCompare(String(a.fecha || '')); }); out[k] = lst.slice(0, 3000); }
+      else { var v2 = {}, l2 = []; l.concat(r).forEach(function(x){ var q = J(x); if(!v2[q]){ v2[q] = 1; l2.push(x); } }); out[k] = l2; }
+    } else if(k === 'seq' || k === 'recibo' || k === 'folioEg'){ out[k] = Math.max(+l || 0, +r || 0); }
+    else if(l && r && typeof l === 'object' && typeof r === 'object' && !Array.isArray(l)){ out[k] = Object.assign({}, r, l); }
+  });
+  return out;
+}
 async function nbBajarFila(){
   var r = await NB.sb.from('estado').select('data, updated_at').eq('id', NB_ID).maybeSingle();
   if(r.error) throw r.error; return r.data;
@@ -5385,16 +5410,23 @@ async function nbDespuesLogin(){
   $('login').innerHTML = '<div class="lbox"><h1>Cargando datos…</h1><div class="nbnote">☁️ Trayendo la información de la nube</div></div>';
   var fila = null;
   try{ fila = await nbBajarFila(); }catch(e){ nbLoginPantalla('No se pudieron leer los datos de la nube: ' + (e.message || e)); return; }
+  var subirUnion = false;
   if(fila && fila.data && Array.isArray(fila.data.usuarios)){
-    var n = fila.data; migrar(n); S = n; NB.base = nbClon(fila.data); NB.at = fila.updated_at; NB.ult = fila.updated_at;
-    try{ localStorage.setItem(KEY, JSON.stringify(Object.assign({}, S, {user: 0}))); }catch(e){}
+    var n = fila.data; migrar(n); NB.base = nbClon(fila.data); NB.at = fila.updated_at; NB.ult = fila.updated_at;
+    var loc = null; try{ loc = JSON.parse(JSON.stringify(estadoGuardable())); }catch(e){}
+    if(loc && nbTieneAlgo(loc) && !nbIncluido(loc, n)){
+      try{ localStorage.setItem(KEY + '-antes-nube', JSON.stringify(loc)); }catch(e){}
+      n = nbUnion(loc, n); migrar(n); subirUnion = true;
+    }
+    S = n; try{ localStorage.setItem(KEY, JSON.stringify(Object.assign({}, S, {user: 0}))); }catch(e){}
   } else { NB.base = null; NB.at = null; }
   NB.listo = true; nbEst(fila ? 'ok' : 'off', fila ? null : 'Nube vacía');
   nbEscuchar();
   var u = nbUsuario();
   if(u){ document.documentElement.classList.remove('nologin'); entrarComo(u, true); nbEst(NB.at ? 'ok' : 'off', NB.at ? null : 'Nube vacía'); }
   else { mostrarLogin(fila ? 'Tu correo de la nube (' + NB.email + ') no está ligado a un usuario del sistema. Entra con tu usuario y contraseña del sistema.' : ''); }
-  if(!fila && u && S.donantes.length){ setTimeout(function(){ nbProgramar(); toast('☁️ Subiendo tus datos a la nube por primera vez…'); }, 400); }
+  if(subirUnion && u){ setTimeout(function(){ nbProgramar(); toast('☁️ Juntando los datos de este dispositivo con la nube…'); }, 400); }
+  else if(!fila && u && S.donantes.length){ setTimeout(function(){ nbProgramar(); toast('☁️ Subiendo tus datos a la nube por primera vez…'); }, 400); }
   else if(!fila) setTimeout(function(){ toast('La nube está vacía: carga tu respaldo para subir tus datos.'); }, 600);
 }
 function nbUsuario(forzar){
