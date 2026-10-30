@@ -3617,18 +3617,20 @@ function recMenu(id, cls){ return '<details class="recmenu' + (cls ? ' ' + cls :
 function recBtns(x){ return '<span class="recbtns"><button type="button" class="btn ghost sm icov" data-a="recVer" data-id="' + x.id + '" aria-label="Ver recibo">' + ICO_VER + '</button>' + recMenu(x.id) + '<button type="button" class="btn sm recwa" data-a="recWa" data-id="' + x.id + '">WhatsApp</button></span>'; }
 function vPortal(){
   if(!S.donantes.length) return '<section class="panel"><div class="empty">No hay donadores para mostrar.</div></section>';
-  if(!ui.portal.d || !don(ui.portal.d)) ui.portal.d = S.donantes[0].id;
-  var d = don(ui.portal.d);
-  var cs = S.compromisos.filter(function(c){ return c.donanteId === d.id && c.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; });
+  if(ui.portal.d && !don(ui.portal.d)) ui.portal.d = null;
+  if(!ui.portal.d && esDonante()) ui.portal.d = S.donantes[0].id;
+  var d = ui.portal.d ? don(ui.portal.d) : null;
+  var cs = !d ? [] : S.compromisos.filter(function(c){ return c.donanteId === d.id && c.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; });
   var c = cs[0];
   var chip = function(a, v, on, txt){ return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="' + a + '" data-v="' + esc(v) + '">' + txt + '</button>'; };
   var pgabs = gabPermUsuario() || S.gabaim, pg = ui.portal.gab && pgabs.indexOf(ui.portal.gab) !== -1 ? ui.portal.gab : '';
   var gabDe = function(x){ var cc = S.compromisos.filter(function(z){ return z.donanteId === x.id && z.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; })[0]; return cc ? (cc.gabai || '') : ''; };
   var lista = S.donantes.filter(function(x){ return !pg || gabDe(x) === pg; }).sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); });
-  if(pg && lista.length && !lista.some(function(x){ return x.id === d.id; })){ ui.portal.d = lista[0].id; d = lista[0]; cs = S.compromisos.filter(function(c){ return c.donanteId === d.id && c.estatus !== 'por confirmar'; }).sort(function(a, b){ return b.anio - a.anio; }); c = cs[0]; }
+  if(d && pg && !lista.some(function(x){ return x.id === d.id; })){ ui.portal.d = null; d = null; cs = []; c = null; }
   var cnt = function(g){ return S.donantes.filter(function(x){ return gabDe(x) === g; }).length; };
   var sel = (esDonante() ? '' : '<div class="sblock"><div class="sub">Gabai' + (gabPermUsuario() ? ' (los que tienes asignados)' : '') + '</div><div class="chips">' + chip('portalGab', '', !pg, 'Todos <b>' + S.donantes.length + '</b>') + pgabs.map(function(g){ return chip('portalGab', g, pg === g, '<span dir="auto">' + esc(g) + '</span> <b>' + cnt(g) + '</b>'); }).join('') + '</div></div>') +
-    '<label class="f" style="max-width:360px">Ver como donante (' + lista.length + ')<select id="portalSel">' + lista.map(function(x){ return '<option value="' + x.id + '"' + (x.id === d.id ? ' selected' : '') + '>' + esc(x.nombre) + '</option>'; }).join('') + '</select></label>';
+    '<label class="f" style="max-width:360px">Ver como donante (' + lista.length + ')<select id="portalSel"><option value=""' + (d ? '' : ' selected') + '>— Elige un donador —</option>' + lista.map(function(x){ return '<option value="' + x.id + '"' + (d && x.id === d.id ? ' selected' : '') + '>' + esc(x.nombre) + '</option>'; }).join('') + '</select></label>';
+  if(!d) return sel + '<section class="panel portal"><div class="empty">🔎 Elige o busca un donador arriba para ver su estado de cuenta.</div></section>';
   if(!c) return sel + '<section class="panel portal"><div class="empty">Este donante todavía no tiene un compromiso confirmado.</div></section>';
   var dado = dadoComp(c), p = c.anualC ? Math.round(dado / c.anualC * 100) : 0;
   var recs = S.donativos.filter(function(x){ return x.compId === c.id; }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha); });
@@ -4817,7 +4819,7 @@ document.addEventListener('click', function(ev){
   if(a === 'tabOrdReset'){ S.cfg = S.cfg || {}; delete S.cfg.tabs; save(); render(); tabOrdRefrescar(); toast('Pestañas en el orden original'); return; }
   if(a === 'navOcultar'){ if(esMovil()){ navAbrir(false); return; } S.cfg = S.cfg || {}; S.cfg.nav = 'oculto'; save(); navAplicar(); return; }
   if(a === 'navMostrar'){ if(esMovil()){ navAbrir(true); return; } S.cfg = S.cfg || {}; S.cfg.nav = 'compacto'; save(); navAplicar(); return; }
-  if(a === 'go'){ if(esMovil()) navAbrir(false); ui.view = b.getAttribute('data-v'); cobLimpiar(); if(ui.view === 'conta') ui.cont = null; if(ui.view === 'compromisos') ui.comp.sel = null; render(); window.scrollTo(0, 0); }
+  if(a === 'go'){ if(esMovil()) navAbrir(false); ui.view = b.getAttribute('data-v'); cobLimpiar(); if(!esDonante()) ui.portal.d = null; if(ui.view === 'conta') ui.cont = null; if(ui.view === 'compromisos') ui.comp.sel = null; render(); window.scrollTo(0, 0); }
   else if(a === 'close') closeModal();
   else if(a === 'rgCAll'){ ui.cont.rv = true; ui.cont.rc = []; render(); }
   else if(a === 'rgC'){ ui.cont.rv = true; var rcv = b.getAttribute('data-c'), rca = ui.cont.rc = ui.cont.rc || [], rci = rca.indexOf(rcv); if(rci === -1) rca.push(rcv); else rca.splice(rci, 1); render(); }
@@ -5239,7 +5241,7 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'avQ' || t.id === 'avGab' || t.id === 'avCon'){ if((ui[t.id] || '') === t.value) return; ui[t.id] = t.value; if(t.id === 'avQ'){ clearTimeout(AVQ_T); setTimeout(render, 0); } else render(); }
   else if(t.id === 'cobCon'){ ui.cob.con = t.value; if(ui.cf) delete ui.cf.cob; render(); }
   else if(t.id === 'recEstilo'){ S.cfg = S.cfg || {}; S.cfg.recEstilo = t.value; save(); toast('Estilo de recibo guardado'); }
-  else if(t.id === 'portalSel'){ ui.portal.d = t.value; render(); }
+  else if(t.id === 'portalSel'){ ui.portal.d = t.value || null; render(); }
   else if(t.name === 'pmModo'){ PM.modo = t.value; $('pmElegir').hidden = PM.modo !== 'elegir'; pmPrev(); }
   else if(t.hasAttribute && t.hasAttribute('data-pmq')){ var qid = t.getAttribute('data-pmq'); PM.sel = PM.sel.filter(function(x){ return x !== qid; }); if(t.checked) PM.sel.push(qid); pmPrev(); }
   else if(t.id === 'pmMon' || t.id === 'pmFecha'){ if(t.id === 'pmMon' && caja($('pmCaja').value).mon !== t.value){ $('pmCaja').value = cajaDef(t.value); $('pmNY').hidden = true; } pmPrev(); }
