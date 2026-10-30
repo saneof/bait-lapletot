@@ -614,7 +614,9 @@ var INGRESOS_NUEVOS = [
   {n: 'Fred Ashkenazi', f: '2026-10-29', mes: 10, mx: 380000, usd: 20000},
   {n: 'Eduardo/Mauricio Atri', f: '2026-10-30', mes: 10, mx: 10800000, usd: 600000},
   {n: 'Beto Shamosh', f: '2026-10-30', mes: 10, mx: 5100000, usd: 255000},
-  {n: 'Moy Shemaria', f: '2026-10-29', mes: 10, mx: 0, usd: 200000}
+  {n: 'Moy Shemaria', f: '2026-10-29', mes: 10, mx: 0, usd: 200000},
+  {n: 'Abraham Dichy', f: '2026-10-30', mes: 11, mx: 4000000, usd: 200000},
+  {n: 'Abraham Dichy', f: '2026-10-30', mes: 12, mx: 2000000, usd: 100000, forzar: true}
 ];
 function recEstiloFix(){ if(!S) return; S.fixes = S.fixes || {}; if(S.fixes.recEst1) return; S.fixes.recEst1 = true; S.cfg = S.cfg || {}; S.cfg.recEstilo = 'estado'; }
 var ROPA_NUEVOS = [
@@ -661,7 +663,7 @@ function aplicarIngresosNuevos(){ recEstiloFix(); fixAdopcionNina(); aplicarRopa
     var k = 'ing|' + x.n + '|' + x.f + '|' + x.mx + '|' + x.usd; if(S.fixes[k]) return; S.fixes[k] = true;
     var d = S.donantes.find(function(z){ return z.nombre === x.n; }); if(!d) return;
     var y = +x.f.slice(0, 4), c = S.compromisos.find(function(z){ return z.donanteId === d.id && z.anio === y && z.origen === 'importado'; }) || S.compromisos.find(function(z){ return z.donanteId === d.id && z.anio === y; }); if(!c) return;
-    var ya = S.donativos.some(function(p){ return p.compId === c.id && p.fecha === x.f && p.montoC === (x.mx || x.usd); }); if(ya) return;
+    var ya = S.donativos.some(function(p){ return p.compId === c.id && p.fecha === x.f && p.montoC === (x.mx || x.usd); }); if(ya && !x.forzar) return;
     var qs = S.cuotas.filter(function(z){ return z.compId === c.id && z.mes >= x.mes && falta(z) > 0 && !z.pausada; }).sort(function(a, b){ return a.mes - b.mes; });
     var rest = x.usd, plan = []; qs.forEach(function(z){ if(rest <= 0) return; var a = Math.min(rest, falta(z)); plan.push({q: z, ap: a}); rest -= a; });
     var o = x.mx ? {fecha: x.f, montoC: x.mx, moneda: 'MXN', montoCompC: x.usd, tc: Math.round(x.mx / x.usd * 10000) / 10000, forma: 'Efectivo', caja: 'MXN'} : {fecha: x.f, montoC: x.usd, moneda: 'USD', montoCompC: x.usd, forma: 'Efectivo', caja: cajaUsd(c.gabai)};
