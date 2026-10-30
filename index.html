@@ -5623,7 +5623,7 @@ function buscaMejorar(){
     var inp = document.createElement('input'); inp.type = 'search'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('data-noi18n', '');
     inp.placeholder = '🔎 Escribe un nombre…' + (vacia ? ' (' + vacia.text.replace(/^—\s*|\s*—$/g, '') + ')' : '');
     var lst = document.createElement('div'); lst.className = 'buscaLista'; lst.hidden = true; lst.setAttribute('data-noi18n', '');
-    w.appendChild(inp); w.appendChild(lst); sel.parentNode.insertBefore(w, sel); sel.style.display = 'none';
+    w.appendChild(inp); w.appendChild(lst); sel.parentNode.insertBefore(w, sel); sel.style.marginTop = '6px'; sel.addEventListener('change', function(){ inp.value = actual(); });
     var actual = function(){ var o = sel.options[sel.selectedIndex]; return o && o.value !== '' ? o.text : ''; };
     inp.value = actual();
     var act = -1, items = [];
