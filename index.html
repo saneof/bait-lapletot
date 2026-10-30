@@ -3677,13 +3677,14 @@ function respLeer(file){
   rd.readAsText(file);
 }
 function respAplicar(){
-  if(!RESP) return;
+  if(!RESP) return; nbAntesDeImportar();
   var yo = user(), s = RESP; RESP = null;
   s.v = 5; migrar(s); S = s; aplicarIngresosNuevos();
   var mismo = S.usuarios.find(function(u){ return u.id === yo.id && u.pw; });
   save(); closeModal();
-  if(mismo && LOGUEADO){ S.user = S.usuarios.indexOf(mismo); log('Importó un respaldo completo'); render(); toast('Respaldo importado'); }
-  else { var nu = NUBE_ON && NB.listo ? nbUsuario(true) : null; if(nu){ entrarComo(nu, true); save(); toast('Respaldo importado y subido a la nube ☁️'); } else { sesionBorrar(); mostrarLogin(); toast('Respaldo importado. Entra con tu usuario.'); } }
+  if(mismo && LOGUEADO){ S.user = S.usuarios.indexOf(mismo); log('Importó un respaldo completo'); render(); toast('Respaldo importado'); nbSubirYa('Respaldo importado'); }
+  else if(LOGUEADO && NUBE_ON && NB.listo){ log('Importó un respaldo completo'); render(); nbSubirYa('Respaldo importado'); }
+  else { var nu = NUBE_ON && NB.listo ? nbUsuario(true) : null; if(nu){ entrarComo(nu, true); save(); nbSubirYa('Respaldo importado'); } else { sesionBorrar(); mostrarLogin(); toast('Respaldo importado. Entra con tu usuario.'); } }
 }
 
 /* ================= Configuración ================= */
@@ -4977,7 +4978,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'recCopiaWa'){ var r2 = REC_WA; if(!r2) return; var ok = false; try{ if(r2.png && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){ navigator.clipboard.write([new ClipboardItem({'image/png': r2.png})]).then(function(){ toast('Recibo copiado: pégalo en WhatsApp con ⌘V'); }, function(){ guardar(r2.nom, r2.buf); toast('No se pudo copiar: se descargó el PDF, arrástralo al chat'); }); ok = true; } }catch(e){} if(!ok){ guardar(r2.nom, r2.buf); toast('Se descargó el PDF: arrástralo al chat de WhatsApp'); } recAbrirWa(); }
   else if(a === 'recBajar'){ if(REC_WA) guardar(REC_WA.nom, REC_WA.buf); }
   else if(a === 'portalGab'){ ui.portal.gab = b.getAttribute('data-v') || ''; render(); }
-  else if(a === 'respComb'){ if(!RESP) return; var rs = RESP; RESP = null; migrar(rs); var nn = combinarDatos(rs); save(); closeModal(); if(LOGUEADO){ log('Combinó un respaldo: agregó ' + nn + ' donadores'); render(); } else mostrarLogin(); toast(nn ? 'Se agregaron ' + nn + ' donadores que faltaban (lo demás se conservó)' : 'No faltaba nada: todo ya estaba'); }
+  else if(a === 'respComb'){ if(!RESP) return; nbAntesDeImportar(); var rs = RESP; RESP = null; migrar(rs); var nn = combinarDatos(rs); save(); nbSubirYa('Respaldo combinado'); closeModal(); if(LOGUEADO){ log('Combinó un respaldo: agregó ' + nn + ' donadores'); render(); } else mostrarLogin(); toast(nn ? 'Se agregaron ' + nn + ' donadores que faltaban (lo demás se conservó)' : 'No faltaba nada: todo ya estaba'); }
   else if(a === 'resgRec'){ var rf2 = resgFuente(); if(!rf2) return; var nn2 = combinarDatos(rf2.s); save(); log('Recuperó ' + nn2 + ' donadores desde la copia guardada'); render(); toast('Se recuperaron ' + nn2 + ' donadores'); }
   else if(a === 'respXls'){
     if(!window.XLSX){ toast('No se pudo preparar el Excel.'); return; }
@@ -5422,6 +5423,7 @@ async function nbDespuesLogin(){
   } else { NB.base = null; NB.at = null; }
   NB.listo = true; nbEst(fila ? 'ok' : 'off', fila ? null : 'Nube vacía');
   nbEscuchar();
+  if(NB.base && nbTieneAlgo(NB.base)) nbRespaldoDiario(NB.base);
   var u = nbUsuario();
   if(u){ document.documentElement.classList.remove('nologin'); entrarComo(u, true); nbEst(NB.at ? 'ok' : 'off', NB.at ? null : 'Nube vacía'); }
   else { mostrarLogin(fila ? 'Tu correo de la nube (' + NB.email + ') no está ligado a un usuario del sistema. Entra con tu usuario y contraseña del sistema.' : ''); }
@@ -5503,6 +5505,7 @@ async function nbSubir(){
     var r = await NB.sb.from('estado').upsert({id: NB_ID, data: datos, updated_at: ahora, updated_by: NB.uid}).select('updated_at').single();
     if(r.error) throw r.error;
     NB.base = nbClon(datos); NB.at = r.data.updated_at; NB.ult = NB.at;
+    nbRespaldoDiario(datos);
     try{ localStorage.setItem(KEY, JSON.stringify(Object.assign({}, datos, {user: 0}))); }catch(e){}
     nbEst('ok');
   }catch(e){ nbEst('err'); clearTimeout(NB.t); NB.t = setTimeout(nbSubir, 15000); }
@@ -5512,18 +5515,81 @@ async function nbSalir(){
   try{ clearInterval(NB.poll); if(NB.canal) NB.sb.removeChannel(NB.canal); await NB.sb.auth.signOut(); }catch(e){}
   NB.listo = false; NB.base = null; NB.at = null; nbEst('off'); nbLoginPantalla();
 }
+
+function nbCuenta(d){ return {don: (d && d.donantes || []).length, pag: (d && d.donativos || []).length}; }
+async function nbGuardarRespaldo(motivo, d){
+  if(!NB.sb || !d || !nbTieneAlgo(d)) return false;
+  var c = nbCuenta(d);
+  var r = await NB.sb.from('respaldos').insert({motivo: motivo, donadores: c.don, pagos: c.pag, data: d});
+  return !r.error;
+}
+async function nbRespaldoDiario(d){
+  try{
+    var hoyK = hoy(); if(NB.respDia === hoyK) return;
+    var r = await NB.sb.from('respaldos').select('creado').eq('motivo', 'Respaldo diario automático').order('creado', {ascending: false}).limit(1);
+    var ult = r.data && r.data[0] ? new Date(r.data[0].creado) : null;
+    var ultK = ult ? ult.getFullYear() + '-' + pad(ult.getMonth() + 1) + '-' + pad(ult.getDate()) : '';
+    if(ultK !== hoyK){ if(await nbGuardarRespaldo('Respaldo diario automático', d)) NB.respDia = hoyK; } else NB.respDia = hoyK;
+  }catch(e){}
+}
+function nbAntesDeImportar(){ if(NUBE_ON && NB.listo && NB.base) nbGuardarRespaldo('Antes de importar un respaldo', nbClon(NB.base)).catch(function(){}); }
+async function nbSubirYa(que){
+  if(!NUBE_ON){ return; }
+  if(!NB.listo){ toast('⚠️ No estás conectado a la nube: lo importado se quedó solo en este dispositivo. Recarga la página y entra con tu usuario.'); return; }
+  clearTimeout(NB.t); toast('☁️ Subiendo a la nube…');
+  var esp = 0; while(NB.sube && esp < 40){ await new Promise(function(ok){ setTimeout(ok, 250); }); esp++; }
+  await nbSubir();
+  try{ var f = await nbBajarFila(); var c = nbCuenta(f && f.data);
+    if(NB.estado === 'ok' && f){ openModal(head('☁️ ' + que + ' y guardado en la nube', 'Ya está disponible en todos tus dispositivos') + '<div class="kpis"><div class="kpi"><span>Donadores en la nube</span><strong>' + c.don + '</strong></div><div class="kpi"><span>Pagos en la nube</span><strong>' + c.pag + '</strong></div></div><div class="dfoot"><button type="button" class="btn primary" data-a="close">Listo</button></div>'); }
+    else toast('⚠️ No se pudo subir a la nube. Revisa tu internet; se reintenta solo.');
+  }catch(e){ toast('⚠️ No se pudo confirmar en la nube. Revisa tu internet.'); }
+}
+async function nbListaRespaldos(){
+  var box = $('nbResp'); if(!box) return;
+  var r = await NB.sb.from('respaldos').select('id, creado, motivo, donadores, pagos').order('creado', {ascending: false}).limit(20);
+  if(r.error){ box.innerHTML = '<div class="sub">No se pudieron leer los respaldos.</div>'; return; }
+  var dir = user().rol === 'Dirección';
+  box.innerHTML = r.data.length ? '<div class="tablewrap"><table class="t"><thead><tr><th>Fecha</th><th>Motivo</th><th class="n">Donadores</th><th class="n">Pagos</th><th></th></tr></thead><tbody>' + r.data.map(function(x){
+    return '<tr><td>' + esc(new Date(x.creado).toLocaleString('es-MX')) + '</td><td>' + esc(x.motivo || '') + '</td><td class="n">' + x.donadores + '</td><td class="n">' + x.pagos + '</td><td style="white-space:nowrap"><button type="button" class="btn ghost sm" data-a="nbRespBajar" data-id="' + x.id + '">⬇ Descargar</button>' + (dir ? ' <button type="button" class="btn ghost sm" data-a="nbRespRest" data-id="' + x.id + '">↺ Restaurar</button>' : '') + '</td></tr>';
+  }).join('') + '</tbody></table></div>' : '<div class="sub">Todavía no hay respaldos. Se crea uno automático cada día.</div>';
+}
+async function nbRespTraer(id){ var r = await NB.sb.from('respaldos').select('creado, data').eq('id', id).single(); if(r.error) throw r.error; return r.data; }
+async function nbRespBajar(id){
+  try{ var x = await nbRespTraer(id); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: x.creado, version: 5, datos: x.data}, null, 1);
+    guardar('Respaldo nube ' + String(x.creado).slice(0, 10) + '.json', new TextEncoder().encode(txt)); }catch(e){ toast('No se pudo descargar el respaldo.'); }
+}
+function nbRespRest(id){
+  openModal(head('↺ ¿Restaurar este respaldo?', 'Toda la información volverá a como estaba en ese momento, en todos los dispositivos.') +
+    '<div class="note">Antes de restaurar guardo un respaldo de cómo está ahora, por si quieres regresar.</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="nbRespRestOk" data-id="' + id + '">Sí, restaurar</button></div>');
+}
+async function nbRespRestOk(id){
+  try{
+    closeModal(); toast('Restaurando…');
+    var x = await nbRespTraer(id);
+    var actual = JSON.parse(JSON.stringify(estadoGuardable())); actual.user = 0;
+    await nbGuardarRespaldo('Antes de restaurar', actual);
+    var yo = user(), n = x.data; n.v = 5; migrar(n); S = n;
+    var k = S.usuarios.findIndex(function(u){ return u.id === yo.id; }); if(k !== -1) S.user = k; else { var u2 = nbUsuario(true); if(u2) S.user = S.usuarios.indexOf(u2); }
+    log('Restauró el respaldo del ' + new Date(x.creado).toLocaleString('es-MX')); save(); render(); nbSubirYa('Respaldo restaurado');
+  }catch(e){ toast('No se pudo restaurar: ' + (e.message || e)); }
+}
 function nbInfo(){
   var cuando = NB.ult ? new Date(NB.ult).toLocaleString('es-MX') : '—';
   openModal(head('☁️ Nube', 'Tus datos se guardan en la nube y se sincronizan solos') +
-    '<div class="kpis"><div class="kpi"><span>Sesión</span><strong style="font-size:15px">' + esc(NB.email || '—') + '</strong></div><div class="kpi"><span>Estado</span><strong style="font-size:15px">' + esc(($('nbEst') || {title: ''}).title.replace('☁️', '').trim()) + '</strong></div><div class="kpi"><span>Último guardado</span><strong style="font-size:15px">' + esc(cuando) + '</strong></div></div>' +
+    '<div class="kpis"><div class="kpi"><span>Sesión</span><strong style="font-size:15px">' + esc(NB.email || '—') + '</strong></div><div class="kpi"><span>Estado</span><strong style="font-size:15px">' + esc(($('nbEst') || {title: ''}).title.replace('☁️', '').trim()) + '</strong></div><div class="kpi"><span>Último guardado</span><strong style="font-size:15px">' + esc(cuando) + '</strong></div><div class="kpi"><span>En la nube</span><strong style="font-size:15px">' + nbCuenta(NB.base).don + ' donadores · ' + nbCuenta(NB.base).pag + ' pagos</strong></div></div>' +
+    '<h3 style="margin:14px 0 6px">🛟 Respaldos en la nube</h3><div class="sub" style="margin-bottom:6px">Se guarda uno automático cada día y antes de importar o restaurar.</div><div id="nbResp"><div class="sub">Cargando…</div></div>' +
     '<div class="note">Cada cambio se sube a la nube en 1-2 segundos. Si otra persona cambia algo, aquí se actualiza solo. Si dos personas cambian cosas distintas al mismo tiempo, se juntan ambos cambios.</div>' +
-    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cerrar</button><button type="button" class="btn ghost" data-a="nbCambiarPw">🔑 Cambiar mi contraseña</button><button type="button" class="btn ghost" data-a="nbAhora">⟳ Sincronizar ahora</button><button type="button" class="btn danger" data-a="nbCerrar">Cerrar sesión de la nube</button></div>');
+    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cerrar</button><button type="button" class="btn ghost" data-a="nbRespAhora">🛟 Respaldar ahora</button><button type="button" class="btn ghost" data-a="nbCambiarPw">🔑 Cambiar mi contraseña</button><button type="button" class="btn ghost" data-a="nbAhora">⟳ Sincronizar ahora</button><button type="button" class="btn danger" data-a="nbCerrar">Cerrar sesión de la nube</button></div>');
 }
 document.addEventListener('click', function(ev){
   var b = ev.target.closest && ev.target.closest('[data-a]'); if(!b) return; var a = b.getAttribute('data-a');
   if(a === 'nbEntrar'){ ev.preventDefault(); nbEntrar(); }
   else if(a === 'nbVer'){ var i = $('nbPw'); if(i){ i.type = i.type === 'password' ? 'text' : 'password'; b.textContent = i.type === 'password' ? 'Ver' : 'Ocultar'; } }
-  else if(a === 'nbInfo'){ nbInfo(); }
+  else if(a === 'nbInfo'){ nbInfo(); nbListaRespaldos(); }
+  else if(a === 'nbRespBajar'){ nbRespBajar(b.getAttribute('data-id')); }
+  else if(a === 'nbRespRest'){ nbRespRest(b.getAttribute('data-id')); }
+  else if(a === 'nbRespRestOk'){ nbRespRestOk(b.getAttribute('data-id')); }
+  else if(a === 'nbRespAhora'){ var dd = JSON.parse(JSON.stringify(estadoGuardable())); dd.user = 0; nbGuardarRespaldo('Respaldo manual', dd).then(function(ok){ toast(ok ? '🛟 Respaldo guardado en la nube' : 'No se pudo guardar el respaldo'); nbListaRespaldos(); }); }
   else if(a === 'nbOlvide'){ ev.preventDefault(); nbOlvide(); }
   else if(a === 'nbGuardaPw'){ ev.preventDefault(); nbGuardaPw(); }
   else if(a === 'nbCambiarPw'){ nbCambiarPw(); }
