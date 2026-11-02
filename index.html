@@ -684,7 +684,7 @@ function aplicarDonativosNuevos(){
   if(hechos) save();
   return hechos;
 }
-function aplicarIngresosNuevos(){ recEstiloFix(); fixAdopcionNina(); aplicarRopa(); aplicarDonativosNuevos();
+function aplicarIngresosNuevos(){ seqSeguro(); recEstiloFix(); fixAdopcionNina(); if(fixVencFinMes()) save(); aplicarRopa(); aplicarDonativosNuevos();
   if(!S || !S.donativos) return; S.fixes = S.fixes || {}; var hechos = 0;
   INGRESOS_NUEVOS.forEach(function(x){
     var k = 'ing|' + x.n + '|' + x.f + '|' + x.mx + '|' + x.usd; if(S.fixes[k]) return; S.fixes[k] = true;
@@ -791,7 +791,7 @@ function load(){
   }
   if(s && s.v === 5){ migrar(s); return s; } return null;
 }
-function nid(p){ S.seq = (S.seq || 0) + 1; return p + S.seq; }
+function nid(p){ if(!nid.ok){ nid.ok = true; try{ seqSeguro(); }catch(e){} } S.seq = (S.seq || 0) + 1; return p + S.seq; }
 function user(){ return S.usuarios[S.user] || S.usuarios[0]; }
 function log(accion){ S.bitacora.unshift({fecha: new Date().toISOString(), usuario: user().nombre, accion: accion}); }
 
@@ -800,6 +800,21 @@ function don(id){ return S.donantes.find(function(d){ return d.id === id; }); }
 function cuotasDe(cid){ return S.cuotas.filter(function(q){ return q.compId === cid; }).sort(function(a, b){ return a.num - b.num; }); }
 function falta(q){ return Math.max(0, q.montoC - q.aplicadoC); }
 
+/* Gabaim cuyas cuotas vencen el último día del mes */
+var GAB_FIN_MES = ['כרטיס- יצחק עבוד', 'כרטיסי- רפה', 'יחידים'];
+function finMes(y, m){ return y + '-' + pad(m) + '-' + pad(new Date(+y, +m, 0).getDate()); }
+function vencDe(anio, mes, gab){ return GAB_FIN_MES.indexOf(gab || '') !== -1 ? finMes(anio, mes) : anio + '-' + pad(mes) + '-01'; }
+function fixVencFinMes(){
+  if(!S || !S.cuotas) return 0; var n = 0, cm = {}; S.compromisos.forEach(function(c){ cm[c.id] = c; });
+  S.cuotas.forEach(function(q){ var c = cm[q.compId]; if(!c || !q.venc) return; var g = q.gabai != null ? q.gabai : (c.gabai || ''); if(GAB_FIN_MES.indexOf(g) === -1 || q.venc.slice(8) !== '01') return; var f = finMes(q.venc.slice(0, 4), +q.venc.slice(5, 7)); if(f !== q.venc){ q.venc = f; n++; } });
+  return n;
+}
+/* Evita que un registro nuevo tome el número de uno que ya existe */
+function seqSeguro(){
+  if(!S) return; var mx = S.seq || 0;
+  ['donantes', 'compromisos', 'cuotas', 'donativos', 'egresos', 'reglas'].forEach(function(k){ (S[k] || []).forEach(function(x){ var m = /(\d+)$/.exec(String(x && x.id || '')); if(m && +m[1] > mx) mx = +m[1]; }); });
+  S.seq = mx;
+}
 function crearCompromiso(o){
   if(o.x){ for(var xk in o.x) o[xk] = o.x[xk]; }
   var plan = (o.plan || []).filter(function(x){ return x.montoC > 0; }).sort(function(a, b){ return a.mes - b.mes; });
@@ -814,7 +829,7 @@ function crearCompromiso(o){
   S.compromisos.push(c);
   for(var i = 0; i < n; i++){
     var mes = plan.length ? plan[i].mes : o.mesIni + i * paso;
-    S.cuotas.push({id: nid('q'), compId: c.id, num: i + 1, mes: mes, venc: o.anio + '-' + pad(mes) + '-01', montoC: plan.length ? plan[i].montoC : base + (i === n - 1 ? rem : 0), aplicadoC: 0, pausada: false, recs: [], nota: ''});
+    S.cuotas.push({id: nid('q'), compId: c.id, num: i + 1, mes: mes, venc: vencDe(o.anio, mes, o.gabai), montoC: plan.length ? plan[i].montoC : base + (i === n - 1 ? rem : 0), aplicadoC: 0, pausada: false, recs: [], nota: ''});
   }
   return c;
 }
