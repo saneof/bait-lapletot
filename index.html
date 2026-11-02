@@ -5728,9 +5728,25 @@ function vRep2(){
     return '<svg class="r2chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Ingresos y egresos por mes en ' + mon + '"><text x="' + pl + '" y="12" font-size="11" fill="currentColor" opacity=".6">máx. ' + mN(mx) + ' ' + mon + '</text>' + bars + '</svg>';
   };
   var graf = '<section class="panel"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Ingresos y egresos por mes</h2><div class="r2leg"><span><i style="background:#1f7a4d"></i>Ingresos</span><span><i style="background:#c62828"></i>Egresos</span><span><i style="background:#d29b00"></i>Mes elegido</span></div></div><div class="r2grid" style="margin-top:8px"><div><div class="sub" style="font-weight:700">Pesos (MXN)</div>' + grafica('MXN') + '</div><div><div class="sub" style="font-weight:700">Dólares (USD)</div>' + grafica('USD') + '</div></div><div class="sub">Toca una barra para ver solo ese mes.</div></section>';
-  var top = function(mon){ var m = {}; filas.forEach(function(x){ if(x.tipo !== 'ing' || x.mon !== mon) return; m[x.nombre] = (m[x.nombre] || 0) + x.monto; }); var arr = Object.keys(m).map(function(k){ return [k, m[k]]; }).sort(function(a, b){ return b[1] - a[1]; }).slice(0, 10);
-    return arr.length ? '<ol>' + arr.map(function(r){ return '<li><span>' + esc(r[0]) + '</span><b>' + mN(r[1]) + ' ' + mon + '</b></li>'; }).join('') + '</ol>' : '<div class="sub">Sin ingresos en ' + mon + '.</div>'; };
-  var tTop = '<section class="panel r2top"><h2>🏆 Top 10 donadores del periodo</h2><div class="r2grid"><div><div class="sub" style="font-weight:700">En pesos</div>' + top('MXN') + '</div><div><div class="sub" style="font-weight:700">En dólares</div>' + top('USD') + '</div></div></section>';
+  // quién no ha pagado: cuotas con saldo hasta el fin del periodo (o hoy si el periodo termina después)
+  var corte = r2Rango()[1] > hoy() ? hoy().slice(0, 7) : r2Rango()[1].slice(0, 7);
+  var np = {};
+  S.cuotas.forEach(function(q){
+    if(q.cancelada || q.pausada || falta(q) <= 0 || !q.venc || q.venc.slice(0, 7) > corte) return;
+    var c = comp(q.compId); if(!c || c.estatus === 'por confirmar' || c.estatus === 'cancelado' || c.estatus === 'renovado') return;
+    var g = gabQ(q, c), d = don(c.donanteId); if(!d) return;
+    if(R2.gab && g !== R2.gab) return; if(R2.con && (c.concepto || '') !== R2.con) return; if(R2.don && d.id !== R2.don) return; if(R2.mod && (c.modalidad || '') !== R2.mod) return;
+    var k = d.id + '|' + c.moneda + '|' + g;
+    var r = np[k] = np[k] || {d: d, g: g, mon: c.moneda, meses: [], debe: 0, venc: 0};
+    r.meses.push(q.venc.slice(0, 7)); r.debe += falta(q); if(q.venc.slice(0, 7) < corte) r.venc++;
+  });
+  var npL = Object.keys(np).map(function(k){ return np[k]; }).sort(function(a, b){ return b.meses.length - a.meses.length || b.debe - a.debe; });
+  var npTot = function(mon){ return npL.reduce(function(a, r){ return a + (r.mon === mon ? r.debe : 0); }, 0); };
+  var tTop = '<section class="panel"><h2>🔴 Quién no ha pagado <span class="sub">(' + npL.length + ' · hasta ' + esc(r2Mes(corte)) + ')</span></h2>' +
+    '<div class="r2act" style="margin:4px 0 10px">' + ['USD', 'MXN'].filter(function(m){ return npTot(m); }).map(function(m){ return '<span class="pill t-bad">Deben ' + mN(npTot(m)) + ' ' + m + '</span>'; }).join('') + '<span class="sub">🔴 tiene meses vencidos · 🟡 solo debe el mes actual</span></div>' +
+    (npL.length ? '<div class="tablewrap"><table class="t" data-cf="rep2np"><thead><tr><th></th><th>Donador</th><th>Gabai</th><th>Meses que debe</th><th class="n">Debe</th><th>Divisa</th></tr></thead><tbody>' + npL.map(function(r){
+      return '<tr><td title="' + (r.venc ? 'Con meses vencidos' : 'Solo el mes actual') + '">' + (r.venc ? '🔴' : '🟡') + '</td><td><b>' + esc(r.d.nombre) + '</b></td><td>' + r2Gab(r.g) + '</td><td>' + r.meses.map(function(m){ return esc(mesNom(+m.slice(5, 7)).slice(0, 3)); }).join(', ') + ' <span class="sub">(' + r.meses.length + ')</span></td><td class="n r2neg"><b>' + mN(r.debe) + '</b></td><td>' + esc(r.mon) + '</td></tr>';
+    }).join('') + '</tbody></table></div>' : '<div class="empty">🎉 Nadie debe en este periodo con los filtros elegidos.</div>') + '</section>';
   // por gabai
   var fg = todas.filter(function(x){ return r2Pasa(x, 'gab'); }), gabs = {}; fg.forEach(function(x){ var k = x.gabai || '(sin gabai)'; gabs[k] = gabs[k] || []; gabs[k].push(x); });
   var tot = {im: 0, em: 0, iu: 0, eu: 0};
