@@ -194,6 +194,7 @@ html.nologin .app{display:none}
 @media (min-width:900px){main>.top{position:relative;padding-top:40px}main>.top>.row>#whoBox{position:absolute;top:0;right:0;flex-wrap:nowrap}}
 .buscaFila{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}.buscaFila>select{flex:1 1 0;width:auto;min-width:0}.buscaFila>.busca{flex:1 1 0;min-width:0}.busca{position:relative;width:100%}.busca .buscaLista{min-width:240px}.busca input{width:100%}.buscaLista{position:absolute;z-index:60;left:0;right:0;top:calc(100% + 4px);background:var(--surface,#fff);border:1px solid var(--line,#dde);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:300px;overflow:auto;padding:4px}.buscaLista button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;color:inherit;cursor:pointer}.buscaLista button:hover,.buscaLista button.act{background:var(--brand-soft,#e8eef6)}.buscaLista b{color:var(--brand,#12324F)}.buscaLista .vacio{padding:9px 12px;color:var(--muted,#667)}
 .r2filt{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;align-items:end}.tablewrap{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:12px}.r2grid>section,.r2grid>div{min-width:0}
+.msel{position:relative;display:inline-block;min-width:260px}.msel>summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:9px 34px 9px 12px;background:var(--surface,#fff);position:relative;font-weight:600}.msel>summary::-webkit-details-marker{display:none}.msel>summary::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted)}.msel .mselp{position:absolute;z-index:40;top:calc(100% + 4px);left:0;min-width:100%;background:var(--surface,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);padding:6px;max-height:320px;overflow:auto}.msel .mselp label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer}.msel .mselp label:hover{background:var(--brand-soft,#e8eef6)}.msel .mselp input[type=checkbox]{width:18px !important;height:18px !important;min-height:0 !important;padding:0 !important;margin:0;flex:none;accent-color:var(--brand,#12324F)}.msel .mselb{display:flex;gap:6px;padding:4px 6px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .r2kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.r2kpi .kpi strong{font-size:30px !important;display:block;margin:4px 0 6px}.r2vs{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}.r2vs.up{background:#e3f4ea;color:#1f7a4d}.r2vs.dn{background:#fde7e5;color:#b3261e}.r2chart{width:100%;height:auto;display:block}.r2chart rect[data-a]{cursor:pointer}.r2chart rect[data-a]:hover{opacity:.75}.r2top li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}.r2top ol{margin:0;padding-left:22px}.r2leg{display:flex;gap:14px;font-size:12px;color:var(--muted)}.r2leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}.r2kpi .lin{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:4px}.r2kpi .lin b{color:var(--ink,#111)}.r2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}.r2grid table tr[data-a]{cursor:pointer}.r2grid table tr[data-a]:hover td{background:var(--brand-soft,#e8eef6)}.r2grid tr.on td{background:#fff4d6}.r2neg{color:#b3261e}.r2pos{color:#1f7a4d}.r2g{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--c) 13%,transparent);color:var(--c);font-weight:600;white-space:nowrap}.r2g::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}td.r2in{background:#f0f9f3}td.r2eg{background:#fdf1f0}th.r2in{color:#1f7a4d}th.r2eg{color:#b3261e}.r2tot td{font-weight:700;border-top:2px solid var(--line)}.r2act{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.r2act .pill{cursor:pointer}
 .lbox h1{font-size:24px;text-align:center;margin:4px 0 0}.lgo{min-height:48px;font-size:16px}
 .pwrow{display:flex;gap:8px;align-items:center}.pwrow input{flex:1;min-width:0}
@@ -5642,6 +5643,7 @@ document.addEventListener('click', function(ev){
 document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && (ev.target.id === 'nbPw' || ev.target.id === 'nbMail')){ ev.preventDefault(); nbEntrar(); } else if(ev.key === 'Enter' && ev.target.id === 'nbN2' && !$('login').hidden){ ev.preventDefault(); nbGuardaPw(); } });
 
 /* ================= Reporte contable (estilo tablero) ================= */
+var R2NP = {gabs: [], open: false};
 var R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: ''};
 function r2Filas(){
   var out = [], Y = anioAct();
@@ -5735,18 +5737,22 @@ function vRep2(){
     if(q.cancelada || q.pausada || falta(q) <= 0 || !q.venc || q.venc.slice(0, 7) > corte) return;
     var c = comp(q.compId); if(!c || c.estatus === 'por confirmar' || c.estatus === 'cancelado' || c.estatus === 'renovado') return;
     var g = gabQ(q, c), d = don(c.donanteId); if(!d) return;
-    if(R2.gab && g !== R2.gab) return; if(R2.con && (c.concepto || '') !== R2.con) return; if(R2.don && d.id !== R2.don) return; if(R2.mod && (c.modalidad || '') !== R2.mod) return;
+    if(R2NP.gabs.indexOf(g) === -1) return; if(R2.con && (c.concepto || '') !== R2.con) return; if(R2.don && d.id !== R2.don) return; if(R2.mod && (c.modalidad || '') !== R2.mod) return;
     var k = d.id + '|' + c.moneda + '|' + g;
     var r = np[k] = np[k] || {d: d, g: g, mon: c.moneda, meses: [], debe: 0, venc: 0};
     r.meses.push(q.venc.slice(0, 7)); r.debe += falta(q); if(q.venc.slice(0, 7) < corte) r.venc++;
   });
   var npL = Object.keys(np).map(function(k){ return np[k]; }).sort(function(a, b){ return b.meses.length - a.meses.length || b.debe - a.debe; });
   var npTot = function(mon){ return npL.reduce(function(a, r){ return a + (r.mon === mon ? r.debe : 0); }, 0); };
-  var tTop = '<section class="panel"><h2>🔴 Quién no ha pagado <span class="sub">(' + npL.length + ' · hasta ' + esc(r2Mes(corte)) + ')</span></h2>' +
-    '<div class="r2act" style="margin:4px 0 10px">' + ['USD', 'MXN'].filter(function(m){ return npTot(m); }).map(function(m){ return '<span class="pill t-bad">Deben ' + mN(npTot(m)) + ' ' + m + '</span>'; }).join('') + '<span class="sub">🔴 tiene meses vencidos · 🟡 solo debe el mes actual</span></div>' +
+  var gabsTodos = (S.gabaim || []).slice(), nSel = R2NP.gabs.length;
+  var msel = '<details class="msel" id="r2npSel"' + (R2NP.open ? ' open' : '') + '><summary>' + (nSel ? (nSel === gabsTodos.length ? 'Todos los gabaim' : nSel === 1 ? R2NP.gabs[0] : nSel + ' gabaim elegidos') : '— Elige gabai(m) —') + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="r2npTodos">Todos</button><button type="button" class="btn ghost sm" data-a="r2npNinguno">Ninguno</button></div>' +
+    gabsTodos.map(function(g){ return '<label><input type="checkbox" data-r2np value="' + esc(g) + '"' + (R2NP.gabs.indexOf(g) !== -1 ? ' checked' : '') + '> ' + r2Gab(g) + '</label>'; }).join('') + '</div></details>';
+  var tTop = '<section class="panel"><h2>🔴 Quién no ha pagado' + (nSel ? ' <span class="sub">(' + npL.length + ' · hasta ' + esc(r2Mes(corte)) + ')</span>' : '') + '</h2><div class="r2act" style="margin:6px 0 10px"><span class="sub">Gabai:</span>' + msel + '</div>' +
+    (!nSel ? '<div class="empty">👆 Elige uno o varios gabaim para ver quién no ha pagado.</div></section>' : '') +
+    (!nSel ? '' : '<div class="r2act" style="margin:4px 0 10px">' + ['USD', 'MXN'].filter(function(m){ return npTot(m); }).map(function(m){ return '<span class="pill t-bad">Deben ' + mN(npTot(m)) + ' ' + m + '</span>'; }).join('') + '<span class="sub">🔴 tiene meses vencidos · 🟡 solo debe el mes actual</span></div>' +
     (npL.length ? '<div class="tablewrap"><table class="t" data-cf="rep2np"><thead><tr><th></th><th>Donador</th><th>Gabai</th><th>Meses que debe</th><th class="n">Debe</th><th>Divisa</th></tr></thead><tbody>' + npL.map(function(r){
       return '<tr><td title="' + (r.venc ? 'Con meses vencidos' : 'Solo el mes actual') + '">' + (r.venc ? '🔴' : '🟡') + '</td><td><b>' + esc(r.d.nombre) + '</b></td><td>' + r2Gab(r.g) + '</td><td>' + r.meses.map(function(m){ return esc(mesNom(+m.slice(5, 7)).slice(0, 3)); }).join(', ') + ' <span class="sub">(' + r.meses.length + ')</span></td><td class="n r2neg"><b>' + mN(r.debe) + '</b></td><td>' + esc(r.mon) + '</td></tr>';
-    }).join('') + '</tbody></table></div>' : '<div class="empty">🎉 Nadie debe en este periodo con los filtros elegidos.</div>') + '</section>';
+    }).join('') + '</tbody></table></div>' : '<div class="empty">🎉 Nadie debe en este periodo con los filtros elegidos.</div>') + '</section>');
   // por gabai
   var fg = todas.filter(function(x){ return r2Pasa(x, 'gab'); }), gabs = {}; fg.forEach(function(x){ var k = x.gabai || '(sin gabai)'; gabs[k] = gabs[k] || []; gabs[k].push(x); });
   var tot = {im: 0, em: 0, iu: 0, eu: 0};
@@ -5761,6 +5767,7 @@ function vRep2(){
   return filt + kpis + '<div class="r2grid">' + tCaja + tMes + '</div>' + tGab + tTop + tDet;
 }
 document.addEventListener('change', function(ev){
+  var t0 = ev.target; if(t0 && t0.hasAttribute && t0.hasAttribute('data-r2np')){ var gv = t0.value, ix = R2NP.gabs.indexOf(gv); if(t0.checked && ix === -1) R2NP.gabs.push(gv); if(!t0.checked && ix !== -1) R2NP.gabs.splice(ix, 1); R2NP.open = true; render(); return; }
   var t = ev.target, k = t && t.getAttribute && t.getAttribute('data-r2'); if(!k) return;
   R2[k] = t.value; if(k === 'per' && t.value !== 'rango'){ R2.desde = ''; R2.hasta = ''; } R2.mesSel = R2.mesSel && k !== 'per' ? R2.mesSel : ''; render();
 });
@@ -5769,8 +5776,13 @@ document.addEventListener('click', function(ev){
   if(a === 'r2Caja'){ var i = R2.cajas.indexOf(v); if(i === -1) R2.cajas.push(v); else R2.cajas.splice(i, 1); render(); }
   else if(a === 'r2Mes'){ R2.mesSel = R2.mesSel === v ? '' : v; render(); }
   else if(a === 'r2Gab'){ R2.gab = R2.gab === v ? '' : v; render(); }
+  else if(a === 'r2npTodos'){ R2NP.gabs = (S.gabaim || []).slice(); R2NP.open = true; render(); }
+  else if(a === 'r2npNinguno'){ R2NP.gabs = []; R2NP.open = true; render(); }
   else if(a === 'r2Limpiar'){ R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: ''}; render(); }
 });
+
+document.addEventListener('toggle', function(ev){ if(ev.target && ev.target.id === 'r2npSel') R2NP.open = ev.target.open; }, true);
+document.addEventListener('click', function(ev){ var d = document.getElementById('r2npSel'); if(d && d.open && !d.contains(ev.target)){ d.open = false; R2NP.open = false; } });
 
 /* ================= Buscador con sugerencias en las listas de donadores ================= */
 var BUSCA_IDS = ['r2Don', 'portalSel', 'donSel', 'segDon', 'cclDon', 'ccDon', 'comDon', 'contDon', 'aprDon', 'bkDon', 'rgDon'];
