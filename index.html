@@ -5681,7 +5681,7 @@ var R2_COL = ['#2563eb', '#7c3aed', '#0d9488', '#ea580c', '#db2777', '#65a30d', 
 function r2Color(g){ var gs = S.gabaim || [], i = gs.indexOf(g); if(i === -1){ var h = 0; String(g || '').split('').forEach(function(ch){ h = (h * 31 + ch.charCodeAt(0)) >>> 0; }); i = gs.length + h; } return g ? R2_COL[i % R2_COL.length] : '#94a3b8'; }
 function r2Gab(g){ return '<span class="r2g" style="--c:' + r2Color(g) + '" dir="auto">' + esc(g || 'Sin gabai') + '</span>'; }
 function r2Mes(ym){ return mesNom(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4); }
-function r2Num(c, cls){ return '<span class="' + (c < 0 ? 'r2neg' : '') + '">' + (c < 0 ? '-' : '') + mN(Math.abs(c)) + '</span>'; }
+function r2Num(c, cls){ return '<span class="' + (c < 0 ? 'r2neg' : c > 0 ? 'r2pos' : '') + '">' + (c < 0 ? '-' : '') + mN(Math.abs(c)) + '</span>'; }
 function vRep2(){
   var todas = r2Filas(), filas = todas.filter(function(x){ return r2Pasa(x); });
   var sel = function(id, val, opts, todos){ return '<select data-r2="' + id + '"><option value="">' + todos + '</option>' + opts.map(function(o){ var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (v === val ? ' selected' : '') + ' dir="auto">' + esc(t) + '</option>'; }).join('') + '</select>'; };
@@ -5741,7 +5741,7 @@ function vRep2(){
   var tDet = '<section class="panel"><h2>Detalle de movimientos <span class="sub">(' + det.length + ')</span></h2>' + tbBar('rep2') + '<div class="tablewrap"><table class="t" data-cf="rep2"><thead><tr><th>Recibo</th><th>Fecha de pago</th><th>Mes del donativo</th><th>Concepto</th><th>Tipo</th><th>Gabai</th><th>Donador / Beneficiario</th><th>Caja</th><th class="n">Monto</th><th>Divisa</th><th>Comentarios</th></tr></thead><tbody>' +
     det.slice(0, 1500).map(function(x){ return '<tr><td>' + esc(x.folio) + '</td><td>' + esc(fFecha(x.fecha)) + '</td><td>' + esc(r2Mes(x.mesD)) + '</td><td>' + esc(x.concepto) + '</td><td>' + (x.tipo === 'ing' ? '<span class="pill t-ok">Ingreso</span>' : '<span class="pill t-bad">Egreso</span>') + '</td><td>' + r2Gab(x.gabai) + '</td><td>' + esc(x.nombre) + '</td><td>' + esc(caja(x.caja).nombre) + '</td><td class="n ' + (x.tipo === 'ing' ? 'r2pos' : 'r2neg') + '"><b>' + (x.monto < 0 ? '-' : '') + mN(Math.abs(x.monto)) + '</b></td><td>' + esc(x.mon) + '</td><td>' + esc(x.obs) + '</td></tr>'; }).join('') +
     '</tbody></table></div>' + (det.length > 1500 ? '<div class="sub">Se muestran los primeros 1,500; usa los filtros para acotar.</div>' : '') + '</section>';
-  return filt + kpis + graf + '<div class="r2grid">' + tCaja + tMes + '</div>' + tGab + tTop + tDet;
+  return filt + kpis + '<div class="r2grid">' + tCaja + tMes + '</div>' + tGab + tTop + tDet;
 }
 document.addEventListener('change', function(ev){
   var t = ev.target, k = t && t.getAttribute && t.getAttribute('data-r2'); if(!k) return;
