@@ -193,6 +193,7 @@ html.nologin .app{display:none}
 .nbest{position:relative;padding-inline:10px}.nbdot{position:absolute;right:5px;bottom:5px;width:8px;height:8px;border-radius:50%;background:#9aa4b2;border:1.5px solid var(--surface,#fff)}.nbest[data-e=ok] .nbdot{background:#1f9d55}.nbest[data-e=sube] .nbdot{background:#d29b00}.nbest[data-e=err] .nbdot{background:#c62828}.lbox .nbnote{font-size:13px;color:var(--muted,#667);text-align:center}
 @media (min-width:900px){main>.top{position:relative;padding-top:40px}main>.top>.row>#whoBox{position:absolute;top:0;right:0;flex-wrap:nowrap}}
 .buscaFila{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}.buscaFila>select{flex:1 1 0;width:auto;min-width:0}.buscaFila>.busca{flex:1 1 0;min-width:0}.busca{position:relative;width:100%}.busca .buscaLista{min-width:240px}.busca input{width:100%}.buscaLista{position:absolute;z-index:60;left:0;right:0;top:calc(100% + 4px);background:var(--surface,#fff);border:1px solid var(--line,#dde);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:300px;overflow:auto;padding:4px}.buscaLista button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;color:inherit;cursor:pointer}.buscaLista button:hover,.buscaLista button.act{background:var(--brand-soft,#e8eef6)}.buscaLista b{color:var(--brand,#12324F)}.buscaLista .vacio{padding:9px 12px;color:var(--muted,#667)}
+.r2filt{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;align-items:end}.r2kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.r2kpi .kpi strong{font-size:30px !important;display:block;margin:4px 0 6px}.r2vs{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}.r2vs.up{background:#e3f4ea;color:#1f7a4d}.r2vs.dn{background:#fde7e5;color:#b3261e}.r2chart{width:100%;height:auto;display:block}.r2chart rect[data-a]{cursor:pointer}.r2chart rect[data-a]:hover{opacity:.75}.r2top li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}.r2top ol{margin:0;padding-left:22px}.r2leg{display:flex;gap:14px;font-size:12px;color:var(--muted)}.r2leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}.r2kpi .lin{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:4px}.r2kpi .lin b{color:var(--ink,#111)}.r2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}.r2grid table tr[data-a]{cursor:pointer}.r2grid table tr[data-a]:hover td{background:var(--brand-soft,#e8eef6)}.r2grid tr.on td{background:#fff4d6}.r2neg{color:#b3261e}.r2pos{color:#1f7a4d}.r2tot td{font-weight:700;border-top:2px solid var(--line)}.r2act{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.r2act .pill{cursor:pointer}
 .lbox h1{font-size:24px;text-align:center;margin:4px 0 0}.lgo{min-height:48px;font-size:16px}
 .pwrow{display:flex;gap:8px;align-items:center}.pwrow input{flex:1;min-width:0}
 .lbox .langs{align-self:center}.lbox .langs button[aria-pressed=true]{background:var(--brand);color:#fff}
@@ -616,7 +617,8 @@ var INGRESOS_NUEVOS = [
   {n: 'Beto Shamosh', f: '2026-10-30', mes: 10, mx: 5100000, usd: 255000},
   {n: 'Moy Shemaria', f: '2026-10-29', mes: 10, mx: 0, usd: 200000},
   {n: 'Abraham Dichy', f: '2026-10-30', mes: 11, mx: 4000000, usd: 200000},
-  {n: 'Abraham Dichy', f: '2026-10-30', mes: 12, mx: 2000000, usd: 100000, forzar: true}
+  {n: 'Abraham Dichy', f: '2026-10-30', mes: 12, mx: 2000000, usd: 100000, forzar: true},
+  {n: 'Jaime Dichy', f: '2026-10-30', mes: 10, mx: 10000000, usd: 500000}
 ];
 function recEstiloFix(){ if(!S) return; S.fixes = S.fixes || {}; if(S.fixes.recEst1) return; S.fixes.recEst1 = true; S.cfg = S.cfg || {}; S.cfg.recEstilo = 'estado'; }
 var ROPA_NUEVOS = [
@@ -1053,7 +1055,7 @@ function seed(){
 /* ================= navegación ================= */
 var ui = {don: {q: '', f: 'todos', open: null}, nd: {}, view: 'donantes', cob: {mes: String(mesAct()), dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}, comp: {f: 'activos', q: '', sel: null, gab: 'todos'}, portal: {d: null}, link: {done: null}};
 var VIEWS = [
-  ['donantes', 'Donadores'], ['nuevocomp', 'Compromisos'], ['seg2', 'Seguimientos'], ['cobranza', 'Cobranza'], ['aprobar', 'Autorizaciones'], ['comis', '% Comisiones'], ['conta', 'Contabilidad'], ['egresos', 'Egresos'], ['direccion', 'Dirección'], ['avisos', 'Avisos'], ['recordat', 'Recordatorios'], ['exportar', 'Exportar'], ['config', 'Configuración'], ['permisos', 'Permisos'],
+  ['donantes', 'Donadores'], ['nuevocomp', 'Compromisos'], ['seg2', 'Seguimientos'], ['cobranza', 'Cobranza'], ['aprobar', 'Autorizaciones'], ['comis', '% Comisiones'], ['conta', 'Contabilidad'], ['rep2', 'Reporte contable'], ['egresos', 'Egresos'], ['direccion', 'Dirección'], ['avisos', 'Avisos'], ['recordat', 'Recordatorios'], ['exportar', 'Exportar'], ['config', 'Configuración'], ['permisos', 'Permisos'],
   ['grp', 'Lo que ve el donante'], ['portal', 'Portal del donante']
 ];
 function esDonante(){ return user().rol === 'Donante'; }
@@ -1124,6 +1126,7 @@ function moverTab(id, d){
   var bt = document.querySelector('[data-a=tabMov][data-v="' + id + '"][data-d="' + d + '"]'); if(bt && !bt.disabled) bt.focus();
 }
 var ICONOS = {
+  rep2: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16v-4M12 16V8M17 16v-6"/>',
   recordat: '<path d="M12 8v4l2.5 2.5"/><circle cx="12" cy="13" r="8"/><path d="M5 3L2 6M19 3l3 3"/>',
   aprobar: '<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
   donantes: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -1180,6 +1183,7 @@ function kicker(){
     case 'comis': return (ui.com && ui.com.mes !== 'todos' ? Mes(+ui.com.mes) + ' ' : '') + Y;
     case 'conta': return movimientos().filter(function(x){ return x.fecha.slice(0, 4) === String(Y); }).length + ' movimientos ' + Y;
     case 'egresos': return (S.egresos || []).length + ' egresos';
+    case 'rep2': return 'Ingresos y egresos';
     case 'permisos': return S.usuarios.length + ' usuarios';
     default: return 'Bait Lapletot';
   }
@@ -1191,7 +1195,7 @@ function accionPrincipal(){
   if(a[0] === 'goEgreso' && !puede('egresos')) return '';
   return '<button type="button" class="btn primary" data-a="' + a[0] + '">' + a[1] + '</button>';
 }
-var CORTO = {donantes: 'Donad.', nuevocomp: 'Compr.', seg2: 'Segui.', cobranza: 'Cobro', aprobar: 'Autor.', comis: '% Com.', conta: 'Conta.', egresos: 'Egres.', direccion: 'Direc.', avisos: 'Avisos', recordat: 'Record.', exportar: 'Export.', config: 'Config.', permisos: 'Perm.', portal: 'Portal'};
+var CORTO = {donantes: 'Donad.', nuevocomp: 'Compr.', seg2: 'Segui.', cobranza: 'Cobro', aprobar: 'Autor.', comis: '% Com.', conta: 'Conta.', rep2: 'Report.', egresos: 'Egres.', direccion: 'Direc.', avisos: 'Avisos', recordat: 'Record.', exportar: 'Export.', config: 'Config.', permisos: 'Perm.', portal: 'Portal'};
 function esMovil(){ return window.innerWidth <= 760; }
 function navModo(){ return (S && S.cfg && S.cfg.nav) || 'compacto'; }
 function navAplicar(){ var ob = document.querySelector('.navord'); if(ob) ob.hidden = !(user() && user().rol === 'Dirección'); var b = document.body, m = navModo(), n = document.querySelector('nav.side'); if(!n) return;
@@ -1201,7 +1205,7 @@ function navAbrir(on){ var n = document.querySelector('nav.side'); if(!n) return
   if(esMovil()){ n.classList.toggle('open', !!on); document.body.classList.toggle('nav-movil-open', !!on); var bg = $('navbg'); if(bg) bg.hidden = !on; return; }
   S.cfg = S.cfg || {}; S.cfg.nav = on ? 'abierto' : 'compacto'; save(); navAplicar(); }
 window.addEventListener('resize', function(){ if(typeof S !== 'undefined' && S) navAplicar(); });
-var NAV_GRUPOS = [['don', 'Donadores', ['donantes', 'nuevocomp', 'seg2']], ['cob', 'Cobros', ['cobranza', 'aprobar', 'avisos', 'recordat']], ['fin', 'Finanzas', ['comis', 'conta', 'egresos']], ['rep', 'Reportes', ['direccion', 'exportar']], ['aju', 'Ajustes', ['config', 'permisos', 'portal']]];
+var NAV_GRUPOS = [['don', 'Donadores', ['donantes', 'nuevocomp', 'seg2']], ['cob', 'Cobros', ['cobranza', 'aprobar', 'avisos', 'recordat']], ['fin', 'Finanzas', ['comis', 'conta', 'rep2', 'egresos']], ['rep', 'Reportes', ['direccion', 'exportar']], ['aju', 'Ajustes', ['config', 'permisos', 'portal']]];
 var ICO_OJO_NO = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M3 3l18 18"/></svg>';
 function navOc(){ var u = user(); return (u && S.cfg && S.cfg['navOc_' + u.id]) || []; }
 function abrirModOc(gid){
@@ -1244,8 +1248,8 @@ function render0(){
   if(ui.view === 'gabaim') ui.view = 'config';
   if(!puede(ui.view)){ var pv = vistasTodas().find(function(v){ return puede(v[0]); }); ui.view = pv ? pv[0] : 'portal'; }
   renderNav();
-  var f = {aprobar: vAprobar, permisos: vPermisos, conta: vConta, egresos: vEgresos, comis: vComis, seg2: vSeg2, nuevocomp: vNuevoComp, gabaim: vGabaim, direccion: vDireccion, cobranza: vCobranza, donantes: vDonantes, compromisos: vCompromisos, avisos: vAvisos, recordat: vRecordat, exportar: vExportar, config: vConfig, link: vLink, portal: vPortal}[ui.view];
-  var titles = {aprobar: 'Autorizaciones', permisos: 'Permisos', conta: 'Contabilidad', egresos: 'Egresos', comis: '% Comisiones', seg2: 'Seguimientos', nuevocomp: 'Compromisos', gabaim: 'Gabaim', direccion: 'Dirección', cobranza: 'Cobranza', donantes: 'Donadores', compromisos: 'Seguimientos', avisos: 'Avisos', recordat: 'Recordatorios', exportar: 'Exportar', config: 'Configuración', link: 'Link de compromiso', portal: 'Portal del donante'};
+  var f = {aprobar: vAprobar, permisos: vPermisos, conta: vConta, rep2: vRep2, egresos: vEgresos, comis: vComis, seg2: vSeg2, nuevocomp: vNuevoComp, gabaim: vGabaim, direccion: vDireccion, cobranza: vCobranza, donantes: vDonantes, compromisos: vCompromisos, avisos: vAvisos, recordat: vRecordat, exportar: vExportar, config: vConfig, link: vLink, portal: vPortal}[ui.view];
+  var titles = {aprobar: 'Autorizaciones', permisos: 'Permisos', conta: 'Contabilidad', rep2: '📊 Reporte contable', egresos: 'Egresos', comis: '% Comisiones', seg2: 'Seguimientos', nuevocomp: 'Compromisos', gabaim: 'Gabaim', direccion: 'Dirección', cobranza: 'Cobranza', donantes: 'Donadores', compromisos: 'Seguimientos', avisos: 'Avisos', recordat: 'Recordatorios', exportar: 'Exportar', config: 'Configuración', link: 'Link de compromiso', portal: 'Portal del donante'};
   $('vtitle').textContent = titles[ui.view];
   $('view').innerHTML = f();
   setTimeout(function(){ try{ rgCampana(); if(!RG_POP_INI && LOGUEADO){ RG_POP_INI = true; if(puede('recordat') && ui.view !== 'recordat') rgPopup(false); } }catch(e){} }, 400);
@@ -5636,8 +5640,120 @@ document.addEventListener('click', function(ev){
 });
 document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && (ev.target.id === 'nbPw' || ev.target.id === 'nbMail')){ ev.preventDefault(); nbEntrar(); } else if(ev.key === 'Enter' && ev.target.id === 'nbN2' && !$('login').hidden){ ev.preventDefault(); nbGuardaPw(); } });
 
+/* ================= Reporte contable (estilo tablero) ================= */
+var R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: ''};
+function r2Filas(){
+  var out = [], Y = anioAct();
+  S.donativos.forEach(function(p){
+    var c = comp(p.compId), d = c ? don(c.donanteId) : null, m = (p.cubre || []).reduce(function(a, k){ return Math.min(a, k.mes); }, 99);
+    out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo || '', mesD: m < 99 ? (c ? c.anio : Y) + '-' + pad(m) : p.fecha.slice(0, 7), concepto: c ? (c.concepto || 'Donativo') : 'Donativo', gabai: p.gabai != null ? p.gabai : (c ? (c.gabai || '') : ''), nombre: d ? d.nombre : '—', donId: d ? d.id : '', caja: p.caja || 'MXN', mon: p.moneda, monto: p.montoC, mod: c ? (c.modalidad || '') : '', obs: p.obs || ''});
+  });
+  (S.egresos || []).forEach(function(e){
+    out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio || '', mesD: e.fecha.slice(0, 7), concepto: e.concepto || 'Egreso', gabai: e.gabai || '', nombre: e.benef || '—', donId: '', caja: e.caja || (e.moneda === 'USD' ? 'USD' : 'MXN'), mon: e.moneda, monto: -e.montoC, mod: '', obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · ')});
+  });
+  return out;
+}
+function r2Rango(){
+  var h = hoy(), Y = h.slice(0, 4), M = h.slice(0, 7);
+  if(R2.per === 'anio') return [Y + '-01-01', Y + '-12-31'];
+  if(R2.per === 'mes') return [M + '-01', M + '-31'];
+  if(R2.per === 'mesant'){ var d = new Date(+Y, +h.slice(5, 7) - 2, 1), m2 = d.getFullYear() + '-' + pad(d.getMonth() + 1); return [m2 + '-01', m2 + '-31']; }
+  if(R2.per === '30') return [addDias(h, -30), h];
+  if(R2.per === 'anioant'){ var y2 = String(+Y - 1); return [y2 + '-01-01', y2 + '-12-31']; }
+  if(R2.per === 'rango') return [R2.desde || '0000-01-01', R2.hasta || '9999-12-31'];
+  return ['0000-01-01', '9999-12-31'];
+}
+function r2Pasa(x, sin, rgF){
+  var rg = rgF || r2Rango(); sin = sin || '';
+  if(x.fecha < rg[0] || x.fecha > rg[1]) return false;
+  if(R2.tipo !== 'todos' && x.tipo !== R2.tipo) return false;
+  if(sin !== 'gab' && R2.gab && x.gabai !== R2.gab) return false;
+  if(R2.con && x.concepto !== R2.con) return false;
+  if(R2.don && x.donId !== R2.don) return false;
+  if(sin !== 'caja' && R2.cajas.length && R2.cajas.indexOf(x.caja) === -1) return false;
+  if(R2.mod && x.mod !== R2.mod) return false;
+  if(R2.rec && String(x.folio).toLowerCase().indexOf(R2.rec.toLowerCase()) === -1) return false;
+  if(R2.com && sinAcento(x.obs).indexOf(sinAcento(R2.com)) === -1) return false;
+  if(sin !== 'mes' && R2.mesSel && x.fecha.slice(0, 7) !== R2.mesSel) return false;
+  return true;
+}
+function r2Mes(ym){ return mesNom(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4); }
+function r2Num(c, cls){ return '<span class="' + (c < 0 ? 'r2neg' : '') + '">' + (c < 0 ? '-' : '') + mN(Math.abs(c)) + '</span>'; }
+function vRep2(){
+  var todas = r2Filas(), filas = todas.filter(function(x){ return r2Pasa(x); });
+  var sel = function(id, val, opts, todos){ return '<select data-r2="' + id + '"><option value="">' + todos + '</option>' + opts.map(function(o){ var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (v === val ? ' selected' : '') + ' dir="auto">' + esc(t) + '</option>'; }).join('') + '</select>'; };
+  var uniq = function(k){ var m = {}; todas.forEach(function(x){ if(x[k]) m[x[k]] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }); };
+  var dons = S.donantes.slice().sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); }).map(function(d){ return [d.id, d.nombre]; });
+  var per = [['anio', 'Este año'], ['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['30', 'Últimos 30 días'], ['anioant', 'Año pasado'], ['todo', 'Todo'], ['rango', 'Elegir fechas…']];
+  var filt = '<section class="panel"><div class="r2filt">' +
+    '<label class="f">Tipo de movimiento<select data-r2="tipo">' + [['todos', 'Ingresos y egresos'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos']].map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Gabai (asignado)' + sel('gab', R2.gab, S.gabaim || [], 'Todos') + '</label>' +
+    '<label class="f">Concepto' + sel('con', R2.con, uniq('concepto'), 'Todos') + '</label>' +
+    '<label class="f">Donador' + '<select id="r2Don" data-r2="don"><option value="">Todos los donadores</option>' + dons.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === R2.don ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Modalidad' + sel('mod', R2.mod, uniq('mod'), 'Todas') + '</label>' +
+    '<label class="f">Periodo<select data-r2="per">' + per.map(function(o){ return '<option value="' + o[0] + '"' + (R2.per === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+    (R2.per === 'rango' ? '<label class="f">Desde<input type="date" data-r2="desde" value="' + esc(R2.desde) + '"></label><label class="f">Hasta<input type="date" data-r2="hasta" value="' + esc(R2.hasta) + '"></label>' : '') +
+    '<label class="f">Número de recibo<input type="search" data-r2="rec" value="' + esc(R2.rec) + '" placeholder="Ej. R-0910"></label>' +
+    '<label class="f">Comentarios<input type="search" data-r2="com" value="' + esc(R2.com) + '" placeholder="Buscar en comentarios"></label>' +
+    '</div><div class="r2act" style="margin-top:10px"><span class="sub">Caja:</span>' + CAJAS.map(function(k){ var on = R2.cajas.indexOf(k.id) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="r2Caja" data-v="' + k.id + '">' + esc(k.nombre) + '</button>'; }).join('') +
+    (R2.mesSel ? '<span class="pill t-info" data-a="r2Mes" data-v="">Mes: ' + esc(r2Mes(R2.mesSel)) + ' ✕</span>' : '') +
+    '<button type="button" class="btn ghost sm" data-a="r2Limpiar" style="margin-left:auto">✕ Quitar filtros</button></div></section>';
+  var sum = function(arr, mon, tipo){ return arr.reduce(function(a, x){ return a + (x.mon === mon && (!tipo || x.tipo === tipo) ? x.monto : 0); }, 0); };
+  var rg0 = r2Rango(), menos1 = function(f){ return /^\d{4}/.test(f) && f.slice(0, 4) !== '0000' && f.slice(0, 4) !== '9999' ? String(+f.slice(0, 4) - 1) + f.slice(4) : f; }, rgA = [menos1(rg0[0]), menos1(rg0[1])];
+  var prev = R2.per === 'todo' ? null : todas.filter(function(x){ return r2Pasa(x, '', rgA); });
+  var vs = function(mon){ if(!prev) return ''; var a = sum(prev, mon, 'ing'), b2 = sum(filas, mon, 'ing'); if(!a) return ''; var pc = Math.round((b2 - a) / Math.abs(a) * 100); return '<span class="r2vs ' + (pc >= 0 ? 'up' : 'dn') + '" title="Ingresos contra el mismo periodo del año pasado (' + mN(a) + ' ' + mon + ')">' + (pc >= 0 ? '▲ ' : '▼ ') + Math.abs(pc) + '% vs año pasado</span>'; };
+  var kpi = function(mon){ var i = sum(filas, mon, 'ing'), e = sum(filas, mon, 'egr'); return '<div class="kpi"><span>Monto contable ' + mon + vs(mon) + '</span><strong' + (i + e < 0 ? ' class="r2neg"' : '') + '>' + (i + e < 0 ? '-' : '') + mN(Math.abs(i + e)) + ' <small style="font-size:14px;color:var(--muted)">' + mon + '</small></strong><div class="lin"><span>Ingresos</span><b class="r2pos">' + mN(i) + '</b></div><div class="lin"><span>Egresos</span><b class="r2neg">' + (e ? '-' : '') + mN(Math.abs(e)) + '</b></div><div class="lin"><span>Movimientos</span><b>' + filas.filter(function(x){ return x.mon === mon; }).length + '</b></div></div>'; };
+  var kpis = '<section class="r2kpi">' + kpi('MXN') + kpi('USD') + '</section>';
+  // por caja
+  var fc = todas.filter(function(x){ return r2Pasa(x, 'caja'); }), porCaja = CAJAS.map(function(k){ var xs = fc.filter(function(x){ return x.caja === k.id; }); return {k: k, n: xs.length, mx: sum(xs, 'MXN'), us: sum(xs, 'USD')}; }).filter(function(r){ return r.n; });
+  var tCaja = '<section class="panel"><h2>Por caja</h2><div class="tablewrap"><table class="t"><thead><tr><th>Caja</th><th class="n">Movs.</th><th class="n">Monto MXN</th><th class="n">Monto USD</th></tr></thead><tbody>' + porCaja.map(function(r){ return '<tr data-a="r2Caja" data-v="' + r.k.id + '"' + (R2.cajas.indexOf(r.k.id) !== -1 ? ' class="on"' : '') + '><td>' + esc(r.k.nombre) + '</td><td class="n">' + r.n + '</td><td class="n">' + r2Num(r.mx) + '</td><td class="n">' + r2Num(r.us) + '</td></tr>'; }).join('') + '</tbody></table></div><div class="sub" style="margin-top:6px">Toca una caja para filtrar todo el reporte.</div></section>';
+  // por mes de pago
+  var fm = todas.filter(function(x){ return r2Pasa(x, 'mes'); }), meses = {}; fm.forEach(function(x){ var k = x.fecha.slice(0, 7); meses[k] = meses[k] || []; meses[k].push(x); });
+  var tMes = '<section class="panel"><h2>Por mes de pago</h2><div class="tablewrap" style="max-height:360px;overflow:auto"><table class="t"><thead><tr><th>Mes</th><th class="n">Movs.</th><th class="n">Monto MXN</th><th class="n">Monto USD</th></tr></thead><tbody>' + Object.keys(meses).sort().map(function(k){ var xs = meses[k]; return '<tr data-a="r2Mes" data-v="' + k + '"' + (R2.mesSel === k ? ' class="on"' : '') + '><td>' + esc(r2Mes(k)) + '</td><td class="n">' + xs.length + '</td><td class="n">' + r2Num(sum(xs, 'MXN')) + '</td><td class="n">' + r2Num(sum(xs, 'USD')) + '</td></tr>'; }).join('') + '</tbody></table></div><div class="sub" style="margin-top:6px">Toca un mes para ver solo ese mes.</div></section>';
+
+  var grafica = function(mon){
+    var ms = Object.keys(meses).sort(); if(!ms.length) return '<div class="sub">Sin movimientos en ' + mon + '.</div>';
+    var dat = ms.map(function(k){ return {k: k, i: sum(meses[k], mon, 'ing'), e: -sum(meses[k], mon, 'egr')}; });
+    var mx = Math.max.apply(null, dat.map(function(d){ return Math.max(d.i, d.e); }).concat([1]));
+    var W = 640, H = 210, pl = 8, pb = 26, bw = (W - pl * 2) / dat.length, h = H - pb - 18;
+    var bars = dat.map(function(d, j){ var x = pl + j * bw, w = Math.max(4, bw * 0.36), hi = d.i / mx * h, he = d.e / mx * h, on = R2.mesSel === d.k;
+      return '<g><title>' + r2Mes(d.k) + ' · Ingresos ' + mN(d.i) + ' ' + mon + (d.e ? ' · Egresos ' + mN(d.e) + ' ' + mon : '') + '</title>' +
+        '<rect data-a="r2Mes" data-v="' + d.k + '" x="' + (x + bw * 0.12).toFixed(1) + '" y="' + (18 + h - hi).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(hi, 1).toFixed(1) + '" rx="3" fill="' + (on ? '#d29b00' : '#1f7a4d') + '"/>' +
+        (d.e ? '<rect data-a="r2Mes" data-v="' + d.k + '" x="' + (x + bw * 0.12 + w + 2).toFixed(1) + '" y="' + (18 + h - he).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(he, 1).toFixed(1) + '" rx="3" fill="#c62828"/>' : '') +
+        '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (H - 8) + '" font-size="11" text-anchor="middle" fill="currentColor" opacity=".7">' + mesNom(+d.k.slice(5, 7)).slice(0, 3) + '</text></g>'; }).join('');
+    return '<svg class="r2chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Ingresos y egresos por mes en ' + mon + '"><text x="' + pl + '" y="12" font-size="11" fill="currentColor" opacity=".6">máx. ' + mN(mx) + ' ' + mon + '</text>' + bars + '</svg>';
+  };
+  var graf = '<section class="panel"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Ingresos y egresos por mes</h2><div class="r2leg"><span><i style="background:#1f7a4d"></i>Ingresos</span><span><i style="background:#c62828"></i>Egresos</span><span><i style="background:#d29b00"></i>Mes elegido</span></div></div><div class="r2grid" style="margin-top:8px"><div><div class="sub" style="font-weight:700">Pesos (MXN)</div>' + grafica('MXN') + '</div><div><div class="sub" style="font-weight:700">Dólares (USD)</div>' + grafica('USD') + '</div></div><div class="sub">Toca una barra para ver solo ese mes.</div></section>';
+  var top = function(mon){ var m = {}; filas.forEach(function(x){ if(x.tipo !== 'ing' || x.mon !== mon) return; m[x.nombre] = (m[x.nombre] || 0) + x.monto; }); var arr = Object.keys(m).map(function(k){ return [k, m[k]]; }).sort(function(a, b){ return b[1] - a[1]; }).slice(0, 10);
+    return arr.length ? '<ol>' + arr.map(function(r){ return '<li><span>' + esc(r[0]) + '</span><b>' + mN(r[1]) + ' ' + mon + '</b></li>'; }).join('') + '</ol>' : '<div class="sub">Sin ingresos en ' + mon + '.</div>'; };
+  var tTop = '<section class="panel r2top"><h2>🏆 Top 10 donadores del periodo</h2><div class="r2grid"><div><div class="sub" style="font-weight:700">En pesos</div>' + top('MXN') + '</div><div><div class="sub" style="font-weight:700">En dólares</div>' + top('USD') + '</div></div></section>';
+  // por gabai
+  var fg = todas.filter(function(x){ return r2Pasa(x, 'gab'); }), gabs = {}; fg.forEach(function(x){ var k = x.gabai || '(sin gabai)'; gabs[k] = gabs[k] || []; gabs[k].push(x); });
+  var tot = {im: 0, em: 0, iu: 0, eu: 0};
+  var tGab = '<section class="panel"><h2>Por gabai (asignado)</h2><div class="tablewrap"><table class="t"><thead><tr><th>Gabai</th><th class="n">Ingreso MXN</th><th class="n">Egreso MXN</th><th class="n">Ingreso USD</th><th class="n">Egreso USD</th></tr></thead><tbody>' + Object.keys(gabs).sort().map(function(k){ var xs = gabs[k], im = sum(xs, 'MXN', 'ing'), em = sum(xs, 'MXN', 'egr'), iu = sum(xs, 'USD', 'ing'), eu = sum(xs, 'USD', 'egr'); tot.im += im; tot.em += em; tot.iu += iu; tot.eu += eu;
+    return '<tr data-a="r2Gab" data-v="' + esc(k === '(sin gabai)' ? '' : k) + '"' + (R2.gab && R2.gab === k ? ' class="on"' : '') + '><td dir="auto">' + esc(k) + '</td><td class="n">' + r2Num(im) + '</td><td class="n">' + r2Num(em) + '</td><td class="n">' + r2Num(iu) + '</td><td class="n">' + r2Num(eu) + '</td></tr>'; }).join('') +
+    '<tr class="r2tot"><td>Total</td><td class="n">' + r2Num(tot.im) + '</td><td class="n">' + r2Num(tot.em) + '</td><td class="n">' + r2Num(tot.iu) + '</td><td class="n">' + r2Num(tot.eu) + '</td></tr></tbody></table></div></section>';
+  // detalle
+  var det = filas.slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || String(b.folio).localeCompare(String(a.folio)); });
+  var tDet = '<section class="panel"><h2>Detalle de movimientos <span class="sub">(' + det.length + ')</span></h2>' + tbBar('rep2') + '<div class="tablewrap"><table class="t" data-cf="rep2"><thead><tr><th>Recibo</th><th>Fecha de pago</th><th>Mes del donativo</th><th>Concepto</th><th>Tipo</th><th>Gabai</th><th>Donador / Beneficiario</th><th>Caja</th><th class="n">Monto</th><th>Divisa</th><th>Comentarios</th></tr></thead><tbody>' +
+    det.slice(0, 1500).map(function(x){ return '<tr><td>' + esc(x.folio) + '</td><td>' + esc(fFecha(x.fecha)) + '</td><td>' + esc(r2Mes(x.mesD)) + '</td><td>' + esc(x.concepto) + '</td><td>' + (x.tipo === 'ing' ? '<span class="pill t-ok">Ingreso</span>' : '<span class="pill t-bad">Egreso</span>') + '</td><td dir="auto">' + esc(x.gabai) + '</td><td>' + esc(x.nombre) + '</td><td>' + esc(caja(x.caja).nombre) + '</td><td class="n">' + r2Num(x.monto) + '</td><td>' + esc(x.mon) + '</td><td>' + esc(x.obs) + '</td></tr>'; }).join('') +
+    '</tbody></table></div>' + (det.length > 1500 ? '<div class="sub">Se muestran los primeros 1,500; usa los filtros para acotar.</div>' : '') + '</section>';
+  return filt + kpis + graf + '<div class="r2grid">' + tCaja + tMes + '</div>' + tGab + tTop + tDet;
+}
+document.addEventListener('change', function(ev){
+  var t = ev.target, k = t && t.getAttribute && t.getAttribute('data-r2'); if(!k) return;
+  R2[k] = t.value; if(k === 'per' && t.value !== 'rango'){ R2.desde = ''; R2.hasta = ''; } R2.mesSel = R2.mesSel && k !== 'per' ? R2.mesSel : ''; render();
+});
+document.addEventListener('click', function(ev){
+  var b = ev.target.closest && ev.target.closest('[data-a]'); if(!b) return; var a = b.getAttribute('data-a'), v = b.getAttribute('data-v') || '';
+  if(a === 'r2Caja'){ var i = R2.cajas.indexOf(v); if(i === -1) R2.cajas.push(v); else R2.cajas.splice(i, 1); render(); }
+  else if(a === 'r2Mes'){ R2.mesSel = R2.mesSel === v ? '' : v; render(); }
+  else if(a === 'r2Gab'){ R2.gab = R2.gab === v ? '' : v; render(); }
+  else if(a === 'r2Limpiar'){ R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: ''}; render(); }
+});
+
 /* ================= Buscador con sugerencias en las listas de donadores ================= */
-var BUSCA_IDS = ['portalSel', 'donSel', 'segDon', 'cclDon', 'ccDon', 'comDon', 'contDon', 'aprDon', 'bkDon', 'rgDon'];
+var BUSCA_IDS = ['r2Don', 'portalSel', 'donSel', 'segDon', 'cclDon', 'ccDon', 'comDon', 'contDon', 'aprDon', 'bkDon', 'rgDon'];
 function buscaNorm(t){ return sinAcento(String(t || '')).toLowerCase(); }
 function buscaMejorar(){
   BUSCA_IDS.forEach(function(id){
