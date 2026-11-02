@@ -3834,7 +3834,7 @@ function tabOrdFilas(){ var vs = vistasOrden(); return vs.map(function(v, i){ re
 function abrirTabOrd(){ openModal(head('Ordenar pestañas', 'Arrastra con ⋮⋮ o usa las flechas. El orden se guarda solo y lo ven todos los usuarios.') + '<div class="list" id="tabOrdList">' + tabOrdFilas() + '</div><div class="dfoot"><button type="button" class="btn ghost" data-a="tabOrdReset">Orden original</button><button type="button" class="btn primary" data-a="close">Listo</button></div>'); }
 function tabOrdRefrescar(){ var tl = $('tabOrdList'); if(tl) tl.innerHTML = tabOrdFilas(); }
 function gabOrdRefrescar(){ var gl = $('gabOrdList'); if(gl) gl.innerHTML = gabOrdFilas(); }
-function closeModal(){ $('modal').hidden = true; $('dlg').innerHTML = ''; $('dlg').classList.remove('wide'); }
+function closeModal(){ $('modal').hidden = true; $('dlg').innerHTML = ''; $('dlg').classList.remove('wide'); if(typeof revisarPend === 'function') setTimeout(revisarPend, 100); }
 function head(t, s){ return '<div class="dhead"><div><h2 id="dlgTitle" style="font-size:20px">' + esc(t) + '</h2>' + (s ? '<div class="sub">' + s + '</div>' : '') + '</div><button type="button" class="x" data-a="close" aria-label="Cerrar">×</button></div>'; }
 
 /* --- pago --- */
@@ -5846,8 +5846,17 @@ function tomarEstado(n){
   if(!n || n.v !== 5 || !Array.isArray(n.usuarios)) return;
   var yo = user(), modal = !$('modal').hidden;
   S = n; var k = yo ? S.usuarios.findIndex(function(u){ return u.id === yo.id; }) : -1; if(k !== -1) S.user = k;
-  if(LOGUEADO){ if(k === -1){ sesionBorrar(); mostrarLogin(); return; } var ae = document.activeElement, editando = ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && $('view').contains(ae); if(!modal && !editando) render(); else if(editando){ var rr = function(){ ae.removeEventListener('blur', rr); setTimeout(function(){ var a3 = document.activeElement; if(!(a3 && /^(INPUT|SELECT|TEXTAREA)$/.test(a3.tagName) && $('view').contains(a3)) && $('modal').hidden) render(); }, 300); }; ae.addEventListener('blur', rr); } }
+  if(LOGUEADO){ if(k === -1){ sesionBorrar(); mostrarLogin(); return; } if(!modal && !escribiendo()) refrescarVista(); else R_PEND = true; }
 }
+/* Varias pestañas o ventanas abiertas: cada una se refresca sola con lo que cambie la otra */
+var R_PEND = false;
+function escribiendo(){ var a = document.activeElement; if(!a || !$('view') || !$('view').contains(a)) return false; if(a.tagName === 'TEXTAREA') return true; return a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|date|month|color|range|file)$/i.test(a.type || ''); }
+function refrescarVista(){ R_PEND = false; var y = window.scrollY; render(); window.scrollTo(0, y); }
+function revisarPend(){ if(R_PEND && LOGUEADO && $('modal').hidden && !escribiendo()) refrescarVista(); }
+document.addEventListener('visibilitychange', function(){ if(!document.hidden) setTimeout(revisarPend, 50); });
+window.addEventListener('focus', function(){ setTimeout(revisarPend, 50); });
+document.addEventListener('focusout', function(){ setTimeout(revisarPend, 300); });
+setInterval(revisarPend, 2000);
 if(!NUBE_ON) aplicarIngresosNuevos();
 if(NUBE_ON) nbIniciar(); else (function(){ var ses = sesionLeer(), u = ses && S.usuarios.find(function(x){ return x.id === ses.uid; });
   if(u && u.pw && !u.inactivo){ S.user = S.usuarios.indexOf(u); LOGUEADO = true; render(); } else { applyLang(); mostrarLogin(); } })();
