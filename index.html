@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v175</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v176</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2512,10 +2512,10 @@ function movimientos(){
   var out = [];
   S.donativos.forEach(function(p){
     var c = comp(p.compId), d = c ? don(c.donanteId) : null;
-    out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo, concepto: c ? (c.concepto || 'Donativo') : 'Donativo', nombre: d ? d.nombre : '—', gabai: p.gabai != null ? p.gabai : (c ? (c.gabai || '') : ''), corr: corrTxt(p, c), corrM: (p.cubre || []).reduce(function(m, k){ return k.ap > 0 ? Math.min(m, k.mes) : m; }, 99), cuotaC: c && c.modalidad !== 'Pago directo' ? c.cuotaC : null, cuotaMon: c ? c.moneda : 'USD', gabaiTxt: '', donId: d ? d.id : '', eqC: c && c.moneda === 'USD' ? p.montoCompC : (p.moneda === 'USD' ? p.montoC : Math.round(p.montoC / (p.tc || S.cfg.tc || 1))), forma: p.forma, caja: p.caja || cajaDef(p.moneda), moneda: p.moneda, montoC: p.montoC, tc: p.tc, obs: p.obs || '', compId: p.compId});
+    out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo, concepto: c ? (c.concepto || 'Donativo') : 'Donativo', nombre: d ? d.nombre : '—', gabai: p.gabai != null ? p.gabai : (c ? (c.gabai || '') : ''), corr: corrTxt(p, c), corrM: (p.cubre || []).reduce(function(m, k){ return k.ap > 0 ? Math.min(m, k.mes) : m; }, 99), cuotaC: c && c.modalidad !== 'Pago directo' ? c.cuotaC : null, cuotaMon: c ? c.moneda : 'USD', gabaiTxt: '', donId: d ? d.id : '', eqC: c && c.moneda === 'USD' ? p.montoCompC : (p.moneda === 'USD' ? p.montoC : Math.round(p.montoC / (p.tc || S.cfg.tc || 1))), modalidad: c ? (c.modalidad || 'Recurrente') : '', forma: p.forma, caja: p.caja || cajaDef(p.moneda), moneda: p.moneda, montoC: p.montoC, tc: p.tc, obs: p.obs || '', compId: p.compId});
   });
   (S.egresos || []).filter(egActivo).forEach(function(e){
-    out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio, concepto: e.concepto, nombre: e.benef, gabai: e.gabai || '', donId: '', eqC: e.moneda === 'USD' ? e.montoC : Math.round(e.montoC / (e.tc || S.cfg.tc || 1)), forma: e.forma, caja: e.caja, moneda: e.moneda, montoC: e.montoC, tc: e.tc, obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · '), id: e.id});
+    out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio, concepto: e.concepto, nombre: e.benef, gabai: e.gabai || '', donId: '', eqC: e.moneda === 'USD' ? e.montoC : Math.round(e.montoC / (e.tc || S.cfg.tc || 1)), modalidad: e.modalidad || '', forma: e.forma, caja: e.caja, moneda: e.moneda, montoC: e.montoC, tc: e.tc, obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · '), id: e.id});
   });
   return out;
 }
@@ -2528,8 +2528,8 @@ function cjMovs(){
   (S.cambiosCaja || []).forEach(function(c){
     var tcN = cjTc(c), extra = [c.coment, tcN ? 'T.C. ' + tcN.toFixed(4) : ''].filter(Boolean).join(' · ');
     var eq = function(m, mon){ return mon === 'USD' ? m : (c.refC || Math.round(m / (tcN || S.cfg.tc || 1))); };
-    out.push({tipo: 'egr', cambio: true, fecha: c.fecha, folio: c.folio, concepto: c.concepto || 'Cambio de caja', nombre: c.receptor || caja(c.des).nombre, gabai: '', donId: '', eqC: eq(c.montoEC, c.monE), forma: c.modalidad || 'Cambio', caja: c.ori, otra: c.des, moneda: c.monE, montoC: c.montoEC, tc: tcN, obs: ['Pasa a ' + caja(c.des).nombre + ' (' + money(c.montoIC, c.monI) + ')', extra].filter(Boolean).join(' · '), id: c.id});
-    out.push({tipo: 'ing', cambio: true, fecha: c.fecha, folio: c.folio, concepto: c.concepto || 'Cambio de caja', nombre: c.emisor || caja(c.ori).nombre, gabai: '', donId: '', eqC: eq(c.montoIC, c.monI), forma: c.modalidad || 'Cambio', caja: c.des, otra: c.ori, moneda: c.monI, montoC: c.montoIC, tc: tcN, obs: ['Viene de ' + caja(c.ori).nombre + ' (' + money(c.montoEC, c.monE) + ')', extra].filter(Boolean).join(' · '), id: c.id});
+    out.push({tipo: 'egr', cambio: true, modalidad: c.modalidad || '', fecha: c.fecha, folio: c.folio, concepto: c.concepto || 'Cambio de caja', nombre: c.receptor || caja(c.des).nombre, gabai: '', donId: '', eqC: eq(c.montoEC, c.monE), forma: c.modalidad || 'Cambio', caja: c.ori, otra: c.des, moneda: c.monE, montoC: c.montoEC, tc: tcN, obs: ['Pasa a ' + caja(c.des).nombre + ' (' + money(c.montoIC, c.monI) + ')', extra].filter(Boolean).join(' · '), id: c.id});
+    out.push({tipo: 'ing', cambio: true, modalidad: c.modalidad || '', fecha: c.fecha, folio: c.folio, concepto: c.concepto || 'Cambio de caja', nombre: c.emisor || caja(c.ori).nombre, gabai: '', donId: '', eqC: eq(c.montoIC, c.monI), forma: c.modalidad || 'Cambio', caja: c.des, otra: c.ori, moneda: c.monI, montoC: c.montoIC, tc: tcN, obs: ['Viene de ' + caja(c.ori).nombre + ' (' + money(c.montoEC, c.monE) + ')', extra].filter(Boolean).join(' · '), id: c.id});
   });
   return out;
 }
@@ -2836,6 +2836,7 @@ var CONT_COLS = [
   ['cuota', 'Compromiso mensual', 'n', function(x){ return x.cuotaC != null ? money(x.cuotaC, x.cuotaMon) : '<span class="sub">—</span>'; }, function(x){ return x.cuotaC != null ? x.cuotaC / 100 : ''; }],
   ['folio', 'Recibo / folio', '', function(x){ return '<b>' + esc(x.folio) + '</b>'; }, function(x){ return x.folio; }],
   ['tipo', 'Tipo', '', function(x){ if(x.cambio) return '<span class="pill t-info">⇄ Cambio ' + (x.tipo === 'ing' ? 'entra' : 'sale') + '</span>'; return '<span class="pill ' + (x.tipo === 'ing' ? 't-ok' : 't-bad') + '">' + (x.tipo === 'ing' ? 'Ingreso' : 'Egreso') + '</span>'; }, function(x){ return x.cambio ? 'Cambio ' + (x.tipo === 'ing' ? 'entra' : 'sale') : x.tipo === 'ing' ? 'Ingreso' : 'Egreso'; }],
+  ['modalidad', 'Modalidad', '', function(x){ return x.modalidad ? esc(x.modalidad) : '<span class="sub">—</span>'; }, function(x){ return x.modalidad || ''; }],
   ['concepto', 'Concepto', '', function(x){ return esc(x.concepto) + (x.obs ? '<div class="sub">' + esc(x.obs) + '</div>' : ''); }, function(x){ return x.concepto; }],
   ['nombre', 'Nombre', '', function(x){ return esc(x.nombre); }, function(x){ return x.nombre; }],
   ['gabai', 'Gabai', '', function(x){ return gabTxt(x.gabai); }, function(x){ return x.gabai || ''; }],
@@ -2844,7 +2845,7 @@ var CONT_COLS = [
   ['ingreso', 'Ingreso', 'n', function(x){ return x.tipo === 'ing' ? '<b style="color:var(--ok)">' + money(x.montoC, x.moneda) + '</b>' : '—'; }, function(x){ return x.tipo === 'ing' ? x.montoC / 100 : ''; }],
   ['egreso', 'Egreso', 'n', function(x){ return x.tipo === 'egr' ? '<b style="color:var(--bad)">' + money(x.montoC, x.moneda) + '</b>' : '—'; }, function(x){ return x.tipo === 'egr' ? x.montoC / 100 : ''; }]
 ];
-function contColsOrden(){ var o = (S.cfg && S.cfg.contCols) || [], out = o.map(function(id){ return CONT_COLS.find(function(k){ return k[0] === id; }); }).filter(Boolean); CONT_COLS.forEach(function(k){ if(out.indexOf(k) === -1) out.push(k); }); return out; }
+function contColsOrden(){ var o = (S.cfg && S.cfg.contCols) || [], out = o.map(function(id){ return CONT_COLS.find(function(k){ return k[0] === id; }); }).filter(Boolean); CONT_COLS.forEach(function(k, i){ if(out.indexOf(k) !== -1) return; var prev = i ? out.indexOf(CONT_COLS[i - 1]) : -1; if(prev === -1) out.push(k); else out.splice(prev + 1, 0, k); }); return out; }
 function contOcultas(){ return (S.cfg && S.cfg.contOcultas) || ['gabai']; }
 function contColsVis(){ var oc = contOcultas(); return contColsOrden().filter(function(k){ return oc.indexOf(k[0]) === -1; }); }
 var SORT_SVG = {
@@ -6363,7 +6364,7 @@ function r2Filas(){
     out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo || '', mesD: m < 99 ? (c ? c.anio : Y) + '-' + pad(m) : p.fecha.slice(0, 7), concepto: c ? (c.concepto || 'Donativo') : 'Donativo', gabai: p.gabai != null ? p.gabai : (c ? (c.gabai || '') : ''), nombre: d ? d.nombre : '—', donId: d ? d.id : '', caja: p.caja || 'MXN', mon: p.moneda, monto: p.montoC, mod: c ? (c.modalidad || '') : '', obs: p.obs || ''});
   });
   (S.egresos || []).filter(egActivo).forEach(function(e){
-    out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio || '', mesD: e.fecha.slice(0, 7), concepto: e.concepto || 'Egreso', gabai: e.gabai || '', nombre: e.benef || '—', donId: '', caja: e.caja || (e.moneda === 'USD' ? 'USD' : 'MXN'), mon: e.moneda, monto: -e.montoC, mod: '', obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · ')});
+    out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio || '', mesD: e.fecha.slice(0, 7), concepto: e.concepto || 'Egreso', gabai: e.gabai || '', nombre: e.benef || '—', donId: '', caja: e.caja || (e.moneda === 'USD' ? 'USD' : 'MXN'), mon: e.moneda, monto: -e.montoC, mod: e.modalidad || '', obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · ')});
   });
   cjMovs().forEach(function(x){
     out.push({tipo: x.tipo, cambio: true, fecha: x.fecha, folio: x.folio || '', mesD: x.fecha.slice(0, 7), concepto: x.concepto, gabai: '', nombre: x.nombre || '—', donId: '', caja: x.caja, otra: x.otra, mon: x.moneda, monto: x.tipo === 'ing' ? x.montoC : -x.montoC, mod: x.forma || '', obs: x.obs || ''});
