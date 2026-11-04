@@ -522,7 +522,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v155</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v156</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2204,6 +2204,7 @@ function vEgresos(){
   var lst = (S.egresos || []).slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || b.folio.localeCompare(a.folio); }).slice(0, 15);
   return '<section class="panel tint-eg"><h2>Registrar egreso</h2><div class="form"><div class="fc2 full"><div class="fcol">' + izq + '</div><div class="fcol">' + der + '</div></div></div>' +
     '<div class="err" id="egErr" hidden></div><div class="row"><button type="button" class="btn danger" data-a="egSave">Registrar egreso</button><button type="button" class="btn ghost" data-a="egLimpiar">Limpiar</button></div></section>' +
+  vEgImport() +
   '<section class="panel"><h2>Últimos egresos</h2>' + (lst.length ? tbBar('egr') + '<div class="tw cards"><table data-cf="egr" data-tt="Egresos" class="cobt"><thead><tr><th>Fecha</th><th>Folio</th><th>Concepto</th><th>Pagado a</th><th class="n">Monto</th><th>Forma</th><th>Caja</th><th></th></tr></thead><tbody>' +
     lst.map(function(e){ return '<tr><td data-l="Fecha" class="nowrap">' + fFecha(e.fecha) + '</td><td data-l="Folio">' + esc(e.folio) + '</td><td data-l="Concepto">' + esc(e.concepto) + (e.desc ? '<div class="sub">' + esc(e.desc) + '</div>' : '') + '</td><td data-l="Pagado a"><b>' + esc(e.benef) + '</b></td><td class="n" data-l="Monto"><b style="color:var(--bad)">' + money(e.montoC, e.moneda) + '</b></td><td data-l="Forma">' + esc(e.forma) + '</td><td data-l="Caja">' + cajaPill(e.caja) + '</td><td>' + bDel('data-a="egDel" data-id="' + e.id + '"') + '</td></tr>'; }).join('') +
     '</tbody></table></div>' : '<div class="empty">Sin egresos registrados.</div>') + '</section>';
@@ -2235,6 +2236,154 @@ function egSave(){
   S.egresos.push(eg);
   log('Registró egreso ' + eg.folio + ' de ' + money(m, mon) + ' (' + con + ') a ' + ben);
   ui.eg = {}; render(); toast('Egreso ' + eg.folio + ' registrado');
+}
+
+/* ================= Layout de egresos (Excel) ================= */
+var EGI_COLS = [['Fecha *', 'fecha'], ['Concepto *', 'concepto'], ['Pagado a *', 'benef'], ['Descripción', 'desc'], ['Monto *', 'monto'], ['Moneda (MXN/USD)', 'moneda'],
+  ['Referencia en USD (si es MXN)', 'ref'], ['Método de pago', 'forma'], ['Caja (Oficina Pesos / Oficina USD / Oficina New York)', 'caja'], ['Factura o comprobante', 'factura'], ['Gabai (si es comisión)', 'gabai'], ['Comentarios', 'coment']];
+var EGI_ALIAS = {fecha: 'fecha', dia: 'fecha', concepto: 'concepto', categoria: 'concepto', 'pagado a': 'benef', beneficiario: 'benef', proveedor: 'benef', 'a quien': 'benef', descripcion: 'desc', detalle: 'desc',
+  monto: 'monto', importe: 'monto', cantidad: 'monto', moneda: 'moneda', divisa: 'moneda', 'referencia en usd': 'ref', 'referencia usd': 'ref', 'equivalente usd': 'ref', usd: 'ref',
+  'metodo de pago': 'forma', 'forma de pago': 'forma', forma: 'forma', caja: 'caja', 'sale de la caja': 'caja', factura: 'factura', 'factura o comprobante': 'factura', comprobante: 'factura',
+  gabai: 'gabai', gabay: 'gabai', comentarios: 'coment', notas: 'coment'};
+function egiKey(h){ var k = sinAcento(String(h || '').replace(/\*/g, '').replace(/\(.*\)/g, '')).trim(); return EGI_ALIAS[k] || null; }
+function egiPlantilla(){
+  if(!window.XLSX){ toast('No se pudo preparar el Excel.'); return; }
+  if(!S.conceptosEg) S.conceptosEg = CONC_EG.slice();
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.aoa_to_sheet([EGI_COLS.map(function(c){ return c[0]; })]);
+  ws['!cols'] = EGI_COLS.map(function(c){ return {wch: Math.max(14, Math.min(34, c[0].length + 2))}; });
+  XLSX.utils.book_append_sheet(wb, ws, 'Egresos');
+  var ins = [['Cómo llenar el layout de egresos'], [''],
+    ['1. Usa la hoja "Egresos". No cambies ni borres los encabezados del renglón 1.'],
+    ['2. Escribe un egreso por renglón a partir del renglón 2.'],
+    ['3. Obligatorios: Fecha, Concepto, Pagado a y Monto.'],
+    ['4. Fecha: formato de fecha de Excel, o escrita como 15/10/2026 (día/mes/año) o 2026-10-15.'],
+    ['5. Monto: solo el número, sin $ (ej. 6000 o 6000.50). Moneda: MXN o USD. Si la dejas vacía queda en MXN.'],
+    ['6. Si es en MXN, escribe la Referencia en USD (cuántos dólares equivale). Si la dejas vacía se usa el tipo de cambio configurado.'],
+    ['7. Caja: si la dejas vacía, MXN sale de Oficina Pesos y USD de Oficina USD.'],
+    ['8. Concepto, método de pago y gabai: usa los valores de la hoja "Listas". Uno nuevo se agrega a la lista al importar.'],
+    ['9. Antes de guardar, el sistema te muestra todo para revisarlo y marca los egresos que parecen repetidos.'], [''],
+    ['Ejemplo (no lo copies a la hoja Egresos):'],
+    ['15/10/2026 | Renta | Inmobiliaria Polanco | Renta octubre | 6000 | MXN | 325 | Transferencia | Oficina Pesos | F-123 | | ']];
+  var wi = XLSX.utils.aoa_to_sheet(ins); wi['!cols'] = [{wch: 110}];
+  XLSX.utils.book_append_sheet(wb, wi, 'Instrucciones');
+  var L = [['Conceptos', 'Métodos de pago', 'Moneda', 'Caja', 'Gabaim']], cj = CAJAS.map(function(k){ return k.nombre; }), mx = Math.max(S.conceptosEg.length, formas().length, cj.length, (S.gabaim || []).length);
+  for(var i = 0; i < mx; i++) L.push([S.conceptosEg[i] || '', formas()[i] || '', ['MXN', 'USD'][i] || '', cj[i] || '', (S.gabaim || [])[i] || '']);
+  var wl = XLSX.utils.aoa_to_sheet(L); wl['!cols'] = L[0].map(function(){ return {wch: 26}; });
+  XLSX.utils.book_append_sheet(wb, wl, 'Listas');
+  guardar('Layout Egresos Bait Lapletot.xlsx', XLSX.write(wb, {bookType: 'xlsx', type: 'array'}));
+}
+function egiFecha(v){
+  if(v == null || v === '') return '';
+  if(typeof v === 'number' && v > 20000){ var d = new Date(Math.round((v - 25569) * 864e5)); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+  if(v instanceof Date && !isNaN(v)) return v.getFullYear() + '-' + pad(v.getMonth() + 1) + '-' + pad(v.getDate());
+  var t = String(v).trim(), m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return m[1] + '-' + pad(+m[2]) + '-' + pad(+m[3]);
+  m = t.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);
+  if(m){ var y = +m[3]; if(y < 100) y += 2000; if(+m[2] >= 1 && +m[2] <= 12 && +m[1] >= 1 && +m[1] <= 31) return y + '-' + pad(+m[2]) + '-' + pad(+m[1]); }
+  return null;
+}
+function egiNum(v){ return typeof v === 'number' ? Math.round(v * 100) : cents(v); }
+function egiCaja(v, mon){
+  var t = sinAcento(v).trim(); if(!t) return mon === 'USD' ? 'USD' : 'MXN';
+  if(/york|ny/.test(t)) return 'NY';
+  if(/peso|mxn/.test(t)) return 'MXN';
+  if(/usd|dolar/.test(t)) return 'USD';
+  return null;
+}
+function egiLeer(file){
+  if(!window.XLSX){ toast('No se pudo leer el archivo.'); return; }
+  var rd = new FileReader();
+  rd.onload = function(){
+    try{
+      var wb = XLSX.read(new Uint8Array(rd.result), {type: 'array'});
+      var nm = wb.SheetNames.find(function(n){ return sinAcento(n).indexOf('egreso') !== -1; }) || wb.SheetNames[0];
+      var aoa = XLSX.utils.sheet_to_json(wb.Sheets[nm], {header: 1, defval: '', raw: true});
+      var hi = aoa.findIndex(function(r){ var ks = r.map(egiKey); return ks.indexOf('monto') !== -1 && (ks.indexOf('benef') !== -1 || ks.indexOf('concepto') !== -1); });
+      if(hi === -1){ toast('No encontré los encabezados. Usa el formato del layout de egresos.'); return; }
+      var keys = aoa[hi].map(egiKey), filas = [];
+      aoa.slice(hi + 1).forEach(function(r, i){
+        var o = {fila: hi + i + 2}; keys.forEach(function(k, j){ if(k) o[k] = typeof r[j] === 'string' ? r[j].trim() : r[j]; });
+        if(!String(o.benef || '').trim() && !String(o.monto || '').trim() && !String(o.concepto || '').trim()) return;
+        filas.push(o);
+      });
+      if(!filas.length){ toast('El archivo no tiene egresos.'); return; }
+      var vis = {};
+      ui.egi = {archivo: file.name, filas: filas.map(function(o){ return egiValidar(o, vis); })};
+      log('Subió el layout de egresos ' + file.name + ' (' + filas.length + ' renglones)'); render();
+      setTimeout(function(){ var el = $('egiPanel'); if(el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 50);
+    }catch(e){ toast('No se pudo leer el archivo. ¿Es un Excel o CSV?'); }
+  };
+  rd.readAsArrayBuffer(file);
+}
+function egiValidar(o, vis){
+  var r = {fila: o.fila, err: [], av: [], on: true};
+  r.fecha = egiFecha(o.fecha);
+  if(r.fecha === '') r.err.push('Falta la fecha.'); else if(r.fecha === null){ r.err.push('Fecha no reconocida.'); r.fecha = ''; }
+  r.concepto = String(o.concepto || '').trim();
+  var cc = (S.conceptosEg || CONC_EG).find(function(x){ return sinAcento(x) === sinAcento(r.concepto); });
+  if(cc) r.concepto = cc; else if(r.concepto) r.av.push('Concepto nuevo: se agrega a la lista.'); else r.err.push('Falta el concepto.');
+  r.benef = String(o.benef || '').trim(); if(!r.benef) r.err.push('Falta a quién se le pagó.');
+  r.desc = String(o.desc || '').trim(); r.factura = String(o.factura == null ? '' : o.factura).trim(); r.coment = String(o.coment || '').trim();
+  r.monto = egiNum(o.monto); if(!(r.monto > 0)){ r.err.push('Monto no reconocido.'); r.monto = 0; }
+  r.moneda = /usd|dol|us\$/i.test(String(o.moneda || '')) ? 'USD' : 'MXN';
+  if(String(o.moneda || '').trim() && !/usd|dol|us\$|mx|peso/i.test(String(o.moneda))) r.av.push('Moneda no reconocida; queda en MXN.');
+  r.caja = egiCaja(o.caja, r.moneda);
+  if(r.caja === null){ r.caja = r.moneda === 'USD' ? 'USD' : 'MXN'; r.av.push('Caja no reconocida; sale de ' + caja(r.caja).nombre + '.'); }
+  if(caja(r.caja).mon !== r.moneda) r.err.push('La caja no coincide con la moneda.');
+  r.tc = null;
+  if(r.moneda === 'MXN' && r.monto > 0){
+    var ref = egiNum(o.ref), tcCfg = S.cfg && +S.cfg.tc > 0 ? +S.cfg.tc : 0;
+    if(ref > 0) r.tc = Math.round(r.monto / ref * 10000) / 10000;
+    else if(tcCfg){ r.tc = tcCfg; r.av.push('Sin referencia en USD; se usa el tipo de cambio ' + tcCfg + '.'); }
+    else r.err.push('Falta la referencia en USD.');
+  }
+  var fm = impForma(o.forma); if(fm === null){ fm = String(o.forma).trim(); r.av.push('Método de pago nuevo: se agrega a la lista.'); } r.forma = fm || 'Transferencia';
+  r.gabai = String(o.gabai || '').trim();
+  if(r.gabai && (S.gabaim || []).indexOf(r.gabai) === -1) r.av.push('Gabai nuevo: se agrega a la lista.');
+  var clave = r.fecha + '|' + sinAcento(r.benef) + '|' + r.monto + '|' + r.moneda;
+  if(r.fecha && (S.egresos || []).some(function(e){ return e.fecha + '|' + sinAcento(e.benef) + '|' + e.montoC + '|' + e.moneda === clave; })){ r.av.push('Ya existe un egreso igual (misma fecha, persona y monto).'); r.on = false; }
+  else if(vis[clave]){ r.av.push('Repetido dentro del archivo.'); r.on = false; }
+  vis[clave] = true;
+  if(r.err.length) r.on = false;
+  return r;
+}
+function vEgImport(){
+  var im = ui.egi;
+  var cab = '<section class="panel tint-imp" id="egiPanel"><h2>Subir egresos desde Excel</h2><div class="sub">Descarga el formato, llénalo y súbelo. Antes de guardar ves todo y eliges qué se registra.</div>' +
+    '<div class="row"><button type="button" class="btn ghost" data-a="egiPlantilla">Descargar formato (Excel)</button><label class="btn primary filebtn">Subir layout de egresos<input type="file" id="egiFile" accept=".xlsx,.xls,.csv" hidden></label>' + (im ? '<span class="sub">Archivo: ' + esc(im.archivo) + '</span>' : '') + '</div>';
+  if(!im) return cab + '</section>';
+  var f = im.filas, sel = f.filter(function(r){ return r.on; }), errs = f.filter(function(r){ return r.err.length; }).length;
+  var tot = {MXN: 0, USD: 0}; sel.forEach(function(r){ tot[r.moneda] += r.monto; });
+  return cab +
+    '<div class="kpis"><div class="kpi accent"><span>Se van a registrar</span><strong>' + sel.length + '</strong><small>de ' + f.length + ' renglones</small></div>' +
+    '<div class="kpi"><span>Total en pesos</span><strong>' + money(tot.MXN, 'MXN') + '</strong></div><div class="kpi"><span>Total en dólares</span><strong>' + money(tot.USD, 'USD') + '</strong></div>' +
+    '<div class="kpi"><span>Con errores</span><strong' + (errs ? ' style="color:var(--bad)"' : '') + '>' + errs + '</strong><small>no se registran</small></div></div>' +
+    '<div class="tw cards"><table class="cobt"><thead><tr><th><label class="ck"><input type="checkbox" id="egiAll"' + (f.every(function(r){ return r.on || r.err.length; }) ? ' checked' : '') + ' aria-label="Marcar todos"></label></th><th class="n">Renglón</th><th>Fecha</th><th>Concepto</th><th>Pagado a</th><th class="n">Monto</th><th>Forma</th><th>Caja</th><th>Revisar</th></tr></thead><tbody>' +
+      f.map(function(r, i){
+        return '<tr' + (r.on ? '' : ' class="off"') + '><td data-l="Registrar"><label class="ck"><input type="checkbox" data-egiq="' + i + '"' + (r.on ? ' checked' : '') + (r.err.length ? ' disabled' : '') + ' aria-label="Registrar renglón ' + r.fila + '"></label></td>' +
+          '<td class="n" data-l="Renglón">' + r.fila + '</td><td data-l="Fecha" class="nowrap">' + (r.fecha ? fFecha(r.fecha) : '—') + '</td>' +
+          '<td data-l="Concepto">' + esc(r.concepto || '—') + (r.desc ? '<div class="sub">' + esc(r.desc) + '</div>' : '') + '</td><td data-l="Pagado a"><b>' + esc(r.benef || '—') + '</b></td>' +
+          '<td class="n" data-l="Monto"><b style="color:var(--bad)">' + (r.monto ? money(r.monto, r.moneda) : '—') + '</b></td><td data-l="Forma">' + esc(r.forma) + '</td><td data-l="Caja">' + cajaPill(r.caja) + '</td>' +
+          '<td data-l="Revisar">' + r.err.map(function(x){ return '<div class="err" style="margin:0">' + esc(x) + '</div>'; }).join('') + r.av.map(function(x){ return '<div class="sub" style="color:var(--warn)">' + esc(x) + '</div>'; }).join('') + (!r.err.length && !r.av.length ? '<span class="pill t-ok">Listo</span>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+    '<div class="bkbar"><b>' + sel.length + ' egresos</b><div class="acts"><button type="button" class="btn ghost" data-a="egiCancel">Cancelar</button><button type="button" class="btn danger" data-a="egiGo"' + (sel.length ? '' : ' disabled') + '>Registrar ' + sel.length + ' egresos</button></div></div></section>';
+}
+function egiGo(){
+  var im = ui.egi; if(!im) return;
+  var sel = im.filas.filter(function(r){ return r.on && !r.err.length; }); if(!sel.length) return;
+  if(!S.egresos) S.egresos = []; if(!S.conceptosEg) S.conceptosEg = CONC_EG.slice();
+  var f1 = null, f2 = null;
+  sel.slice().sort(function(a, b){ return a.fecha.localeCompare(b.fecha); }).forEach(function(r){
+    if(r.concepto && S.conceptosEg.indexOf(r.concepto) === -1) S.conceptosEg.push(r.concepto);
+    if(r.forma && formas().indexOf(r.forma) === -1){ if(!S.formas) S.formas = FORMAS_BASE.slice(); S.formas.push(r.forma); }
+    if(r.gabai){ if(!S.gabaim) S.gabaim = []; if(S.gabaim.indexOf(r.gabai) === -1) S.gabaim.push(r.gabai); }
+    S.folioEg = (S.folioEg || 0) + 1;
+    var folio = 'E-' + String(S.folioEg).padStart(4, '0'); if(!f1) f1 = folio; f2 = folio;
+    S.egresos.push({id: nid('e'), folio: folio, fecha: r.fecha, concepto: r.concepto, benef: r.benef, desc: r.desc, montoC: r.monto, moneda: r.moneda, tc: r.tc, forma: r.forma, caja: r.caja, factura: r.factura, gabai: r.gabai, coment: r.coment, usuario: user().nombre});
+  });
+  log('Importó ' + sel.length + ' egresos desde ' + im.archivo + ' (folios ' + f1 + (f2 !== f1 ? ' a ' + f2 : '') + ')');
+  ui.egi = null; render(); toast(sel.length + ' egresos registrados');
 }
 
 /* ================= Contabilidad ================= */
@@ -4984,6 +5133,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'gbSave'){ var gk2 = +b.getAttribute('data-k'), gi = document.querySelector('[data-gbn="' + gk2 + '"]'); if(gi && gbRename(gk2, gi.value)){ render(); toast('Nombre actualizado en sus compromisos'); } }
   else if(a === 'gbCob'){ ui.cob.gab = S.gabaim[+b.getAttribute('data-k')]; ui.cob.rap = true; ui.cob.mes = String(mesAct()); ui.view = 'cobranza'; render(); window.scrollTo(0, 0); }
   else if(a === 'impPlantilla') plantillaXls();
+  else if(a === 'egiPlantilla') egiPlantilla();
+  else if(a === 'egiCancel'){ ui.egi = null; render(); }
+  else if(a === 'egiGo') egiGo();
   else if(a === 'impCancel'){ ui.imp = null; render(); }
   else if(a === 'impGo') impGo();
   else if(a === 'impClaude') impClaude();
@@ -5288,6 +5440,9 @@ document.addEventListener('change', function(ev){
   else if(t.hasAttribute && t.hasAttribute('data-dsel')){ ui.don.sel = ui.don.sel || {}; var dk = t.getAttribute('data-dsel'); if(t.checked) ui.don.sel[dk] = true; else delete ui.don.sel[dk]; render(); }
   else if(t.id === 'respFile'){ if(t.files && t.files[0]) respLeer(t.files[0]); t.value = ''; }
   else if(t.id === 'impFile'){ if(t.files && t.files[0]) impLeer(t.files[0]); t.value = ''; }
+  else if(t.id === 'egiFile'){ if(t.files && t.files[0]) egiLeer(t.files[0]); t.value = ''; }
+  else if(t.id === 'egiAll'){ ui.egi.filas.forEach(function(r){ if(!r.err.length) r.on = t.checked; }); render(); }
+  else if(t.hasAttribute && t.hasAttribute('data-egiq')){ ui.egi.filas[+t.getAttribute('data-egiq')].on = t.checked; render(); }
   else if(t.id === 'impAll'){ ui.imp.filas.forEach(function(r){ if(!r.err.length) r.on = t.checked; }); render(); }
   else if(t.hasAttribute && t.hasAttribute('data-impq')){ ui.imp.filas[+t.getAttribute('data-impq')].on = t.checked; render(); }
   else if(t.id === 'donGab'){ ui.don.gab = t.value; ui.don.pick = null; render(); }
