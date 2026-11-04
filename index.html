@@ -555,7 +555,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v164</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v165</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2624,12 +2624,12 @@ function flPasa(x, f, q){
   if(f.tipo === 'cam' && !x.cambio) return false;
   if(f.tipo === 'sin' && x.cambio) return false;
   if(f.con && x.concepto !== f.con) return false;
-  if(f.gab !== 'todos' && (x.tipo !== 'ing' || x.cambio || (x.gabai || '') !== f.gab)) return false;
+  if(f.gabs && f.gabs.length && (x.tipo !== 'ing' || x.cambio || f.gabs.indexOf(x.gabai || '') === -1)) return false;
   if(f.forma && x.forma !== f.forma) return false;
   if(q && ((x.nombre || '') + ' ' + (x.folio || '') + ' ' + (x.concepto || '') + ' ' + (x.obs || '') + ' ' + (x.gabai || '') + ' ' + (x.corr || '')).toLowerCase().indexOf(q) === -1) return false;
   return true;
 }
-function flFiltrado(f){ return f.tipo !== 'todos' || !!f.con || f.gab !== 'todos' || !!f.forma || !!(f.q || '').trim(); }
+function flFiltrado(f){ return f.tipo !== 'todos' || !!f.con || !!(f.gabs && f.gabs.length) || !!f.forma || !!(f.q || '').trim(); }
 function vFlujo(){
   cjCats();
   if(!ui.fl){ var r0 = flRango('mes'); ui.fl = {caja: 'MXN', desde: r0[0], hasta: r0[1], per: 'mes', tipo: 'todos', con: '', gab: 'todos', forma: '', q: ''}; }
@@ -2690,7 +2690,9 @@ function vFlujo(){
       '<label class="f">Desde<input id="flDesde" type="date" value="' + esc(f.desde) + '"></label>' +
       '<label class="f">Hasta<input id="flHasta" type="date" value="' + esc(f.hasta) + '"></label>' +
       '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (ingresos)'], ['egr', 'Solo cargos (egresos)'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
-      '<label class="f">Gabai<select id="flGab">' + optsGabai(f.gab, true) + '</select></label>' +
+      (function(){ f.gabs = f.gabs || []; var gl = (S.gabaim || []).slice(); all.forEach(function(x){ if(x.tipo === 'ing' && !x.cambio && x.gabai && gl.indexOf(x.gabai) === -1) gl.push(x.gabai); }); var ns = f.gabs.length;
+        return '<label class="f">Gabai (puedes elegir varios)<details class="msel" id="flGabSel"' + (ui.flGabOpen ? ' open' : '') + '><summary>' + (!ns ? 'Todos los gabaim' : ns === 1 ? esc(f.gabs[0]) : ns + ' gabaim elegidos') + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="flgTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="flgNinguno">Quitar selección</button></div>' +
+          gl.map(function(g){ return '<label><input type="checkbox" data-flg value="' + esc(g) + '"' + (f.gabs.indexOf(g) !== -1 ? ' checked' : '') + '> ' + r2Gab(g) + '</label>'; }).join('') + '</div></details></label>'; })() +
       '<label class="f">Concepto' + sel('flCon', [['', 'Todos los conceptos']].concat(Object.keys(cons).sort().map(function(c){ return [c, c]; })), f.con) + '</label>' +
       '<label class="f">Forma de pago' + sel('flForma', [['', 'Todas']].concat(Object.keys(frm).sort().map(function(c){ return [c, c]; })), f.forma) + '</label>' +
       '<label class="f">Buscar<input id="flQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre, folio, gabai…"></label></div>' +
@@ -5571,7 +5573,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'cjDelOk'){ var ci = (S.cambiosCaja || []).findIndex(function(x){ return x.id === b.getAttribute('data-id'); }); if(ci !== -1){ var cx = S.cambiosCaja.splice(ci, 1)[0]; log('Eliminó el cambio de caja ' + cx.folio); } closeModal(); render(); toast('Cambio de caja eliminado'); }
   else if(a === 'flCaja'){ ui.fl.caja = b.getAttribute('data-c'); render(); }
   else if(a === 'flPer'){ var fr = flRango(b.getAttribute('data-p')); ui.fl.per = b.getAttribute('data-p'); ui.fl.desde = fr[0]; ui.fl.hasta = fr[1]; render(); }
-  else if(a === 'flLimpiar'){ Object.assign(ui.fl, {tipo: 'todos', con: '', gab: 'todos', forma: '', q: ''}); render(); }
+  else if(a === 'flLimpiar'){ Object.assign(ui.fl, {tipo: 'todos', con: '', gab: 'todos', gabs: [], forma: '', q: ''}); ui.flGabOpen = false; render(); }
+  else if(a === 'flgTodos'){ var gl2 = (S.gabaim || []).slice(); movCaja().forEach(function(x){ if(x.caja === ui.fl.caja && x.tipo === 'ing' && !x.cambio && x.gabai && gl2.indexOf(x.gabai) === -1) gl2.push(x.gabai); }); ui.fl.gabs = gl2; ui.flGabOpen = true; render(); }
+  else if(a === 'flgNinguno'){ ui.fl.gabs = []; ui.flGabOpen = true; render(); }
   else if(a === 'respBajar'){ log('Descargó un respaldo completo'); save(); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: new Date().toISOString(), version: 5, datos: estadoGuardable()}, null, 1); guardar(respNombre() + '.json', new TextEncoder().encode(txt)); }
   else if(a === 'respOk') respAplicar();
   else if(a === 'modOcAbrir' || a === 'modOcFoot'){ abrirModOc(b.getAttribute('data-g') || ''); }
@@ -6416,6 +6420,9 @@ document.addEventListener('click', function(ev){
 });
 
 document.addEventListener('toggle', function(ev){ if(ev.target && ev.target.id === 'r2npSel') R2NP.open = ev.target.open; }, true);
+document.addEventListener('toggle', function(ev){ if(ev.target && ev.target.id === 'flGabSel') ui.flGabOpen = ev.target.open; }, true);
+document.addEventListener('click', function(ev){ var d = document.getElementById('flGabSel'); if(d && d.open && !d.contains(ev.target)){ d.open = false; ui.flGabOpen = false; } });
+document.addEventListener('change', function(ev){ var t = ev.target; if(!t || !t.hasAttribute || !t.hasAttribute('data-flg') || !ui.fl) return; ui.fl.gabs = ui.fl.gabs || []; var ix = ui.fl.gabs.indexOf(t.value); if(t.checked && ix === -1) ui.fl.gabs.push(t.value); if(!t.checked && ix !== -1) ui.fl.gabs.splice(ix, 1); ui.flGabOpen = true; render(); });
 document.addEventListener('click', function(ev){ var d = document.getElementById('r2npSel'); if(d && d.open && !d.contains(ev.target)){ d.open = false; R2NP.open = false; } });
 
 /* ================= Buscador con sugerencias en las listas de donadores ================= */
