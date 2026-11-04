@@ -522,7 +522,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v158</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v159</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2195,7 +2195,7 @@ function egCats(){
   S.catEgV2 = true;
 }
 function egActivo(e){ return e.estatus !== 'Cancelado'; }
-var EG_IDS = ['egFecha', 'egConcepto', 'egBenef', 'egModal', 'egDesc', 'egMonto', 'egMon', 'egTc', 'egForma', 'egEstatus', 'egCaja', 'egFactura', 'egGabai', 'egComent'];
+var EG_IDS = ['egFecha', 'egConcepto', 'egBenef', 'egModal', 'egDesc', 'egMonto', 'egMon', 'egTc', 'egForma', 'egEstatus', 'egCaja', 'egComent'];
 function vEgresos(){
   ui.eg = ui.eg || {};
   egCats();
@@ -2205,16 +2205,14 @@ function vEgresos(){
     '<label class="f">' + hd('Modalidad', 'modalidadesEg', 'egModal') + '<select id="egModal">' + opts(S.modalidadesEg) + '</select></label>' + filaEdit('modalidadesEg', 'egModal') + filaNuevo('modalidadesEg', 'egModal', 'Nueva modalidad') +
     '<label class="f">' + hd('Concepto *', 'conceptosEg', 'egConcepto') + '<select id="egConcepto"><option value="">— Selecciona —</option>' + opts(S.conceptosEg) + '</select></label>' + filaEdit('conceptosEg', 'egConcepto') + filaNuevo('conceptosEg', 'egConcepto', 'Nuevo concepto') +
     '<label class="f">Monto *<input id="egMonto" inputmode="decimal" placeholder="0.00"></label>' +
-    '<label class="f">Moneda<select id="egMon"><option>MXN</option><option>USD</option></select></label>' +
-    '<label class="f" id="egTcL">Referencia en USD<input id="egTc" inputmode="decimal" value=""></label>' +
+    '<label class="f">Divisa<select id="egMon"><option>MXN</option><option>USD</option></select></label>' +
+    '<label class="f" id="egTcL">Referencia Dólares<input id="egTc" inputmode="decimal" value=""></label>' +
     '<label class="f">Fecha *<input id="egFecha" type="date" value="' + hoy() + '"></label>';
   var der = '<label class="f">' + hd('Método de pago', 'formas', 'egForma') + '<select id="egForma">' + formas().map(function(x){ return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label>' + filaEdit('formas', 'egForma') + filaNuevo('formas', 'egForma', 'Nuevo método de pago') +
     '<label class="f">Descripción<input id="egDesc" maxlength="200"></label>' +
     '<label class="f">Estatus<select id="egEstatus">' + opts(EST_EG) + '</select></label>' +
-    '<label class="f">Sale de la caja<select id="egCaja">' + CAJAS.map(function(k){ return '<option value="' + k.id + '">' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Factura o comprobante<input id="egFactura" maxlength="60"></label>' +
-    '<label class="f">Gabai (si es comisión)<select id="egGabai"><option value="">—</option>' + (S.gabaim || []).map(function(g){ return '<option>' + esc(g) + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Folio (ID recibo)<input readonly tabindex="-1" class="ro" value="E-' + String((S.folioEg || 0) + 1).padStart(4, '0') + '"></label>' +
+    '<label class="f">Caja<select id="egCaja">' + CAJAS.map(function(k){ return '<option value="' + k.id + '">' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
+    '<label class="f">ID Recibo<input readonly tabindex="-1" class="ro" value="E-' + String((S.folioEg || 0) + 1).padStart(4, '0') + '"></label>' +
     '<label class="f">Comentarios<textarea id="egComent" maxlength="500"></textarea></label>';
   var lst = (S.egresos || []).slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || b.folio.localeCompare(a.folio); }).slice(0, 15);
   return '<section class="panel tint-eg"><h2>Registrar egreso</h2><div class="form"><div class="fc2 full"><div class="fcol">' + izq + '</div><div class="fcol">' + der + '</div></div></div>' +
@@ -2243,10 +2241,10 @@ function egSave(){
   if(m <= 0) return fail('Escribe el monto.');
   if(caja(cj).mon !== mon) return fail('La caja no coincide con la moneda.');
   var refE = cents($('egTc').value);
-  if(mon === 'MXN' && !(refE > 0)) return fail('Escribe la referencia en USD.');
+  if(mon === 'MXN' && !(refE > 0)) return fail('Escribe la referencia en dólares.');
   var tc = mon === 'MXN' ? Math.round(m / refE * 10000) / 10000 : null;
   S.folioEg = (S.folioEg || 0) + 1;
-  var eg = {id: nid('e'), folio: 'E-' + String(S.folioEg).padStart(4, '0'), fecha: fecha, concepto: con, benef: ben, modalidad: $('egModal').value, estatus: $('egEstatus').value || 'Activo', desc: $('egDesc').value.trim(), montoC: m, moneda: mon, tc: tc, forma: $('egForma').value, caja: cj, factura: $('egFactura').value.trim(), gabai: $('egGabai').value, coment: $('egComent').value.trim(), usuario: user().nombre};
+  var eg = {id: nid('e'), folio: 'E-' + String(S.folioEg).padStart(4, '0'), fecha: fecha, concepto: con, benef: ben, modalidad: $('egModal').value, estatus: $('egEstatus').value || 'Activo', desc: $('egDesc').value.trim(), montoC: m, moneda: mon, tc: tc, forma: $('egForma').value, caja: cj, factura: '', gabai: '', coment: $('egComent').value.trim(), usuario: user().nombre};
   if(!S.egresos) S.egresos = [];
   S.egresos.push(eg);
   log('Registró egreso ' + eg.folio + ' de ' + money(m, mon) + ' (' + con + ') a ' + ben);
@@ -2254,10 +2252,10 @@ function egSave(){
 }
 
 /* ================= Layout de egresos (Excel) ================= */
-var EGI_COLS = [['Receptor *', 'benef'], ['Modalidad', 'modal'], ['Concepto *', 'concepto'], ['Monto *', 'monto'], ['Moneda (MXN/USD)', 'moneda'], ['Referencia en USD (si es MXN)', 'ref'], ['Fecha *', 'fecha'],
-  ['Método de pago', 'forma'], ['Descripción', 'desc'], ['Estatus (Activo/Cancelado)', 'estatus'], ['Caja (Oficina Pesos / Oficina USD / Oficina New York)', 'caja'], ['Factura o comprobante', 'factura'], ['Gabai (si es comisión)', 'gabai'], ['Comentarios', 'coment']];
+var EGI_COLS = [['Receptor *', 'benef'], ['Modalidad', 'modal'], ['Concepto *', 'concepto'], ['Monto *', 'monto'], ['Divisa (MXN/USD)', 'moneda'], ['Referencia Dólares (si es MXN)', 'ref'], ['Fecha *', 'fecha'],
+  ['Método de pago', 'forma'], ['Descripción', 'desc'], ['Estatus (Activo/Cancelado)', 'estatus'], ['Caja (Oficina Pesos / Oficina USD / Oficina New York)', 'caja'], ['Comentarios', 'coment']];
 var EGI_ALIAS = {fecha: 'fecha', dia: 'fecha', concepto: 'concepto', categoria: 'concepto', 'pagado a': 'benef', receptor: 'benef', beneficiario: 'benef', modalidad: 'modal', estatus: 'estatus', status: 'estatus', estado: 'estatus', 'id recibo': 'folio', proveedor: 'benef', 'a quien': 'benef', descripcion: 'desc', detalle: 'desc',
-  monto: 'monto', importe: 'monto', cantidad: 'monto', moneda: 'moneda', divisa: 'moneda', 'referencia en usd': 'ref', 'referencia usd': 'ref', 'equivalente usd': 'ref', usd: 'ref',
+  monto: 'monto', importe: 'monto', cantidad: 'monto', moneda: 'moneda', divisa: 'moneda', 'referencia en usd': 'ref', 'referencia dolares': 'ref', 'fecha de inicio': 'fecha', 'referencia usd': 'ref', 'equivalente usd': 'ref', usd: 'ref',
   'metodo de pago': 'forma', 'forma de pago': 'forma', forma: 'forma', caja: 'caja', 'sale de la caja': 'caja', factura: 'factura', 'factura o comprobante': 'factura', comprobante: 'factura',
   gabai: 'gabai', gabay: 'gabai', comentarios: 'coment', notas: 'coment'};
 function egiKey(h){ var k = sinAcento(String(h || '').replace(/\*/g, '').replace(/\(.*\)/g, '')).trim(); return EGI_ALIAS[k] || null; }
@@ -2273,18 +2271,18 @@ function egiPlantilla(){
     ['2. Escribe un egreso por renglón a partir del renglón 2.'],
     ['3. Obligatorios: Receptor, Concepto, Monto y Fecha. El folio (ID recibo) lo pone el sistema solo.'],
     ['4. Fecha: formato de fecha de Excel, o escrita como 15/10/2026 (día/mes/año) o 2026-10-15.'],
-    ['5. Monto: solo el número, sin $ (ej. 6000 o 6000.50). Moneda: MXN o USD. Si la dejas vacía queda en MXN.'],
-    ['6. Si es en MXN, escribe la Referencia en USD (cuántos dólares equivale). Si la dejas vacía se usa el tipo de cambio configurado.'],
+    ['5. Monto: solo el número, sin $ (ej. 6000 o 6000.50). Divisa: MXN o USD. Si la dejas vacía queda en MXN.'],
+    ['6. Si es en MXN, escribe la Referencia Dólares (cuántos dólares equivale). Si la dejas vacía se usa el tipo de cambio configurado.'],
     ['7. Caja: si la dejas vacía, MXN sale de Oficina Pesos y USD de Oficina USD.'],
-    ['8. Receptor, modalidad, concepto, método de pago y gabai: usa los valores de la hoja "Listas". Uno nuevo se agrega a la lista al importar.'],
+    ['8. Receptor, modalidad, concepto y método de pago: usa los valores de la hoja "Listas". Uno nuevo se agrega a la lista al importar.'],
     ['   Modalidad vacía queda en "' + S.modalidadesEg[0] + '". Estatus vacío queda en Activo; los Cancelados no cuentan en contabilidad.'],
     ['9. Antes de guardar, el sistema te muestra todo para revisarlo y marca los egresos que parecen repetidos.'], [''],
     ['Ejemplo (no lo copies a la hoja Egresos):'],
-    ['Moshe Nagar | Pago Directo | Envio | 6000 | MXN | 325 | 15/10/2026 | Transferencia | Envío octubre | Activo | Oficina Pesos | F-123 | | ']];
+    ['Moshe Nagar | Pago Directo | Envio | 6000 | MXN | 325 | 15/10/2026 | Transferencia | Envío octubre | Activo | Oficina Pesos | ']];
   var wi = XLSX.utils.aoa_to_sheet(ins); wi['!cols'] = [{wch: 110}];
   XLSX.utils.book_append_sheet(wb, wi, 'Instrucciones');
-  var L = [['Receptores', 'Modalidades', 'Conceptos', 'Métodos de pago', 'Moneda', 'Estatus', 'Caja', 'Gabaim']], cj = CAJAS.map(function(k){ return k.nombre; }), mx = Math.max(S.receptoresEg.length, S.modalidadesEg.length, S.conceptosEg.length, formas().length, cj.length, (S.gabaim || []).length);
-  for(var i = 0; i < mx; i++) L.push([S.receptoresEg[i] || '', S.modalidadesEg[i] || '', S.conceptosEg[i] || '', formas()[i] || '', ['MXN', 'USD'][i] || '', EST_EG[i] || '', cj[i] || '', (S.gabaim || [])[i] || '']);
+  var L = [['Receptores', 'Modalidades', 'Conceptos', 'Métodos de pago', 'Divisa', 'Estatus', 'Caja']], cj = CAJAS.map(function(k){ return k.nombre; }), mx = Math.max(S.receptoresEg.length, S.modalidadesEg.length, S.conceptosEg.length, formas().length, cj.length);
+  for(var i = 0; i < mx; i++) L.push([S.receptoresEg[i] || '', S.modalidadesEg[i] || '', S.conceptosEg[i] || '', formas()[i] || '', ['MXN', 'USD'][i] || '', EST_EG[i] || '', cj[i] || '']);
   var wl = XLSX.utils.aoa_to_sheet(L); wl['!cols'] = L[0].map(function(){ return {wch: 26}; });
   XLSX.utils.book_append_sheet(wb, wl, 'Listas');
   guardar('Layout Egresos Bait Lapletot.xlsx', XLSX.write(wb, {bookType: 'xlsx', type: 'array'}));
@@ -2348,10 +2346,10 @@ function egiValidar(o, vis){
   if(mc) r.modal = mc; else if(r.modal) r.av.push('Modalidad nueva: se agrega a la lista.'); else r.modal = S.modalidadesEg[0] || 'Pago Directo';
   r.estatus = /cancel/i.test(String(o.estatus || '')) ? 'Cancelado' : 'Activo';
   if(r.estatus === 'Cancelado') r.av.push('Viene como Cancelado: no cuenta en contabilidad.');
-  r.desc = String(o.desc || '').trim(); r.factura = String(o.factura == null ? '' : o.factura).trim(); r.coment = String(o.coment || '').trim();
+  r.desc = String(o.desc || '').trim(); r.factura = ''; r.coment = String(o.coment || '').trim();
   r.monto = egiNum(o.monto); if(!(r.monto > 0)){ r.err.push('Monto no reconocido.'); r.monto = 0; }
   r.moneda = /usd|dol|us\$/i.test(String(o.moneda || '')) ? 'USD' : 'MXN';
-  if(String(o.moneda || '').trim() && !/usd|dol|us\$|mx|peso/i.test(String(o.moneda))) r.av.push('Moneda no reconocida; queda en MXN.');
+  if(String(o.moneda || '').trim() && !/usd|dol|us\$|mx|peso/i.test(String(o.moneda))) r.av.push('Divisa no reconocida; queda en MXN.');
   r.caja = egiCaja(o.caja, r.moneda);
   if(r.caja === null){ r.caja = r.moneda === 'USD' ? 'USD' : 'MXN'; r.av.push('Caja no reconocida; sale de ' + caja(r.caja).nombre + '.'); }
   if(caja(r.caja).mon !== r.moneda) r.err.push('La caja no coincide con la moneda.');
@@ -2359,12 +2357,11 @@ function egiValidar(o, vis){
   if(r.moneda === 'MXN' && r.monto > 0){
     var ref = egiNum(o.ref), tcCfg = S.cfg && +S.cfg.tc > 0 ? +S.cfg.tc : 0;
     if(ref > 0) r.tc = Math.round(r.monto / ref * 10000) / 10000;
-    else if(tcCfg){ r.tc = tcCfg; r.av.push('Sin referencia en USD; se usa el tipo de cambio ' + tcCfg + '.'); }
-    else r.err.push('Falta la referencia en USD.');
+    else if(tcCfg){ r.tc = tcCfg; r.av.push('Sin referencia en dólares; se usa el tipo de cambio ' + tcCfg + '.'); }
+    else r.err.push('Falta la referencia en dólares.');
   }
   var fm = impForma(o.forma); if(fm === null){ fm = String(o.forma).trim(); r.av.push('Método de pago nuevo: se agrega a la lista.'); } r.forma = fm || 'Transferencia';
-  r.gabai = String(o.gabai || '').trim();
-  if(r.gabai && (S.gabaim || []).indexOf(r.gabai) === -1) r.av.push('Gabai nuevo: se agrega a la lista.');
+  r.gabai = '';
   var clave = r.fecha + '|' + sinAcento(r.benef) + '|' + r.monto + '|' + r.moneda;
   if(r.fecha && (S.egresos || []).some(function(e){ return e.fecha + '|' + sinAcento(e.benef) + '|' + e.montoC + '|' + e.moneda === clave; })){ r.av.push('Ya existe un egreso igual (misma fecha, persona y monto).'); r.on = false; }
   else if(vis[clave]){ r.av.push('Repetido dentro del archivo.'); r.on = false; }
