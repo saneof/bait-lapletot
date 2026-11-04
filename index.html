@@ -347,7 +347,7 @@ select.cjsel{border-left:5px solid var(--c)!important;color:var(--c);font-weight
 .ord{min-width:20px;text-align:right;color:var(--muted);font-size:13px}
 .catrow{padding:6px 0}.catrow .gbin{min-height:34px;font-size:14px}
 .catadd{gap:8px;flex-wrap:nowrap}.catadd .gbin{flex:0 1 240px;min-width:0;min-height:34px;font-size:14px}
-.dh{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;color:var(--muted);font-weight:700;letter-spacing:-2px;padding:4px 6px;border-radius:6px;line-height:1}.dh:hover{background:var(--hover);color:var(--ink)}.dh:active{cursor:grabbing}.rgf{display:grid;gap:6px;margin:6px 0 14px}.rgch{display:flex;flex-wrap:wrap;gap:6px}.rgch .chip{min-height:32px;padding:0 12px;font-size:13px}.rgch .chip.on{background:var(--brand,#1f3a5f);color:#fff;border-color:transparent}.rgm{font-size:12.5px;white-space:nowrap}
+.dh{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;color:var(--muted);font-weight:700;letter-spacing:-2px;padding:4px 6px;border-radius:6px;line-height:1}.dh:hover{background:var(--hover);color:var(--ink)}.dh:active{cursor:grabbing}.rgf{display:grid;gap:6px;margin:6px 0 14px}.rgch{display:flex;flex-wrap:wrap;gap:6px}.rgch .chip{min-height:32px;padding:0 12px;font-size:13px}.rgch .chip.on{background:var(--brand,#1f3a5f);color:#fff;border-color:transparent}.rgm{font-size:12.5px;white-space:nowrap}.rgm td.rgclk{cursor:pointer}.rgm td.rgclk:hover{background:var(--brand-soft,#e8eef6);text-decoration:underline}
 .xhint{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:12.5px;color:var(--muted);margin:2px 0 6px}.xhint .btn{min-height:30px;padding:0 12px}
 .tw.xs,.tablewrap.xs{scrollbar-width:auto;scrollbar-color:#94a3b8 #eef2f6}.tw.xs::-webkit-scrollbar,.tablewrap.xs::-webkit-scrollbar{height:12px}.tw.xs::-webkit-scrollbar-thumb,.tablewrap.xs::-webkit-scrollbar-thumb{background:#94a3b8;border-radius:8px}.tw.xs::-webkit-scrollbar-track,.tablewrap.xs::-webkit-scrollbar-track{background:#eef2f6}
 .rgm thead th:nth-child(-n+3),.rgm .rgn,.rgm td.rgc,.rgm td.rgt{box-sizing:border-box}.rgm thead th:nth-child(-n+3){position:sticky;z-index:3;background:var(--surface,#fff)}.rgm thead th:nth-child(1){left:0;width:130px;min-width:130px}.rgm thead th:nth-child(2){left:130px;width:150px;min-width:150px}.rgm thead th:nth-child(3){left:280px;width:60px;min-width:60px}
@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v177</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v178</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1360,7 +1360,7 @@ function render0(){
   save();
 }
 function xsMarcar(){
-  document.querySelectorAll('main .tw, main .tablewrap').forEach(function(w){
+  document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
     var x = w.scrollWidth > w.clientWidth + 4, h = w.previousElementSibling, tiene = h && h.classList && h.classList.contains('xhint');
     w.classList.toggle('xs', x);
     if(x && !tiene){ var d = document.createElement('div'); d.className = 'xhint'; d.setAttribute('data-noi18n', ''); d.innerHTML = '<span>↔ Esta tabla tiene más columnas: desliza o usa las flechas</span><button type="button" class="btn ghost sm" data-a="xsMove" data-d="-1" aria-label="Ver columnas a la izquierda">◀</button><button type="button" class="btn ghost sm" data-a="xsMove" data-d="1" aria-label="Ver columnas a la derecha">▶</button>'; w.parentNode.insertBefore(d, w); }
@@ -2806,8 +2806,9 @@ function contResumenGab(){
   var gN = function(g){ return g ? r2Gab(g) : '<span class="r2g" style="--c:#94a3b8">Sin gabai</span>'; }, ORDH = '<span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>';
   var fmtR = function(v){ return f.rsc ? '$' + NF0.format(Math.round(v / 100)) : mN(v); }, c = function(o, k, b){ var v = o ? o[k] : 0; return '<td class="n' + (b ? ' rtot' : '') + '">' + (v ? (b ? '<b>' + fmtR(v) + '</b>' : fmtR(v)) : '<span class="rz">–</span>') + '</td>'; };
   var TIPOS = [['MXN', 'MXN'], ['USD', 'USD'], ['eq', 'Eq. USD']], tipos = f.rt.length ? TIPOS.filter(function(t){ return f.rt.indexOf(t[0]) !== -1; }) : TIPOS;
-  var bloque = function(nombre, get, tot, cls, con, span){
-    return tipos.map(function(t, i){ return '<tr class="' + (cls || '') + (i === 0 ? ' rg1' : '') + (t[0] === 'eq' ? ' req' : '') + '">' + (i === 0 && nombre != null ? '<th scope="row" rowspan="' + (span || tipos.length) + '" class="rgn">' + nombre + '</th>' : '') + (i === 0 ? '<td rowspan="' + tipos.length + '" class="rgc">' + (con || '') + '</td>' : '') + '<td class="rgt">' + t[1] + '</td>' + mSel.map(function(m){ return c(get(m), t[0]); }).join('') + c(tot, t[0], true) + '</tr>'; }).join('');
+  var cc = function(o, k, b, ctx, m){ var td = c(o, k, b); var v = o ? o[k] : 0; if(!v || !ctx) return td; return td.replace('<td class="n', '<td data-a="rgVer" data-g="' + esc(ctx.g) + '" data-k="' + esc(ctx.k) + '" data-m="' + (m || '') + '" data-t="' + k + '" title="Ver los pagos" class="rgclk n'); };
+  var bloque = function(nombre, get, tot, cls, con, span, ctx){
+    return tipos.map(function(t, i){ return '<tr class="' + (cls || '') + (i === 0 ? ' rg1' : '') + (t[0] === 'eq' ? ' req' : '') + '">' + (i === 0 && nombre != null ? '<th scope="row" rowspan="' + (span || tipos.length) + '" class="rgn">' + nombre + '</th>' : '') + (i === 0 ? '<td rowspan="' + tipos.length + '" class="rgc">' + (con || '') + '</td>' : '') + '<td class="rgt">' + t[1] + '</td>' + mSel.map(function(m){ return cc(get(m), t[0], false, ctx, m); }).join('') + cc(tot, t[0], true, ctx, '') + '</tr>'; }).join('');
   };
   var chipsG = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rg.length ? ' on' : '') + '" data-a="rgGAll">Todos</button>' + gabs.map(function(g){ return '<button type="button" class="chip' + (f.rg.indexOf(g) !== -1 ? ' on' : '') + '" data-a="rgG" data-g="' + esc(g) + '" aria-pressed="' + (f.rg.indexOf(g) !== -1) + '">' + gN(g) + '</button>'; }).join('') + '</div>';
   var chipsM = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rm.length ? ' on' : '') + '" data-a="rgMAll">Todo el año</button>' + MESES.es.map(function(n, k){ var on = f.rm.indexOf(k + 1) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgM" data-m="' + (k + 1) + '" aria-pressed="' + on + '">' + Mes(k + 1).slice(0, 3) + '</button>'; }).join('') + '</div>';
@@ -2825,12 +2826,12 @@ function contResumenGab(){
         (f.rv ? '<div class="row" style="gap:8px;margin:-4px 0 8px"><button type="button" class="chip' + (f.rsc ? ' on' : '') + '" data-a="rgCent" aria-pressed="' + !!f.rsc + '">Sin centavos (más compacto)</button></div>' : '<button type="button" class="btn primary" data-a="rgGAll">Ver resumen de todos los gabaim</button>'); })() +
     (!f.rv ? '' : '<div class="tw rgw"><table class="cobt rgm"><thead><tr><th>Gabai</th><th>Concepto</th><th></th>' + mSel.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Total</th></tr></thead><tbody>' +
       gSel.map(function(g){ var ks = (GK[g] || []).slice().sort(function(a, b){ return cons.indexOf(a) - cons.indexOf(b); });
-        if(!ks.length) return bloque(gN(g), function(m){ return D[g + '|' + m]; }, TG[g], '', '<span class="sub">—</span>');
+        if(!ks.length) return bloque(gN(g), function(m){ return D[g + '|' + m]; }, TG[g], '', '<span class="sub">—</span>', null, {g: g, k: '*'});
         var multi = ks.length > 1, span = tipos.length * (ks.length + (multi ? 1 : 0));
-        return ks.map(function(k, ki){ return bloque(ki === 0 ? gN(g) : null, function(m){ return DC[g + '|' + k + '|' + m]; }, TGC[g + '|' + k], ki ? 'rgsub' : '', '<span class="pill t-info rgcp">' + esc(k) + '</span>', span); }).join('') +
-          (multi ? bloque(null, function(m){ return D[g + '|' + m]; }, TG[g], 'rgsub rggt', '<b>Total gabai</b>') : '');
+        return ks.map(function(k, ki){ return bloque(ki === 0 ? gN(g) : null, function(m){ return DC[g + '|' + k + '|' + m]; }, TGC[g + '|' + k], ki ? 'rgsub' : '', '<span class="pill t-info rgcp">' + esc(k) + '</span>', span, {g: g, k: k}); }).join('') +
+          (multi ? bloque(null, function(m){ return D[g + '|' + m]; }, TG[g], 'rgsub rggt', '<b>Total gabai</b>', null, {g: g, k: '*'}) : '');
       }).join('') +
-      bloque('<b>Total</b>', function(m){ return TM[m]; }, TT, 'rgtot', f.rc.length ? f.rc.map(esc).join(' + ') : 'Todos los conceptos') +
+      bloque('<b>Total</b>', function(m){ return TM[m]; }, TT, 'rgtot', f.rc.length ? f.rc.map(esc).join(' + ') : 'Todos los conceptos', null, {g: '*', k: '*'}) +
     '</tbody></table></div>') + '</section>';
 }
 var CONT_COLS = [
@@ -2885,6 +2886,32 @@ function contTabla(rows, tot){
   return '<section class="panel"><div class="row" style="justify-content:flex-end;align-items:flex-end;gap:8px">' + selOrd + picker + '</div>' + (rows.length ? tbBar('cont') + '<div class="tw cards"><table data-cf="cont" data-tt="Contabilidad" class="cobt contt"><thead><tr>' + vis.map(th).join('') + '</tr></thead><tbody>' +
     rows.map(function(x){ return '<tr>' + vis.map(function(k){ return '<td data-l="' + esc(k[1]) + '"' + (k[2] ? ' class="' + k[2] + '"' : '') + '>' + k[3](x) + '</td>'; }).join('') + '</tr>'; }).join('') +
     '</tbody><tfoot><tr>' + foot + '</tr></tfoot></table></div>' : '<div class="empty">Sin movimientos con estos filtros.</div>') + '</section>';
+}
+function rgVer(g, k, m, t){
+  var f = ui.cont, mm = m ? +m : 0;
+  var xs = movimientos().filter(function(x){
+    if(x.tipo !== 'ing' || x.cambio || x.fecha.slice(0, 4) !== f.anio) return false;
+    var gx = x.gabai || '', mx = +x.fecha.slice(5, 7), cn = x.concepto || 'Sin concepto';
+    if(f.rg.length && f.rg.indexOf(gx) === -1) return false;
+    if(f.rm.length && f.rm.indexOf(mx) === -1) return false;
+    if(f.rc.length && f.rc.indexOf(x.concepto || '') === -1) return false;
+    if(f.rcj && f.rcj.length && f.rcj.indexOf(x.caja) === -1) return false;
+    if(g !== '*' && gx !== g) return false;
+    if(k !== '*' && cn !== k) return false;
+    if(mm && mx !== mm) return false;
+    if(t !== 'eq' && x.moneda !== t) return false;
+    return true;
+  }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || String(a.folio).localeCompare(String(b.folio), 'es', {numeric: true}); });
+  var tot = xs.reduce(function(a, x){ return a + (t === 'eq' ? (x.eqC || 0) : x.montoC); }, 0);
+  var tit = [g === '*' ? 'Todos los gabaim' : (g || 'Sin gabai'), k === '*' ? (f.rc.length ? f.rc.join(' + ') : 'Todos los conceptos') : k, mm ? Mes(mm) + ' ' + f.anio : 'Año ' + f.anio, t === 'eq' ? 'Equivalente USD' : t].join(' · ');
+  openModal(head('Pagos', esc(tit)) +
+    '<div class="row" style="gap:10px;margin:2px 0 10px"><span class="pill t-ok">' + xs.length + (xs.length === 1 ? ' pago' : ' pagos') + '</span><span class="pill t-info">Total ' + (t === 'eq' ? money(tot, 'USD') : money(tot, t)) + '</span></div>' +
+    (xs.length ? tbBar('rgver') + '<div class="tw cards"><table data-cf="rgver" data-tt="Pagos · ' + esc(tit) + '" class="cobt"><thead><tr><th>Fecha</th><th>Recibo</th><th>Donador</th><th>Concepto</th><th>Corresponde a</th><th class="n">Monto</th><th class="n">Eq. USD</th><th>Forma</th><th>Caja</th><th>Comentarios</th></tr></thead><tbody>' +
+      xs.map(function(x){ return '<tr><td data-l="Fecha" class="nowrap">' + fFecha(x.fecha) + '</td><td data-l="Recibo"><b>' + esc(x.folio) + '</b></td><td data-l="Donador">' + esc(x.nombre) + '</td><td data-l="Concepto">' + esc(x.concepto || '') + '</td><td data-l="Corresponde a">' + esc(x.corr || '—') + '</td><td class="n" data-l="Monto"><b>' + money(x.montoC, x.moneda) + '</b></td><td class="n" data-l="Eq. USD">' + money(x.eqC || 0, 'USD') + '</td><td data-l="Forma">' + esc(x.forma || '') + '</td><td data-l="Caja">' + cajaPill(x.caja) + '</td><td data-l="Comentarios" style="white-space:pre-wrap;min-width:120px">' + esc(x.obs || '') + '</td></tr>'; }).join('') +
+      '</tbody><tfoot><tr><td colspan="5"><b>Total · ' + xs.length + '</b></td><td class="n"><b>' + (t === 'eq' ? '' : money(tot, t)) + '</b></td><td class="n"><b>' + money(xs.reduce(function(a, x){ return a + (x.eqC || 0); }, 0), 'USD') + '</b></td><td colspan="3"></td></tr></tfoot></table></div>' : '<div class="empty">Sin pagos.</div>') +
+    '<div class="dfoot"><button type="button" class="btn primary" data-a="close">Cerrar</button></div>');
+  var dl = $('dlg'); if(dl) dl.classList.add('wide');
+  try{ colFiltros(); xsMarcar(); }catch(e){}
 }
 function contFiltrado(f){ return f.tipo !== 'todos' || f.mes !== 'todos' || f.caja !== 'todos' || !!f.con || (f.gab && f.gab !== 'todos') || !!f.don || !!(f.q || '').trim(); }
 function vConta(){
@@ -5490,6 +5517,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'close') closeModal();
   else if(a === 'rgCAll'){ ui.cont.rv = true; ui.cont.rc = []; render(); }
   else if(a === 'rgC'){ ui.cont.rv = true; var rcv = b.getAttribute('data-c'), rca = ui.cont.rc = ui.cont.rc || [], rci = rca.indexOf(rcv); if(rci === -1) rca.push(rcv); else rca.splice(rci, 1); render(); }
+  else if(a === 'rgVer'){ rgVer(b.getAttribute('data-g'), b.getAttribute('data-k'), b.getAttribute('data-m'), b.getAttribute('data-t')); }
   else if(a === 'rgCent'){ ui.cont.rsc = !ui.cont.rsc; render(); }
   else if(a === 'rgGAll' || a === 'rgMAll' || a === 'rgTAll'){ ui.cont.rv = true; ui.cont[{rgGAll: 'rg', rgMAll: 'rm', rgTAll: 'rt'}[a]] = []; render(); }
   else if(a === 'rgG' || a === 'rgM' || a === 'rgT'){ ui.cont.rv = true; var rk = {rgG: 'rg', rgM: 'rm', rgT: 'rt'}[a], rv = a === 'rgG' ? b.getAttribute('data-g') : a === 'rgT' ? b.getAttribute('data-t') : +b.getAttribute('data-m'), ra = ui.cont[rk] = ui.cont[rk] || [], ri = ra.indexOf(rv); if(ri === -1) ra.push(rv); else ra.splice(ri, 1); render(); }
