@@ -522,7 +522,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v157</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v158</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2671,6 +2671,7 @@ function mostrarLogin(msg){
     '<div class="err" id="lgErr"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</div>' +
     '<button type="button" class="btn primary lgo" data-a="' + (boot ? 'lgBoot' : 'lgEntrar') + '">' + (boot ? L('Guardar y entrar', 'Save and sign in', 'שמירה וכניסה') : L('Entrar', 'Sign in', 'כניסה')) + '</button>' +
     (boot || !S.donantes.length ? '<div class="lresp"><div class="sub">' + L('¿Ya tienes tus datos en otra computadora? Descarga ahí un respaldo (Exportar → Descargar respaldo) y cárgalo aquí:', 'Have your data elsewhere? Load a backup here:', 'יש לך גיבוי? טען אותו כאן:') + '</div><label class="btn ghost filebtn">' + L('Cargar respaldo', 'Load backup', 'טעינת גיבוי') + '<input type="file" id="respFile" accept=".json,application/json" hidden></label></div>' : '') +
+    (NUBE_ON ? '<button type="button" class="btn ghost" data-a="lgReset">🔑 Restablecer contraseña</button><button type="button" class="back" data-a="lgNube" style="align-self:center">☁️ Entrar con la versión en la nube</button>' : '') +
     '<div class="langs" data-noi18n><button type="button" data-a="lgLang" data-l="es"' + (LANG === 'es' ? ' aria-pressed="true"' : '') + '>Español</button><button type="button" data-a="lgLang" data-l="en"' + (LANG === 'en' ? ' aria-pressed="true"' : '') + '>English</button><button type="button" data-a="lgLang" data-l="he"' + (LANG === 'he' ? ' aria-pressed="true"' : '') + '>עברית</button></div></div>';
   document.documentElement.classList.add('nologin');
   $('login').hidden = false; $('login').setAttribute('dir', LANG === 'he' ? 'rtl' : 'ltr');
@@ -2687,11 +2688,46 @@ function lgEntrar(){
   var u = S.usuarios.find(function(x){ return loginDe(x) === un || sinAcento(x.nombre) === un; });
   var fallo = function(m){ err.textContent = m; err.hidden = false; $('lgPw').value = ''; $('lgPw').focus(); };
   var L = function(es, en, he){ return LANG === 'en' ? en : LANG === 'he' ? he : es; };
+  if(NUBE_ON && pw && (!u || !u.pw || hashPw(u, pw) !== u.pw)){ lgNubeIntento($('lgUser').value, pw, fallo); return; }
   if(!u || !pw) return fallo(L('Usuario o contraseña incorrectos.', 'Wrong user or password.', 'שם משתמש או סיסמה שגויים.'));
   if(u.inactivo) return fallo(L('Este usuario está desactivado.', 'This user is disabled.', 'המשתמש מושבת.'));
   if(!u.pw) return fallo(L('Este usuario aún no tiene contraseña. Pide a Dirección que se la asigne.', 'This user has no password yet. Ask Management to set one.', 'למשתמש אין סיסמה עדיין. בקשו מההנהלה.'));
   if(hashPw(u, pw) !== u.pw) return fallo(L('Usuario o contraseña incorrectos.', 'Wrong user or password.', 'שם משתמש או סיסמה שגויים.'));
   entrarComo(u, $('lgRec').checked);
+}
+async function nbAsegurar(){
+  if(NB.sb) return true;
+  try{ await nbLib(); }catch(e){ return false; }
+  NB.sb = window.supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
+  NB.sb.auth.onAuthStateChange(function(ev){ if(ev === 'PASSWORD_RECOVERY') nbNuevaPantalla(); });
+  return true;
+}
+async function lgNubeIntento(usr, pw, fallo){
+  var bt = document.querySelector('[data-a=lgEntrar]'); if(bt){ bt.disabled = true; bt.textContent = 'Entrando…'; }
+  var fin = function(t){ if(bt){ bt.disabled = false; bt.textContent = 'Entrar'; } fallo(t); };
+  if(!(await nbAsegurar())) return fin('Sin conexión con la nube. Revisa tu internet y vuelve a intentar.');
+  var m = nbCorreoDe(usr);
+  if(!m) return fin('Ese usuario no está ligado a un correo. Escribe tu correo completo.');
+  var r = await NB.sb.auth.signInWithPassword({email: m, password: pw});
+  if(r.error) return fin(/invalid/i.test(r.error.message) ? 'Usuario o contraseña incorrectos. Pica "Restablecer contraseña" para crear una nueva.' : 'No se pudo entrar: ' + r.error.message);
+  NB.email = (r.data.user.email || m).toLowerCase(); NB.uid = r.data.user.id; await nbDespuesLogin();
+}
+async function lgReset(){
+  if(!$('lgUser')){ await lgNube(); return; }
+  var err = $('lgErr'), us = $('lgUser').value;
+  var msg = function(t, ok){ err.textContent = t; err.hidden = false; err.style.background = ok ? 'var(--ok-soft)' : ''; err.style.color = ok ? 'var(--ok)' : ''; };
+  var m = nbCorreoDe(us);
+  if(!m || m.indexOf('@') < 1){ msg('Escribe arriba tu correo (o tu usuario) y vuelve a picar "Restablecer contraseña".'); if($('lgUser')) $('lgUser').focus(); return; }
+  if(!(await nbAsegurar())){ msg('Sin conexión con la nube. Revisa tu internet y vuelve a intentar.'); return; }
+  var r = await NB.sb.auth.resetPasswordForEmail(m, {redirectTo: location.origin + location.pathname});
+  if(r.error){ msg(/rate|seconds/i.test(r.error.message) ? 'Ya se mandó un correo hace poco. Espera unos minutos y revisa tu bandeja (y spam).' : 'No se pudo mandar el correo: ' + r.error.message); return; }
+  msg('📧 Te mandamos un correo a ' + m + '. Ábrelo en este mismo dispositivo y pica el enlace para crear tu nueva contraseña. Revisa también spam.', true);
+  toast('Correo enviado a ' + m);
+}
+async function lgNube(){
+  var us = $('lgUser') ? $('lgUser').value : '';
+  if(!(await nbAsegurar())){ toast('Sin conexión con la nube.'); return; }
+  nbLoginPantalla(); if($('nbMail') && us) $('nbMail').value = us;
 }
 function lgBoot(){
   var dir = S.usuarios.find(function(u){ return u.rol === 'Dirección'; }), p1 = $('lgPw').value, p2 = $('lgPw2').value, err = $('lgErr');
@@ -5563,7 +5599,7 @@ function nbLib(){
   return new Promise(function(ok, no){
     if(window.supabase && window.supabase.createClient) return ok();
     var sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
-    sc.onload = function(){ ok(); }; sc.onerror = function(){ no(new Error('lib')); }; document.head.appendChild(sc);
+    sc.onload = function(){ ok(); }; sc.onerror = function(){ var s2 = document.createElement('script'); s2.src = 'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'; s2.onload = function(){ ok(); }; s2.onerror = function(){ no(new Error('lib')); }; document.head.appendChild(s2); }; document.head.appendChild(sc);
   });
 }
 async function nbIniciar(){
@@ -5585,7 +5621,7 @@ function nbLoginPantalla(msg){
     '<label class="f">Contraseña<span class="pwrow"><input id="nbPw" type="password" autocomplete="current-password"><button type="button" class="back" data-a="nbVer">Ver</button></span></label>' +
     '<div class="err" id="nbErr"' + (msg ? '' : ' hidden') + '>' + esc(msg || '') + '</div>' +
     '<button type="button" class="btn primary lgo" data-a="nbEntrar">Entrar</button>' +
-    '<button type="button" class="btn ghost" data-a="nbOlvide">¿Olvidaste tu contraseña?</button></div>';
+    '<button type="button" class="btn ghost" data-a="nbOlvide">🔑 Restablecer contraseña</button></div>';
   document.documentElement.classList.add('nologin'); $('login').hidden = false;
   setTimeout(function(){ if($('nbMail')) $('nbMail').focus(); }, 30);
 }
@@ -5613,7 +5649,7 @@ async function nbGuardaPw(){
 }
 async function nbOlvide(){
   var m = nbCorreoDe($('nbMail').value), err = $('nbErr');
-  if(!m || m.indexOf('@') < 1){ err.textContent = 'Escribe arriba tu usuario o correo y vuelve a picar "¿Olvidaste tu contraseña?".'; err.hidden = false; $('nbMail').focus(); return; }
+  if(!m || m.indexOf('@') < 1){ err.textContent = 'Escribe arriba tu usuario o correo y vuelve a picar "Restablecer contraseña".'; err.hidden = false; $('nbMail').focus(); return; }
   var r = await NB.sb.auth.resetPasswordForEmail(m, {redirectTo: location.origin + location.pathname});
   if(r.error){ err.textContent = /rate|seconds/i.test(r.error.message) ? 'Ya se mandó un correo hace poco. Espera unos minutos y revisa tu bandeja (y spam).' : 'No se pudo mandar el correo: ' + r.error.message; err.hidden = false; return; }
   err.hidden = true; $('login').querySelector('.nbnote').innerHTML = '📧 Te mandamos un correo a <b>' + esc(m) + '</b>. Ábrelo en este dispositivo y pica el enlace para crear tu nueva contraseña. Revisa también spam.';
@@ -5646,7 +5682,7 @@ async function nbEntrar(){
   if(!m) return fallo('Ese usuario no está ligado a un correo. Escribe tu correo.');
   if(bt){ bt.disabled = true; bt.textContent = 'Entrando…'; }
   var r = await NB.sb.auth.signInWithPassword({email: m, password: pw});
-  if(r.error) return fallo(/invalid/i.test(r.error.message) ? 'Usuario o contraseña incorrectos. Si no la recuerdas, pica "¿Olvidaste tu contraseña?".' : 'No se pudo entrar: ' + r.error.message);
+  if(r.error) return fallo(/invalid/i.test(r.error.message) ? 'Usuario o contraseña incorrectos. Si no la recuerdas, pica "Restablecer contraseña".' : 'No se pudo entrar: ' + r.error.message);
   NB.email = (r.data.user.email || m).toLowerCase(); NB.uid = r.data.user.id; await nbDespuesLogin();
 }
 
@@ -5863,6 +5899,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'nbRespRestOk'){ nbRespRestOk(b.getAttribute('data-id')); }
   else if(a === 'nbRespAhora'){ var dd = JSON.parse(JSON.stringify(estadoGuardable())); dd.user = 0; nbGuardarRespaldo('Respaldo manual', dd).then(function(ok){ toast(ok ? '🛟 Respaldo guardado en la nube' : 'No se pudo guardar el respaldo'); nbListaRespaldos(); }); }
   else if(a === 'nbOlvide'){ ev.preventDefault(); nbOlvide(); }
+  else if(a === 'lgReset'){ ev.preventDefault(); lgReset(); }
+  else if(a === 'lgNube'){ ev.preventDefault(); lgNube(); }
   else if(a === 'nbGuardaPw'){ ev.preventDefault(); nbGuardaPw(); }
   else if(a === 'nbCambiarPw'){ nbCambiarPw(); }
   else if(a === 'nbCambiaOk'){ nbCambiaOk(); }
