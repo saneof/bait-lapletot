@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v174</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v175</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1872,6 +1872,7 @@ function abrirQEdit(qid){
         '<label class="f">Forma de pago<select data-pf="forma">' + opt(formas().concat(formas().indexOf(p.forma) === -1 && p.forma ? [p.forma] : []), p.forma) + '</select></label>' +
         '<label class="f">Caja<select data-pf="caja">' + opt(CAJAS.map(function(k){ return [k.id, k.nombre]; }), p.caja || cajaDef(p.moneda)) + '</select></label>' +
         '<label class="f">Observaciones<input data-pf="obs" value="' + esc(p.obs || '') + '" maxlength="200"></label>' +
+        '<label class="f">Aplica al mes<select data-pf="aplica">' + cuotasDe(c.id).slice().sort(function(a, b){ return a.mes - b.mes; }).map(function(z){ var cur = (p.cubre[0] || {}).qid === z.id; return '<option value="' + z.id + '"' + (cur ? ' selected' : '') + '>' + Mes(z.mes) + ' ' + c.anio + (cur ? '' : falta(z) > 0 ? ' · pendiente' : ' · ya pagado') + '</option>'; }).join('') + '</select>' + (p.cubre.length > 1 ? '<small class="sub">Ahora cubre ' + esc(rangosMeses(p.cubre.map(function(x){ return x.mes; }))) + '; si eliges un mes, todo el pago se aplica a ese mes.</small>' : '') + '</label>' +
         '<label class="ck del" style="align-self:end"><input type="checkbox" data-pf="borrar"> Eliminar este pago</label></div>';
     }).join('') : '<div class="sub" style="margin-top:12px">Sin pagos en este mes.</div>') +
     '<div class="err" id="qeErr" hidden></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="qeSave" data-id="' + q.id + '">Guardar cambios</button></div>');
@@ -1889,7 +1890,7 @@ function qeSave(qid){
   var datos = [];
   document.querySelectorAll('[data-pe]').forEach(function(box){
     var g = function(k){ var e = box.querySelector('[data-pf="' + k + '"]'); return e.type === 'checkbox' ? e.checked : e.value; };
-    datos.push({p: S.donativos.find(function(x){ return x.id === box.getAttribute('data-pe'); }), fecha: g('fecha'), monto: Math.round(parseFloat(String(g('monto')).replace(/[^0-9.\-]/g, '')) * 100), moneda: g('moneda'), ref: cents(g('tc')), forma: g('forma'), caja: g('caja'), obs: g('obs').trim(), borrar: g('borrar')});
+    datos.push({p: S.donativos.find(function(x){ return x.id === box.getAttribute('data-pe'); }), fecha: g('fecha'), monto: Math.round(parseFloat(String(g('monto')).replace(/[^0-9.\-]/g, '')) * 100), moneda: g('moneda'), ref: cents(g('tc')), forma: g('forma'), caja: g('caja'), obs: g('obs').trim(), borrar: g('borrar'), aplica: g('aplica')});
   });
   for(var i = 0; i < datos.length; i++){ var x = datos[i]; if(x.borrar) continue;
     if(!x.fecha) return fallo('Falta la fecha del pago ' + x.p.recibo + '.');
@@ -1909,6 +1910,8 @@ function qeSave(qid){
     if(x.caja !== (p.caja || '')){ ch.push('caja'); p.caja = x.caja; }
     if(x.obs !== (p.obs || '')){ ch.push('observaciones'); p.obs = x.obs; }
     if(eq !== p.montoCompC){ p.montoCompC = eq; reaplicar(p, q); }
+    var curQ = p.cubre.length === 1 ? p.cubre[0].qid : '';
+    if(x.aplica && x.aplica !== curQ){ var tq = S.cuotas.find(function(z){ return z.id === x.aplica; }); if(tq){ desaplicar(p); tq.aplicadoC += p.montoCompC; p.cubre = [{qid: tq.id, num: tq.num, mes: tq.mes, ap: p.montoCompC}]; p.mesCorr = tq.mes; ch.push('ahora aplica a ' + Mes(tq.mes)); } }
     if(ch.length) cambios.push('pago ' + p.recibo + ': ' + ch.join(', '));
   });
   var acc = $('qaAcc') ? $('qaAcc').value : '';
@@ -2783,7 +2786,7 @@ function contPasa(x, f, q){
   return true;
 }
 function contResumenGab(){
-  var f = ui.cont; f.rg = f.rg || []; f.rm = f.rm || []; f.rt = f.rt || []; f.rc = f.rc || [];
+  var f = ui.cont; f.rg = f.rg || []; f.rm = f.rm || []; f.rt = f.rt || []; f.rc = f.rc || []; f.rcj = f.rcj || [];
   var ing = movimientos().filter(function(x){ return x.tipo === 'ing' && x.fecha.slice(0, 4) === f.anio; });
   var gabs = (S.gabaim || []).slice(); ing.forEach(function(x){ if(gabs.indexOf(x.gabai || '') === -1) gabs.push(x.gabai || ''); });
   var gSel = f.rg.length ? gabs.filter(function(g){ return f.rg.indexOf(g) !== -1; }) : gabs;
@@ -2793,6 +2796,7 @@ function contResumenGab(){
     var g = x.gabai || '', m = +x.fecha.slice(5, 7);
     if(gSel.indexOf(g) === -1 || mSel.indexOf(m) === -1) return;
     if(f.rc.length && f.rc.indexOf(x.concepto || '') === -1) return;
+    if(f.rcj.length && f.rcj.indexOf(x.caja) === -1) return;
     var cn = x.concepto || 'Sin concepto', k = g + '|' + m, kc = g + '|' + cn + '|' + m, tc = g + '|' + cn; GK[g] = GK[g] || []; if(GK[g].indexOf(cn) === -1) GK[g].push(cn);
     [D[k] = D[k] || z(), DC[kc] = DC[kc] || z(), TGC[tc] = TGC[tc] || z(), TG[g] = TG[g] || z(), TM[m] = TM[m] || z(), TT].forEach(function(o){ o[x.moneda] += x.montoC; o.eq += x.eqC || 0; });
   });
@@ -2808,12 +2812,13 @@ function contResumenGab(){
   var chipsC = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rc.length ? ' on' : '') + '" data-a="rgCAll">Todos</button>' + cons.map(function(k){ var on = f.rc.indexOf(k) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgC" data-c="' + esc(k) + '" aria-pressed="' + on + '">' + esc(k) + '</button>'; }).join('') + '</div>';
   var chipsT = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rt.length ? ' on' : '') + '" data-a="rgTAll">Todas</button>' + TIPOS.map(function(t){ var on = f.rt.indexOf(t[0]) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgT" data-t="' + t[0] + '" aria-pressed="' + on + '">' + t[1] + '</button>'; }).join('') + '</div>';
   return '<section class="panel"><h2>Resumen por gabai · ' + esc(f.anio) + '</h2>' +
-    (function(){ var mk = function(id, key, items, todos){ var sel = f[key], h = msHtml(id, items, sel, id === 'rg' ? gabSum(sel) : esc(!sel.length ? todos : sel.length === 1 ? (items.filter(function(it){ return it[0] === sel[0]; })[0] || ['', ''])[2] || String(sel[0]) : sel.length + ' elegidos'), id === 'rg' ? '<button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button>' : ''); MS[id].set = function(a){ f[key] = a; f.rv = true; }; return h; };
+    (function(){ var mk = function(id, key, items, todos){ var sel = f[key], h = msHtml(id, items, sel, id === 'rg' ? gabSum(sel) : id === 'rj' ? (sel.length ? '<span class="gsum">' + sel.map(cajaPill).join('') + '</span>' : '<span>Todas las cajas</span>') : esc(!sel.length ? todos : sel.length === 1 ? (items.filter(function(it){ return it[0] === sel[0]; })[0] || ['', ''])[2] || String(sel[0]) : sel.length + ' elegidos'), id === 'rg' ? '<button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button>' : ''); MS[id].set = function(a){ f[key] = a; f.rv = true; }; return h; };
       return '<div class="rgsel">' +
         '<div class="f fms">' + ORDH + mk('rg', 'rg', gabs.map(function(g){ return [g, gN(g), g || 'Sin gabai']; }), 'Todos los gabaim') + '</div>' +
         '<div class="f fms">Concepto' + mk('rc', 'rc', cons.map(function(k){ return [k, esc(k), k]; }), 'Todos los conceptos') + '</div>' +
         '<div class="f fms">Mes' + mk('rm', 'rm', MESES.es.map(function(n, k){ return [k + 1, esc(Mes(k + 1)), Mes(k + 1)]; }), 'Todo el año') + '</div>' +
-        '<div class="f fms">Moneda' + mk('rt', 'rt', TIPOS.map(function(t){ return [t[0], esc(t[1]), t[1]]; }), 'Todas') + '</div></div>' +
+        '<div class="f fms">Moneda' + mk('rt', 'rt', TIPOS.map(function(t){ return [t[0], esc(t[1]), t[1]]; }), 'Todas') + '</div>' +
+        '<div class="f fms">Caja' + mk('rj', 'rcj', CAJAS.map(function(k){ return [k.id, cajaPill(k.id), k.nombre]; }), 'Todas las cajas') + '</div></div>' +
         (f.rv ? '<div class="row" style="gap:8px;margin:-4px 0 8px"><button type="button" class="chip' + (f.rsc ? ' on' : '') + '" data-a="rgCent" aria-pressed="' + !!f.rsc + '">Sin centavos (más compacto)</button></div>' : '<button type="button" class="btn primary" data-a="rgGAll">Ver resumen de todos los gabaim</button>'); })() +
     (!f.rv ? '' : '<div class="tw rgw"><table class="cobt rgm"><thead><tr><th>Gabai</th><th>Concepto</th><th></th>' + mSel.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Total</th></tr></thead><tbody>' +
       gSel.map(function(g){ var ks = (GK[g] || []).slice().sort(function(a, b){ return cons.indexOf(a) - cons.indexOf(b); });
