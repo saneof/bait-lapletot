@@ -194,7 +194,7 @@ html.nologin .app{display:none}
 @media (min-width:900px){main>.top{position:relative;padding-top:40px}main>.top>.row>#whoBox{position:absolute;top:0;right:0;flex-wrap:nowrap}}
 .buscaFila{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}.buscaFila>select{flex:1 1 0;width:auto;min-width:0}.buscaFila>.busca{flex:1 1 0;min-width:0}.busca{position:relative;width:100%}.busca .buscaLista{min-width:240px}.busca input{width:100%}.buscaLista{position:absolute;z-index:60;left:0;right:0;top:calc(100% + 4px);background:var(--surface,#fff);border:1px solid var(--line,#dde);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:300px;overflow:auto;padding:4px}.buscaLista button{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;color:inherit;cursor:pointer}.buscaLista button:hover,.buscaLista button.act{background:var(--brand-soft,#e8eef6)}.buscaLista b{color:var(--brand,#12324F)}.buscaLista .vacio{padding:9px 12px;color:var(--muted,#667)}
 .r2filt{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;align-items:end}.tablewrap{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:12px}.r2grid>section,.r2grid>div{min-width:0}
-.msel{position:relative;display:inline-block;min-width:260px}.msel>summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:9px 34px 9px 12px;background:var(--surface,#fff);position:relative;font-weight:600}.msel>summary::-webkit-details-marker{display:none}.msel>summary::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted)}.msel .mselp{position:absolute;z-index:40;top:calc(100% + 4px);left:0;min-width:100%;background:var(--surface,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);padding:6px;max-height:320px;overflow:auto}.msel .mselp label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer}.msel .mselp label:hover{background:var(--brand-soft,#e8eef6)}.msel .mselp input[type=checkbox]{width:18px !important;height:18px !important;min-height:0 !important;padding:0 !important;margin:0;flex:none;accent-color:var(--brand,#12324F)}.msel .mselb{display:flex;gap:6px;padding:4px 6px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.msel{position:relative;display:inline-block;min-width:260px}div.f.fms{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:var(--muted);min-width:0;max-width:none}.fms .msel{display:block;min-width:0;width:100%}.fms .msel>summary{font-weight:500;color:var(--ink);font-size:14px;min-height:42px;box-sizing:border-box;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fms .mselp label{color:var(--ink);font-size:14px;font-weight:400}.msel .mselb{flex-wrap:wrap}.rgsel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;margin:6px 0 14px}.msel>summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:9px 34px 9px 12px;background:var(--surface,#fff);position:relative;font-weight:600}.msel>summary::-webkit-details-marker{display:none}.msel>summary::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted)}.msel .mselp{position:absolute;z-index:40;top:calc(100% + 4px);left:0;min-width:100%;background:var(--surface,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);padding:6px;max-height:320px;overflow:auto}.msel .mselp label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer}.msel .mselp label:hover{background:var(--brand-soft,#e8eef6)}.msel .mselp input[type=checkbox]{width:18px !important;height:18px !important;min-height:0 !important;padding:0 !important;margin:0;flex:none;accent-color:var(--brand,#12324F)}.msel .mselb{display:flex;gap:6px;padding:4px 6px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .chip .r2n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#fff;color:var(--brand,#12324F);font-size:11px;margin-right:2px}button.r2sort{all:unset;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;white-space:nowrap}button.r2sort span{opacity:.45;font-size:11px}button.r2sort.on{color:var(--brand,#12324F)}button.r2sort.on span{opacity:1}
 .ini-hero{position:relative;overflow:hidden;border-radius:22px;padding:34px 34px 30px;color:#fff;background:radial-gradient(1200px 400px at 85% -20%,rgba(212,175,55,.28),transparent 60%),linear-gradient(135deg,#0e2a44 0%,#12324F 45%,#1d4a73 100%);box-shadow:0 18px 40px rgba(18,50,79,.25)}
 .ini-hero::after{content:'';position:absolute;right:-60px;bottom:-60px;width:260px;height:260px;border-radius:50%;border:2px solid rgba(212,175,55,.35)}
@@ -562,7 +562,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v166</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v167</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1483,6 +1483,42 @@ function cajaTxt(id){ var k = caja(id); return k.nombre + (k.externa ? ' · solo
 function optsCaja(sel, mon){
   return CAJAS.filter(function(k){ return !mon || k.mon === mon; }).map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('');
 }
+/* ===== Selector múltiple con palomitas ===== */
+var MS = {};
+function msHtml(id, items, sel, sum, extra){
+  MS[id] = {items: items, sel: sel.slice(), set: null};
+  return '<details class="msel" id="ms_' + id + '"' + (ui.msOpen === id ? ' open' : '') + '><summary>' + sum + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="msAll" data-ms="' + id + '">Marcar todos</button><button type="button" class="btn ghost sm" data-a="msNone" data-ms="' + id + '">Quitar selección</button>' + (extra || '') + '</div>' +
+    items.map(function(it, i){ return '<label><input type="checkbox" data-ms="' + id + '" value="' + i + '"' + (sel.indexOf(it[0]) !== -1 ? ' checked' : '') + '> ' + it[1] + '</label>'; }).join('') + '</div></details>';
+}
+function gabArr(v){ return v == null || v === 'todos' ? [] : Array.isArray(v) ? v : [v]; }
+function gabOk(v, g){ var a = gabArr(v); return !a.length || a.indexOf(g || '') !== -1; }
+function gabSelTxt(v){ var a = gabArr(v); return !a.length ? 'Todos los gabaim' : a.length === 1 ? (a[0] || 'Sin gabai asignado') : a.length + ' gabaim elegidos'; }
+function gabToggle(v, g){ var a = gabArr(v).slice(), i = a.indexOf(g); if(i === -1) a.push(g); else a.splice(i, 1); return a; }
+var GMS = {
+  ccl: function(){ return [ui.ccl, 'todos']; }, seg: function(){ return [ui.seg, 'todos', function(){ if(ui.seg.don !== '*') ui.seg.don = ''; }]; },
+  com: function(){ return [ui.com, 'todos', function(){ ui.com.don = ''; }]; }, cont: function(){ return [ui.cont, 'todos']; }, cob: function(){ return [ui.cob, 'todos']; },
+  don: function(){ return [ui.don, 'todos', function(){ ui.don.pick = null; }]; }, comp: function(){ return [ui.comp, 'todos']; }, apr: function(){ return [ui.apr.f, 'todos']; },
+  ini: function(){ return [ui.iniF, '', function(){ ui.iniF.con = ''; }]; }, r2: function(){ return [R2, '']; }
+};
+function gabMs(k){
+  var r = GMS[k](), o = r[0], v = o.gab; if(r[1] === '' && v === '') v = 'todos';
+  var items = (S.gabaim || []).map(function(g){ return [g, '<span dir="auto">' + esc(g) + '</span>']; }).concat([['', '<span class="sub">Sin gabai asignado</span>']]);
+  var id = 'g_' + k, h = msHtml(id, items, gabArr(v), '<span dir="auto">' + esc(gabSelTxt(v)) + '</span>', '<button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button>');
+  MS[id].set = function(a){ o.gab = a.length ? a : r[1]; if(r[2]) r[2](); };
+  return h;
+}
+document.addEventListener('change', function(ev){
+  var t = ev.target; if(!t || !t.hasAttribute || !t.hasAttribute('data-ms')) return;
+  var id = t.getAttribute('data-ms'), m = MS[id]; if(!m || !m.set) return;
+  var v = m.items[+t.value][0], a = m.sel.slice(), i = a.indexOf(v); if(t.checked && i === -1) a.push(v); if(!t.checked && i !== -1) a.splice(i, 1);
+  m.set(a); ui.msOpen = id; render();
+});
+document.addEventListener('click', function(ev){
+  var b = ev.target.closest && ev.target.closest('[data-a="msAll"],[data-a="msNone"]');
+  if(b){ var id = b.getAttribute('data-ms'), m = MS[id]; if(m && m.set){ m.set(b.getAttribute('data-a') === 'msAll' ? m.items.map(function(it){ return it[0]; }) : []); ui.msOpen = id; render(); } return; }
+  var d = ui.msOpen && document.getElementById('ms_' + ui.msOpen); if(d && d.open && !d.contains(ev.target)){ d.open = false; ui.msOpen = ''; }
+});
+document.addEventListener('toggle', function(ev){ var t = ev.target; if(!t || !t.id || t.id.indexOf('ms_') !== 0) return; var id = t.id.slice(3); if(t.open) ui.msOpen = id; else if(ui.msOpen === id) ui.msOpen = ''; }, true);
 function optsGabai(sel, todos){
   return (todos ? '<option value="todos"' + (sel === 'todos' ? ' selected' : '') + '>Todos los gabaim</option>' : '') +
     '<option value=""' + (sel === '' ? ' selected' : '') + '>' + (todos ? 'Sin gabai asignado' : '— Elige gabai —') + '</option>' +
@@ -1498,7 +1534,7 @@ function bkConfirmar(){
   var malos = plan.filter(function(p){ return p.sobra > 0; });
   if(malos.length){ toast('Revisa los montos marcados: superan lo que deben.'); return; }
   var tt = bkTotales(plan);
-  openModal(head('Confirmar cobro en bloque', plan.length + (plan.length === 1 ? ' pago' : ' pagos') + ' · ' + fFecha(bk.fecha || hoy()) + (ui.cob.gab !== 'todos' ? ' · gabai ' + esc(ui.cob.gab || 'sin asignar') : '')) +
+  openModal(head('Confirmar cobro en bloque', plan.length + (plan.length === 1 ? ' pago' : ' pagos') + ' · ' + fFecha(bk.fecha || hoy()) + (gabArr(ui.cob.gab).length ? ' · ' + esc(gabSelTxt(ui.cob.gab)) : '')) +
     '<div class="kpis">' + Object.keys(tt.porCaja).map(function(k){ var cj = caja(k); return '<div class="kpi' + (cj.externa ? '' : ' accent') + '"><span>' + esc(cj.nombre) + '</span><strong>' + money(tt.porCaja[k], cj.mon) + '</strong><small>' + (cj.externa ? 'Solo reporte · no mueve caja' : 'Entra a caja') + '</small></div>'; }).join('') + '</div>' +
     '<div class="tw"><table><thead><tr><th>Donante</th><th>Se aplica a</th><th class="n">Monto</th><th>Caja</th></tr></thead><tbody>' +
       plan.map(function(p){ return '<tr><td>' + esc(don(p.r.c.donanteId).nombre) + '</td><td>' + p.plan.map(function(x){ return Mes(x.q.mes); }).join(', ') + '</td><td class="n">' + money(p.r.monto, p.r.mon) + (p.r.mon !== p.r.c.moneda ? '<div class="sub">Ref. ' + money(p.r.montoC, p.r.c.moneda) + '</div>' : '') + '</td><td>' + esc(caja(p.r.caja).nombre) + '</td></tr>'; }).join('') +
@@ -1558,7 +1594,7 @@ function gbRename(k, nuevo){
   if(S.gabaim.indexOf(nuevo) !== -1){ toast('Ya existe un gabai con ese nombre.'); return false; }
   S.gabaim[k] = nuevo; var n = 0;
   S.compromisos.forEach(function(c){ if(c.gabai === viejo){ c.gabai = nuevo; n++; } }); S.donativos.forEach(function(p){ if(p.gabai === viejo) p.gabai = nuevo; });
-  ['cob', 'comp', 'don'].forEach(function(x){ if(ui[x] && ui[x].gab === viejo) ui[x].gab = nuevo; });
+  ['cob', 'comp', 'don', 'seg', 'com', 'cont', 'ccl'].forEach(function(x){ if(!ui[x]) return; if(ui[x].gab === viejo) ui[x].gab = nuevo; else if(Array.isArray(ui[x].gab)) ui[x].gab = ui[x].gab.map(function(g){ return g === viejo ? nuevo : g; }); });
   log('Cambió el nombre del gabai ' + viejo + ' a ' + nuevo + ' (' + n + ' compromisos)');
   return true;
 }
@@ -2030,7 +2066,7 @@ function listaComps(){
   var rows = S.compromisos.filter(function(c){
     if(f.anio && String(c.anio) !== f.anio) return false;
     if(f.don && c.donanteId !== f.don) return false;
-    if(f.gab !== 'todos' && (c.gabai || '') !== f.gab) return false;
+    if(!gabOk(f.gab, c.gabai)) return false;
     if(f.mes && !(porComp[c.id] || []).some(function(q){ return q.mes === +f.mes && !q.pausada; })) return false;
     return true;
   }).sort(function(a, b){ var da = don(a.donanteId) || {}, db = don(b.donanteId) || {}; return (da.ape || da.nombre || '').localeCompare(db.ape || db.nombre || '', 'es') || (da.nom || '').localeCompare(db.nom || '', 'es'); });
@@ -2042,7 +2078,7 @@ function listaComps(){
     '<div class="form"><label class="f">Año<select id="cclAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (a === f.anio ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
       '<label class="f">Mes<select id="cclMes"><option value="">Todos los meses</option>' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (String(k + 1) === f.mes ? ' selected' : '') + '>' + Mes(k + 1) + '</option>'; }).join('') + '</select></label>' +
       '<label class="f">Donador<select id="cclDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">Todos los donadores</option>' + dl.map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
-      '<label class="f">Gabai<select id="cclGab">' + optsGabai(f.gab, true) + '</select></label></div>' +
+      '<div class="f fms">Gabai' + gabMs('ccl') + '</div></div>' +
     '<div class="kpis"><div class="kpi"><span>Compromisos</span><strong>' + rows.length + '</strong></div><div class="kpi"><span>Comprometido</span><strong>' + money(tot, 'USD') + '</strong></div>' + (f.mes ? '<div class="kpi"><span>' + Mes(+f.mes) + '</span><strong>' + money(rows.reduce(function(a, c){ return a + mesV(c, +f.mes); }, 0), 'USD') + '</strong></div>' : '') + '</div>' +
     (rows.length ? tbBar('comps') + '<div class="tw cards"><table data-cf="comps" data-tt="Compromisos" class="cobt"><thead><tr><th></th><th>Donante</th><th>Concepto</th><th>Gabai</th><th class="n">' + (f.mes ? 'Pago de ' + Mes(+f.mes) : 'Monto (USD)') + '</th><th class="n">Pagos</th><th>Meses</th><th class="n">Total año</th><th>Modalidad</th><th></th></tr></thead><tbody>' +
     rows.map(function(c){ var d = don(c.donanteId) || {nombre: '—'};
@@ -2127,7 +2163,7 @@ function vSeg2(){
     if(f.f === 'atraso' && !x.s.g.atr.length) return false;
     if(f.f === 'corriente' && (x.s.g.atr.length || x.s.g.pau.length)) return false;
     if(f.f === 'pausa' && !x.s.g.pau.length) return false;
-    if(f.gab !== 'todos' && (x.c.gabai || '') !== f.gab) return false;
+    if(!gabOk(f.gab, x.c.gabai)) return false;
     return true;
   });
   rows.sort(function(a, b){
@@ -2141,7 +2177,7 @@ function vSeg2(){
     '<div class="chips">' + CH.map(function(x){ return '<button type="button" class="chip' + (f.f === x[0] ? ' on' : '') + '" data-a="segF" data-f="' + x[0] + '">' + x[1] + ' <b>' + cuenta[x[0]] + '</b></button>'; }).join('') + '</div>' +
     '<div class="kpis"><div class="kpi"><span>Comprometido</span><strong>' + money(totComp, 'USD') + '</strong></div><div class="kpi"><span>Pagado</span><strong style="color:var(--ok)">' + money(totDado, 'USD') + '</strong></div><div class="kpi"><span>Atrasado</span><strong style="color:var(--bad)">' + money(totAtr, 'USD') + '</strong></div></div>' +
     '<div class="form"><label class="f">Donador<select id="segDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value=""' + (!f.don ? ' selected' : '') + '>' + (LANG === 'he' ? '— בחרו תורם —' : LANG === 'en' ? '— Select donor —' : '— Selecciona donador —') + '</option><option value="*"' + (f.don === '*' ? ' selected' : '') + '>' + (LANG === 'he' ? 'כל התורמים' : LANG === 'en' ? 'All donors' : 'Todos los donadores') + '</option>' +
-      segDons(f.gab === 'todos' ? data : data.filter(function(x){ return (x.c.gabai || '') === f.gab; })).map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label><label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="segGab">' + optsGabai(f.gab, true) + '</select></label>' +
+      segDons(data.filter(function(x){ return gabOk(f.gab, x.c.gabai); })).map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label><div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('seg') + '</div>' +
       '<label class="f">Ordenar por<select id="segOrd"><option value="atraso"' + (f.ord === 'atraso' ? ' selected' : '') + '>Mayor atraso primero</option><option value="nombre"' + (f.ord === 'nombre' ? ' selected' : '') + '>Apellido</option><option value="gabai"' + (f.ord === 'gabai' ? ' selected' : '') + '>Gabai</option></select></label></div>' +
     (!hayFiltro ? '<div class="segblank"></div>' : rows.length ? tbBar('seg') + '<div class="tw cards"><table data-cf="seg" data-tt="Seguimientos" class="cobt segt"><thead><tr><th>Donador</th><th>Gabai</th><th>Pagado</th><th>Atrasado</th><th>Por venir</th><th class="n">Falta (USD)</th><th></th></tr></thead><tbody>' +
       rows.map(function(x){
@@ -2182,14 +2218,14 @@ function comisPagos(){
 function vComis(){
   ui.com = ui.com || {gab: 'todos', don: '', mes: 'todos'};
   var f = ui.com, todos = comisPagos();
-  var base = todos.filter(function(x){ return (f.gab === 'todos' || x.gabai === f.gab) && (!f.don || x.d.id === f.don); });
+  var base = todos.filter(function(x){ return gabOk(f.gab, x.gabai) && (!f.don || x.d.id === f.don); });
   var rows = base.filter(function(x){ return f.mes === 'todos' || x.mes === +f.mes; });
   var sum = function(arr){ var s = {MXN: 0, USD: 0, eq: 0, n: arr.length, conCom: 0}; arr.forEach(function(x){ s[x.mon] += x.com; s.eq += x.comUSD; if(x.com) s.conCom++; }); return s; };
   var tot = sum(rows);
   var porMes = []; for(var m = 1; m <= 12; m++) porMes.push(sum(base.filter(function(x){ return x.mes === m; })));
   var max = Math.max.apply(null, porMes.map(function(s){ return s.eq; }).concat([1]));
   var tcv = S.cfg.tc || 1;
-  var donsOpt = {}; todos.forEach(function(x){ if(f.gab === 'todos' || x.gabai === f.gab) donsOpt[x.d.id] = x.d; });
+  var donsOpt = {}; todos.forEach(function(x){ if(gabOk(f.gab, x.gabai)) donsOpt[x.d.id] = x.d; });
   var donsList = Object.keys(donsOpt).map(function(k){ return donsOpt[k]; }).sort(function(a, b){ return (a.ape || a.nombre).localeCompare(b.ape || b.nombre, 'es'); });
   var gabs = {}; rows.forEach(function(x){ var k = x.gabai || ''; gabs[k] = gabs[k] || []; gabs[k].push(x); });
   var mesTxt = f.mes === 'todos' ? String(anioAct()) : Mes(+f.mes) + ' ' + anioAct();
@@ -2200,7 +2236,7 @@ function vComis(){
     }).join('') + '</div>' +
     '<div class="row sub" style="gap:14px"><span class="leg"><i class="sw cm"></i> MXN</span><span class="leg"><i class="sw cu"></i> USD</span></div>';
   return '<section class="panel">' +
-    '<div class="form"><label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="comGab">' + optsGabai(f.gab, true) + '</select></label>' +
+    '<div class="form"><div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('com') + '</div>' +
       '<label class="f">Donador<select id="comDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? 'כל התורמים' : LANG === 'en' ? 'All donors' : 'Todos los donadores') + '</option>' + donsList.map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
       '<label class="f">Mes<select id="comMesSel"><option value="todos"' + (f.mes === 'todos' ? ' selected' : '') + '>Todo el año ' + anioAct() + '</option>' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (String(f.mes) === String(k + 1) ? ' selected' : '') + '>' + Mes(k + 1) + '</option>'; }).join('') + '</select></label></div>' +
     '<div class="kpis"><div class="kpi kcj cj-MXN"><span>Comisión en pesos · ' + esc(mesTxt) + '</span><strong>' + money(tot.MXN, 'MXN') + '</strong></div>' +
@@ -2573,7 +2609,7 @@ function iniDet(per, mesK, Y){
     if(f.tipo === 'egr' && (x.tipo !== 'egr' || x.cambio)) return false;
     if(f.tipo === 'cam' && !x.cambio) return false;
     if(f.tipo === 'sin' && x.cambio) return false;
-    if(!sinGC && f.gab && (x.tipo !== 'ing' || x.cambio || gabDe(x) !== f.gab)) return false;
+    if(!sinGC && gabArr(f.gab || 'todos').length && (x.tipo !== 'ing' || x.cambio || !gabOk(f.gab, x.gabai))) return false;
     if(!sinGC && f.con && (x.tipo !== 'egr' || x.cambio || conDe(x) !== f.con)) return false;
     if(!sinGC && f.coni && (x.tipo !== 'ing' || x.cambio || conDe(x) !== f.coni)) return false;
     if(q && sinAcento([x.folio, x.nombre, x.gabai, x.concepto, x.forma, x.obs].join(' ')).indexOf(q) === -1) return false;
@@ -2585,7 +2621,7 @@ function iniDet(per, mesK, Y){
   var gX = grp(function(x){ return (x.tipo === 'ing' ? 'Entró de ' : 'Salió a ') + caja(x.otra).nombre; }, function(x){ return x.cambio; });
   var tabla = function(tit, arr, act, selV, col, vacio){ var tt = arr.reduce(function(a, r){ return a + r[2]; }, 0), tn = arr.reduce(function(a, r){ return a + r[1]; }, 0);
     return '<div><h3 style="margin:0 0 6px">' + tit + '</h3>' + (arr.length ? '<div class="tablewrap"><table class="t"><thead><tr><th>' + (act === 'iniGab' ? 'Gabai' : act === 'iniCon' || act === 'iniConI' ? 'Concepto' : 'Movimiento') + '</th><th class="n">Movs.</th><th class="n">Total ' + mon + '</th><th class="n">%</th></tr></thead><tbody>' +
-      arr.map(function(r){ return '<tr' + (act ? ' data-a="' + act + '" data-v="' + esc(r[0]) + '" title="Filtrar el detalle por ' + esc(r[0]) + '"' : '') + (selV === r[0] ? ' class="on"' : '') + '><td dir="auto">' + esc(r[0]) + '</td><td class="n">' + r[1] + '</td><td class="n"><b style="color:' + col + '">' + mN(r[2]) + '</b></td><td class="n">' + (tt ? (r[2] / tt * 100).toFixed(1) : '0') + '%</td></tr>'; }).join('') +
+      arr.map(function(r){ return '<tr' + (act ? ' data-a="' + act + '" data-v="' + esc(r[0]) + '" title="Filtrar el detalle por ' + esc(r[0]) + '"' : '') + ((Array.isArray(selV) ? selV.indexOf(act === 'iniGab' && r[0] === 'Sin gabai' ? '' : r[0]) !== -1 : selV === r[0]) ? ' class="on"' : '') + '><td dir="auto">' + esc(r[0]) + '</td><td class="n">' + r[1] + '</td><td class="n"><b style="color:' + col + '">' + mN(r[2]) + '</b></td><td class="n">' + (tt ? (r[2] / tt * 100).toFixed(1) : '0') + '%</td></tr>'; }).join('') +
       '<tr class="r2tot"><td>Total</td><td class="n">' + tn + '</td><td class="n"><b>' + mN(tt) + '</b></td><td class="n">100%</td></tr></tbody></table></div>' : '<div class="empty">' + vacio + '</div>') + '</div>'; };
   var sel = function(id, v, opts){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
   var uniq = function(fn, fl){ var m = {}; base.forEach(function(x){ if(fl(x)) m[fn(x)] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }).map(function(g){ return [g, g]; }); };
@@ -2598,7 +2634,7 @@ function iniDet(per, mesK, Y){
       '<label class="f">Desde<input id="iniFDesde" type="date" value="' + esc(d0) + '"></label>' +
       '<label class="f">Hasta<input id="iniFHasta" type="date" value="' + esc(h0) + '"></label>' +
       '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
-      '<label class="f">Gabai (ingresos)' + sel('iniFGab', f.gab, [['', 'Todos']].concat(uniq(gabDe, function(x){ return x.tipo === 'ing' && !x.cambio; }))) + '</label>' +
+      '<div class="f fms">Gabai (ingresos)' + gabMs('ini') + '</div>' +
       '<label class="f">Concepto (ingresos)' + sel('iniFConi', f.coni || '', [['', 'Todos']].concat(uniq(conDe, function(x){ return x.tipo === 'ing' && !x.cambio; }))) + '</label>' +
       '<label class="f">Concepto (egresos)' + sel('iniFCon', f.con, [['', 'Todos']].concat(uniq(conDe, function(x){ return x.tipo === 'egr' && !x.cambio; }))) + '</label>' +
       '<label class="f">Buscar<input id="iniFQ" type="search" value="' + esc(f.q || '') + '" placeholder="Nombre, folio, comentario…"></label></div>' +
@@ -2607,7 +2643,7 @@ function iniDet(per, mesK, Y){
       '<div class="fl-kpi"><span>Egresos</span><strong style="color:var(--bad)">' + mN(ca) + '</strong><small>' + rows.filter(function(x){ return x.tipo === 'egr'; }).length + ' movs. · ' + mon + '</small></div>' +
       '<div class="fl-kpi"><span>Neto</span><strong' + (ab - ca < 0 ? ' style="color:var(--bad)"' : '') + '>' + (ab - ca < 0 ? '−' : '') + mN(Math.abs(ab - ca)) + '</strong><small>' + (filt ? 'con los filtros' : 'del periodo') + '</small></div>' +
       '<div class="fl-kpi"><span>Movimientos</span><strong>' + rows.length + '</strong><small>en el detalle</small></div></div>' +
-    '<div class="idg">' + tabla('Ingresos por gabai', gI, 'iniGab', f.gab, 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Ingresos por concepto', gIC, 'iniConI', f.coni, 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Egresos por concepto', gE, 'iniCon', f.con, 'var(--bad)', 'Sin egresos en este periodo.') + (gX.length ? tabla('Cambios de caja', gX, '', '', '#12324F', '') : '') + '</div>' +
+    '<div class="idg">' + tabla('Ingresos por gabai', gI, 'iniGab', gabArr(f.gab || 'todos'), 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Ingresos por concepto', gIC, 'iniConI', f.coni, 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Egresos por concepto', gE, 'iniCon', f.con, 'var(--bad)', 'Sin egresos en este periodo.') + (gX.length ? tabla('Cambios de caja', gX, '', '', '#12324F', '') : '') + '</div>' +
     '<p class="sub" style="margin:0 0 6px">Toca un gabai o un concepto (de ingresos o de egresos) para ver solo esos movimientos abajo. Cada columna también se puede filtrar.</p>' +
     tbBar('inidet') + (rows.length ? '<div class="tw cards"><table data-cf="inidet" data-tt="' + esc(k.nombre) + ' · ' + esc(perTxt) + '" class="cobt"><thead><tr><th>Fecha</th><th>Folio</th><th>Tipo</th><th>Donador / Receptor</th><th>Gabai / Concepto</th><th>Forma</th><th class="n">Ingreso</th><th class="n">Egreso</th><th>Comentarios</th></tr></thead><tbody>' +
       rows.map(function(x){ var tp = x.cambio ? '<span class="pill t-info">⇄ Cambio ' + (x.tipo === 'ing' ? 'entra' : 'sale') + '</span>' : '<span class="pill ' + (x.tipo === 'ing' ? 't-ok">Ingreso' : 't-bad">Egreso') + '</span>';
@@ -2698,8 +2734,8 @@ function vFlujo(){
       '<label class="f">Hasta<input id="flHasta" type="date" value="' + esc(f.hasta) + '"></label>' +
       '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (ingresos)'], ['egr', 'Solo cargos (egresos)'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
       (function(){ f.gabs = f.gabs || []; var gl = (S.gabaim || []).slice(); all.forEach(function(x){ if(x.tipo === 'ing' && !x.cambio && x.gabai && gl.indexOf(x.gabai) === -1) gl.push(x.gabai); }); var ns = f.gabs.length;
-        return '<label class="f">Gabai (puedes elegir varios)<details class="msel" id="flGabSel"' + (ui.flGabOpen ? ' open' : '') + '><summary>' + (!ns ? 'Todos los gabaim' : ns === 1 ? esc(f.gabs[0]) : ns + ' gabaim elegidos') + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="flgTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="flgNinguno">Quitar selección</button></div>' +
-          gl.map(function(g){ return '<label><input type="checkbox" data-flg value="' + esc(g) + '"' + (f.gabs.indexOf(g) !== -1 ? ' checked' : '') + '> ' + r2Gab(g) + '</label>'; }).join('') + '</div></details></label>'; })() +
+        return '<div class="f fms">Gabai (puedes elegir varios)<details class="msel" id="flGabSel"' + (ui.flGabOpen ? ' open' : '') + '><summary>' + (!ns ? 'Todos los gabaim' : ns === 1 ? esc(f.gabs[0]) : ns + ' gabaim elegidos') + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="flgTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="flgNinguno">Quitar selección</button><button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button></div>' +
+          gl.map(function(g){ return '<label><input type="checkbox" data-flg value="' + esc(g) + '"' + (f.gabs.indexOf(g) !== -1 ? ' checked' : '') + '> ' + r2Gab(g) + '</label>'; }).join('') + '</div></details></div>'; })() +
       '<label class="f">Concepto' + sel('flCon', [['', 'Todos los conceptos']].concat(Object.keys(cons).sort().map(function(c){ return [c, c]; })), f.con) + '</label>' +
       '<label class="f">Forma de pago' + sel('flForma', [['', 'Todas']].concat(Object.keys(frm).sort().map(function(c){ return [c, c]; })), f.forma) + '</label>' +
       '<label class="f">Buscar<input id="flQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre, folio, gabai…"></label></div>' +
@@ -2724,7 +2760,7 @@ function contPasa(x, f, q){
   if(f.mes !== 'todos' && +x.fecha.slice(5, 7) !== +f.mes) return false;
   if(f.caja !== 'todos' && x.caja !== f.caja) return false;
   if(f.con && x.concepto !== f.con) return false;
-  if(f.gab && f.gab !== 'todos' && x.gabai !== f.gab) return false;
+  if(!gabOk(f.gab || 'todos', x.gabai)) return false;
   if(f.don && x.donId !== f.don) return false;
   if(q && (x.nombre + ' ' + x.folio + ' ' + x.concepto + ' ' + x.obs).toLowerCase().indexOf(q) === -1) return false;
   return true;
@@ -2743,7 +2779,7 @@ function contResumenGab(){
     var cn = x.concepto || 'Sin concepto', k = g + '|' + m, kc = g + '|' + cn + '|' + m, tc = g + '|' + cn; GK[g] = GK[g] || []; if(GK[g].indexOf(cn) === -1) GK[g].push(cn);
     [D[k] = D[k] || z(), DC[kc] = DC[kc] || z(), TGC[tc] = TGC[tc] || z(), TG[g] = TG[g] || z(), TM[m] = TM[m] || z(), TT].forEach(function(o){ o[x.moneda] += x.montoC; o.eq += x.eqC || 0; });
   });
-  var gN = function(g){ return g ? '<span dir="auto">' + esc(g) + '</span>' : 'Sin gabai'; };
+  var gN = function(g){ return g ? '<span dir="auto">' + esc(g) + '</span>' : 'Sin gabai'; }, ORDH = '<span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>';
   var c = function(o, k, b){ var v = o ? o[k] : 0; return '<td class="n' + (b ? ' rtot' : '') + '">' + (v ? (b ? '<b>' + mN(v) + '</b>' : mN(v)) : '<span class="rz">–</span>') + '</td>'; };
   var TIPOS = [['MXN', 'MXN'], ['USD', 'USD'], ['eq', 'Eq. USD']], tipos = f.rt.length ? TIPOS.filter(function(t){ return f.rt.indexOf(t[0]) !== -1; }) : TIPOS;
   var bloque = function(nombre, get, tot, cls, con, span){
@@ -2755,7 +2791,13 @@ function contResumenGab(){
   var chipsC = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rc.length ? ' on' : '') + '" data-a="rgCAll">Todos</button>' + cons.map(function(k){ var on = f.rc.indexOf(k) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgC" data-c="' + esc(k) + '" aria-pressed="' + on + '">' + esc(k) + '</button>'; }).join('') + '</div>';
   var chipsT = '<div class="chips rgch"><button type="button" class="chip' + (f.rv && !f.rt.length ? ' on' : '') + '" data-a="rgTAll">Todas</button>' + TIPOS.map(function(t){ var on = f.rt.indexOf(t[0]) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="rgT" data-t="' + t[0] + '" aria-pressed="' + on + '">' + t[1] + '</button>'; }).join('') + '</div>';
   return '<section class="panel"><h2>Resumen por gabai · ' + esc(f.anio) + '</h2>' +
-    '<div class="rgf"><div class="sub">Gabai</div>' + chipsG + '<div class="sub">Concepto</div>' + chipsC + '<div class="sub">Mes</div>' + chipsM + '<div class="sub">Moneda</div>' + chipsT + '</div>' +
+    (function(){ var mk = function(id, key, items, todos){ var sel = f[key], h = msHtml(id, items, sel, esc(!sel.length ? todos : sel.length === 1 ? (items.filter(function(it){ return it[0] === sel[0]; })[0] || ['', ''])[2] || String(sel[0]) : sel.length + ' elegidos'), id === 'rg' ? '<button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button>' : ''); MS[id].set = function(a){ f[key] = a; f.rv = true; }; return h; };
+      return '<div class="rgsel">' +
+        '<div class="f fms">' + ORDH + mk('rg', 'rg', gabs.map(function(g){ return [g, gN(g), g || 'Sin gabai']; }), 'Todos los gabaim') + '</div>' +
+        '<div class="f fms">Concepto' + mk('rc', 'rc', cons.map(function(k){ return [k, esc(k), k]; }), 'Todos los conceptos') + '</div>' +
+        '<div class="f fms">Mes' + mk('rm', 'rm', MESES.es.map(function(n, k){ return [k + 1, esc(Mes(k + 1)), Mes(k + 1)]; }), 'Todo el año') + '</div>' +
+        '<div class="f fms">Moneda' + mk('rt', 'rt', TIPOS.map(function(t){ return [t[0], esc(t[1]), t[1]]; }), 'Todas') + '</div></div>' +
+        (f.rv ? '' : '<button type="button" class="btn primary" data-a="rgGAll">Ver resumen de todos los gabaim</button>'); })() +
     (!f.rv ? '' : '<div class="tw rgw"><table class="cobt rgm"><thead><tr><th>Gabai</th><th>Concepto</th><th></th>' + mSel.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Total</th></tr></thead><tbody>' +
       gSel.map(function(g){ var ks = (GK[g] || []).slice().sort(function(a, b){ return cons.indexOf(a) - cons.indexOf(b); });
         if(!ks.length) return bloque(gN(g), function(m){ return D[g + '|' + m]; }, TG[g], '', '<span class="sub">—</span>');
@@ -2832,7 +2874,7 @@ function vConta(){
   var delAnio = all.filter(function(x){ return x.fecha.slice(0, 4) === f.anio; });
   var conceptos = {}; delAnio.forEach(function(x){ conceptos[x.concepto] = 1; });
   var q = (f.q || '').toLowerCase();
-  var donsC = {}; delAnio.forEach(function(x){ if(x.donId && (f.gab === 'todos' || x.gabai === f.gab)) donsC[x.donId] = 1; });
+  var donsC = {}; delAnio.forEach(function(x){ if(x.donId && gabOk(f.gab, x.gabai)) donsC[x.donId] = 1; });
   if(f.don && !donsC[f.don]) f.don = '';
   var donsL = Object.keys(donsC).map(don).filter(Boolean).sort(function(a, b){ return (a.ape || a.nombre).localeCompare(b.ape || b.nombre, 'es') || (a.nom || '').localeCompare(b.nom || '', 'es'); });
   var rows = delAnio.filter(function(x){ return contPasa(x, f, q); }).sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || b.folio.localeCompare(a.folio); });
@@ -2840,13 +2882,13 @@ function vConta(){
   rows.forEach(function(x){ porCaja[x.caja][x.tipo] += x.montoC; porCaja[x.caja].eq = (porCaja[x.caja].eq || 0) + (x.tipo === 'ing' ? 1 : -1) * (x.eqC || 0); });
   var tot = {ing: {MXN: 0, USD: 0}, egr: {MXN: 0, USD: 0}}; rows.forEach(function(x){ tot[x.tipo][x.moneda] += x.montoC; });
   var sel = function(id, opts, v){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
-  return tabs + '<section class="panel">' +
+  return tabs + contResumenGab() + '<section class="panel">' +
     '<div class="seg" role="group" aria-label="Tipo">' + [['todos', 'Todos'], ['ing', 'Ingresos'], ['egr', 'Egresos'], ['cam', 'Cambios caja']].map(function(x){ return '<button type="button" class="' + (f.tipo === x[0] ? 'on' : '') + '" data-a="contTipo" data-t="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>' +
     '<div class="form">' +
       '<label class="f">Año' + sel('contAnio', Object.keys(anios).sort().reverse().map(function(a){ return [a, a]; }), f.anio) + '</label>' +
       '<label class="f">Mes' + sel('contMes', [['todos', 'Todo el año']].concat(MESES.es.map(function(n, k){ return [String(k + 1), Mes(k + 1)]; })), f.mes) + '</label>' +
       '<label class="f">Caja' + sel('contCaja', [['todos', 'Todas las cajas']].concat(CAJAS.map(function(k){ return [k.id, k.nombre]; })), f.caja) + '</label>' +
-      '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="contGab">' + optsGabai(f.gab, true) + '</select></label>' +
+      '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cont') + '</div>' +
       '<label class="f">Donador<select id="contDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? 'כל התורמים' : LANG === 'en' ? 'All donors' : 'Todos los donadores') + '</option>' + donsL.map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
       '<label class="f">Concepto' + sel('contCon', [['', 'Todos los conceptos']].concat(Object.keys(conceptos).sort().map(function(c){ return [c, c]; })), f.con) + '</label>' +
       '<label class="f">Buscar<input id="contQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre, folio o recibo"></label></div>' +
@@ -2855,7 +2897,7 @@ function vConta(){
       return '<div class="kpi kcj cj-' + k.id + '"><span>' + esc(k.nombre) + '</span><strong' + (s.ing - s.egr < 0 ? ' style="color:var(--bad)"' : '') + '>' + money(s.ing - s.egr, k.mon) + '</strong><small>' + (k.mon === 'MXN' ? 'Equivalente en USD: <b>' + money(s.eq || 0, 'USD') + '</b>' : '<span style="color:var(--ok)">+ ' + money(s.ing, k.mon) + '</span> · <span style="color:var(--bad)">− ' + money(s.egr, k.mon) + '</span>') + '</small></div>'; }).join('') + '</div>' +
 
   '</section>' +
-  (!contFiltrado(f) ? '' : contTabla(rows, tot)) + contResumenGab();
+  (!contFiltrado(f) ? '' : contTabla(rows, tot));
 }
 function contFilas(){
   var f = ui.cont, all = movCaja(), q = (f.q || '').toLowerCase();
@@ -3070,7 +3112,7 @@ function cobFiltradas(conDia){
     return c.anio === Y && (f.mes === 'todo' || q.mes === +f.mes);
   });
   if(f.q){ var s = f.q.toLowerCase(); qs = qs.filter(function(q){ return don(comp(q.compId).donanteId).nombre.toLowerCase().indexOf(s) !== -1; }); }
-  if(f.gab !== 'todos') qs = qs.filter(function(q){ return gabQ(q) === f.gab; });
+  if(gabArr(f.gab).length) qs = qs.filter(function(q){ return gabOk(f.gab, gabQ(q)); });
   if(f.caja !== 'todos') qs = qs.filter(function(q){ return planVista(q).caja === f.caja; });
   if((f.cajas || []).length) qs = qs.filter(function(q){ return f.cajas.indexOf(planVista(q).caja) !== -1; });
   if((f.mons || []).length) qs = qs.filter(function(q){ return f.mons.indexOf(planVista(q).mon) !== -1; });
@@ -3136,7 +3178,7 @@ function vBloque(){
   var todos = filas.length && filas.every(function(r){ return r.on; });
   return '<div class="bk">' +
     '<div class="form"><label class="f">Elegir donador<select id="bkDon"><option value="">Todos los donadores (' + bdon.length + ')</option>' + bdon.map(function(n){ return '<option' + (n === f.bkDon ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="cobGab">' + optsGabai(f.gab, true) + '</select></label>' +
+    '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cob') + '</div>' +
     '<label class="f">Buscar por nombre<input id="bkQ" type="search" value="' + esc(f.q || '') + '" placeholder="Buscar"></label></div>' +
     '<div class="chips" style="margin:2px 0 10px">' + [['todos', 'Todos'], ['Al corriente', 'Al corriente'], ['Con atraso', 'Con atraso'], ['noenviar', 'No enviar avisos'], ['sinlada', 'Teléfono sin lada']].map(function(o){ return '<button type="button" class="chip' + (est === o[0] ? ' on' : '') + '" data-a="bkEst" data-e="' + o[0] + '">' + o[1] + ' <b>' + cnt(o[0]) + '</b></button>'; }).join('') + '</div>' +
     '<div class="form">' +
@@ -3200,7 +3242,7 @@ function vCobranza(){
   var selAnio = '<label class="f">Año<select id="cobAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (+a === YY ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>';
   return '<section class="panel">' +
     (soloBloque() ? (requiereAprob() ? '<div class="note">Marca con palomita los cobros que vas a entregar, pon el monto (pesos o dólares) y la caja. Dirección los autoriza antes de registrarse.</div>' : '') : '<div class="row" style="justify-content:space-between"><div class="seg" role="group" aria-label="Modo"><button type="button" class="' + (f.rap ? '' : 'on') + '" data-a="cobModo" data-m="lista">Lista de cuotas</button><button type="button" class="' + (f.rap ? 'on' : '') + '" data-a="cobModo" data-m="bloque">Cobro en bloque</button></div></div>') +
-    '<div class="form">' + selAnio + '<label class="f">Mes<select id="cobMes">' + opts + '</select></label>' + (f.rap ? '' : '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="cobGab">' + optsGabai(f.gab, true) + '</select></label>') +
+    '<div class="form">' + selAnio + '<label class="f">Mes<select id="cobMes">' + opts + '</select></label>' + (f.rap ? '' : '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cob') + '</div>') +
     '<label class="f">Buscar donante<input id="cobQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre"></label></div>' +
     '<div class="rgf"><div class="sub">Estado</div><div class="chips rgch">' + (function(){ var ce = cobEdoConteo(), ed = f.edo || 'todas'; return [['todas', 'Todas'], ['pend', 'Pendientes y vencidas'], ['liq', 'Liquidadas']].map(function(o){ return '<button type="button" class="chip' + (ed === o[0] ? ' on' : '') + (o[0] === 'pend' ? ' chpend' : o[0] === 'liq' ? ' chliq' : '') + '" data-a="cobEdo" data-e="' + o[0] + '" aria-pressed="' + (ed === o[0]) + '">' + o[1] + ' <b>' + ce[o[0]] + '</b></button>'; }).join(''); })() + '</div>' +
     '<div class="sub">Moneda</div><div class="chips rgch"><button type="button" class="chip' + (!(f.mons || []).length ? ' on' : '') + '" data-a="cobMonAll">Todas</button>' + ['MXN', 'USD'].map(function(m){ var on = (f.mons || []).indexOf(m) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobMon" data-m="' + m + '" aria-pressed="' + on + '">' + m + '</button>'; }).join('') + '</div>' +
@@ -3449,7 +3491,7 @@ function vDonantes(){
     return {d: d, c: c, ed: ed};
   }).filter(function(r){
     if(f.pick && r.d.id !== f.pick) return false;
-    if(f.gab && f.gab !== 'todos' && ((r.c && r.c.gabai) || '') !== f.gab) return false;
+    if(!gabOk(f.gab || 'todos', r.c && r.c.gabai)) return false;
     if(q && (r.d.nombre + ' ' + (r.d.hebreo || '') + ' ' + r.d.tel + ' ' + r.d.correo).toLowerCase().indexOf(q) === -1) return false;
     if(f.f === 'corriente') return r.ed[0] === 'Al corriente';
     if(f.f === 'atraso') return r.ed[0] === 'Con atraso';
@@ -3474,7 +3516,7 @@ function vDonantes(){
   var rf = gabPermUsuario() ? null : resgFuente();
   var list = (rf ? '<div class="note resgnote">⚠️ En este navegador hay una copia guardada con <b>' + rf.faltan + ' donador' + (rf.faltan === 1 ? '' : 'es') + '</b> que no aparecen en la lista. <button type="button" class="btn primary sm" data-a="resgRec">Recuperarlos</button></div>' : '') + '<section class="panel tint-list"><div class="row" style="justify-content:space-between"><h2>Lista de donadores</h2></div>' +
     '<div class="form"><label class="f">Elegir donador<select id="donSel"><option value="">Todos los donadores (' + S.donantes.length + ')</option>' + S.donantes.slice().sort(function(a, b){ return (a.ape || '').localeCompare(b.ape || '', 'es') || (a.nom || '').localeCompare(b.nom || '', 'es'); }).map(function(x){ return '<option value="' + x.id + '"' + (f.pick === x.id ? ' selected' : '') + '>' + esc(x.ape + ', ' + x.nom) + '</option>'; }).join('') + '</select></label>' +
-      '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="donGab">' + optsGabai(f.gab || 'todos', true) + '</select></label>' +
+      '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('don') + '</div>' +
       '<label class="f">Buscar por nombre, teléfono o correo<input id="donQ" type="search" value="' + esc(f.q) + '" placeholder="Buscar"></label></div>' +
     '<div class="chips">' + FL.map(function(x){ return '<button type="button" class="chip' + (f.f === x[0] ? ' on' : '') + '" data-a="donF" data-f="' + x[0] + '">' + x[1] + ' <b>' + x[2] + '</b></button>'; }).join('') + '</div>' +
     (function(){ var sel = Object.keys(f.sel || {}).filter(function(k){ return don(k); }); return sel.length ? '<div class="selbar"><b>' + sel.length + (sel.length === 1 ? ' donador seleccionado' : ' donadores seleccionados') + '</b><div class="acts"><button type="button" class="btn ghost sm" data-a="donSelNone">Quitar selección</button><button type="button" class="btn danger sm" data-a="donDelSel">Eliminar seleccionados</button></div></div>' : ''; })() +
@@ -3720,7 +3762,7 @@ function vCompromisos(){
   var tot = function(g){ var s = {n: 0, anual: suma(), dado: suma(), venc: suma()}; data.forEach(function(x){ if(!enGrupo(x, g)) return; s.n++; s.anual[x.c.moneda] += x.c.anualC; s.dado[x.c.moneda] += x.r.dado; s.venc[x.c.moneda] += x.r.vencido; }); return s; };
   var q = f.q.toLowerCase();
   var gf = f.gab || 'todos';
-  var rows = data.filter(function(x){ return enGrupo(x, f.f) && (gf === 'todos' || (x.c.gabai || '') === gf) && (!q || (x.d.nombre + ' ' + (x.d.hebreo || '')).toLowerCase().indexOf(q) !== -1); });
+  var rows = data.filter(function(x){ return enGrupo(x, f.f) && gabOk(gf, x.c.gabai) && (!q || (x.d.nombre + ' ' + (x.d.hebreo || '')).toLowerCase().indexOf(q) !== -1); });
   var ord = f.ord || 'apellido';
   rows.sort(function(a, b){
     if(ord === 'atraso') return (b.r.venc.length - a.r.venc.length) || (aMXN(b.r.vencido, b.c.moneda) - aMXN(a.r.vencido, a.c.moneda));
@@ -3739,7 +3781,7 @@ function vCompromisos(){
     '<div class="chips">' + GR.map(function(g){ var s = tot(g[0]); return '<button type="button" class="chip' + (f.f === g[0] ? ' on' : '') + '" data-a="compF" data-f="' + g[0] + '">' + g[1] + ' <b>' + s.n + '</b></button>'; }).join('') + '</div>' +
     tarjetas +
     '<div class="form"><label class="f">Buscar donador<input id="compQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre o nombre en hebreo"></label>' +
-      '<label class="f"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span><select id="compGab">' + optsGabai(gf, true) + '</select></label>' +
+      '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('comp') + '</div>' +
       '<label class="f">Ordenar por<select id="compOrd"><option value="apellido"' + (ord === 'apellido' ? ' selected' : '') + '>Apellido</option><option value="atraso"' + (ord === 'atraso' ? ' selected' : '') + '>Mayor atraso primero</option><option value="avance"' + (ord === 'avance' ? ' selected' : '') + '>Menor avance primero</option><option value="monto"' + (ord === 'monto' ? ' selected' : '') + '>Compromiso más grande</option></select></label></div>' +
     legend +
     (rows.length ? '<div class="clist">' + rows.map(function(x){
@@ -5251,7 +5293,7 @@ function paAplicar(x){
 function vAprobar(){
   ui.apr = ui.apr || {sel: {}}; var af = ui.apr.f = ui.apr.f || {don: '', gab: 'todos', q: '', est: 'todos'};
   var todosP = porAprobar(), edoP = function(x){ var c = comp(x.compId); return c ? estadoDonante(c)[0] : ''; };
-  var base0 = todosP.filter(function(x){ return (!af.don || x.donante === af.don) && (af.gab === 'todos' || (x.gabai || '') === af.gab) && (!af.q || (x.donante + ' ' + x.cobrador).toLowerCase().indexOf(af.q.toLowerCase()) !== -1); });
+  var base0 = todosP.filter(function(x){ return (!af.don || x.donante === af.don) && gabOk(af.gab, x.gabai) && (!af.q || (x.donante + ' ' + x.cobrador).toLowerCase().indexOf(af.q.toLowerCase()) !== -1); });
   var nAl = base0.filter(function(x){ return edoP(x) === 'Al corriente'; }).length, nAt = base0.filter(function(x){ return edoP(x) === 'Con atraso'; }).length;
   var pend = base0.filter(function(x){ var c = comp(x.compId), d = c && don(c.donanteId); return af.est === 'todos' || (af.est === 'noenviar' ? d && d.noEnviar : af.est === 'sinlada' ? d && !telDigits(d.tel) : edoP(x) === af.est); }), hist = (S.porAprobar || []).filter(function(x){ return x.estado !== 'pendiente'; }).slice(-40).reverse();
   var sel = ui.apr.sel;
@@ -5280,7 +5322,7 @@ function vAprobar(){
   };
   return '<section class="panel"><h2>Autorizaciones</h2><p class="sub" style="margin-top:-4px">Aquí llegan los cobros que te entregan los cobradores desde Cobro en bloque, separados por persona. Puedes corregir fecha, moneda, monto, referencia en USD, forma o caja. Al <b>autorizar</b> se registran como pago en su compromiso, Cobranza, Contabilidad y Comisiones.</p>' +
     ('<div class="form" style="margin-top:6px"><label class="f">Elegir donador<select id="aprDon"><option value="">Todos los donadores (' + todosP.map(function(x){ return x.donante; }).filter(function(v, i, arr){ return arr.indexOf(v) === i; }).sort().length + ')</option>' + todosP.map(function(x){ return x.donante; }).filter(function(v, i, arr){ return arr.indexOf(v) === i; }).sort().map(function(n){ return '<option' + (n === af.don ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '</select></label>' +
-      '<label class="f">Gabai<select id="aprGab">' + optsGabai(af.gab, true) + '</select></label>' +
+      '<div class="f fms">Gabai' + gabMs('apr') + '</div>' +
       '<label class="f">Buscar por donador o cobrador<input id="aprQ" type="search" value="' + esc(af.q) + '" placeholder="Buscar"></label></div>' +
       '<div class="chips" style="margin-top:4px">' + [['todos', 'Todos', base0.length], ['Al corriente', 'Al corriente', nAl], ['Con atraso', 'Con atraso', nAt], ['noenviar', 'No enviar avisos', base0.filter(function(x){ var c = comp(x.compId), d = c && don(c.donanteId); return d && d.noEnviar; }).length], ['sinlada', 'Teléfono sin lada', base0.filter(function(x){ var c = comp(x.compId), d = c && don(c.donanteId); return d && !telDigits(d.tel); }).length]].map(function(o){ return '<button type="button" class="chip' + (af.est === o[0] ? ' on' : '') + '" data-a="aprEst" data-e="' + o[0] + '">' + o[1] + ' <b>' + o[2] + '</b></button>'; }).join('') + '</div>') +
     '<div style="margin-top:10px">' + tbBar('apr') + '</div>' +
@@ -5499,7 +5541,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'egiPlantilla') egiPlantilla();
   else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); if(ui.iniF){ ui.iniF.desde = ''; ui.iniF.hasta = ''; } render(); }
   else if(a === 'iniCaja'){ var ic = b.getAttribute('data-c'); ui.iniCaja = ui.iniCaja === ic ? '' : ic; render(); }
-  else if(a === 'iniGab'){ ui.iniF.gab = ui.iniF.gab === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.con = ''; render(); }
+  else if(a === 'iniGab'){ var igv = b.getAttribute('data-v'), iga = gabToggle(ui.iniF.gab || 'todos', igv === 'Sin gabai' ? '' : igv); ui.iniF.gab = iga.length ? iga : ''; ui.iniF.con = ''; render(); }
   else if(a === 'iniCon'){ ui.iniF.con = ui.iniF.con === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.gab = ''; ui.iniF.coni = ''; render(); }
   else if(a === 'iniConI'){ ui.iniF.coni = ui.iniF.coni === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.con = ''; render(); }
   else if(a === 'iniFLimpiar'){ ui.iniF = null; render(); }
@@ -6308,7 +6350,7 @@ function r2Pasa(x, sin, rgF){
   var rg = rgF || r2Rango(); sin = sin || '';
   if(x.fecha < rg[0] || x.fecha > rg[1]) return false;
   if(R2.tipo === 'cam' ? !x.cambio : R2.tipo === 'sin' ? x.cambio : (R2.tipo !== 'todos' && (x.tipo !== R2.tipo || x.cambio))) return false;
-  if(sin !== 'gab' && R2.gab && x.gabai !== R2.gab) return false;
+  if(sin !== 'gab' && !gabOk(R2.gab || 'todos', x.gabai)) return false;
   if(R2.con && x.concepto !== R2.con) return false;
   if(R2.don && x.donId !== R2.don) return false;
   if(sin !== 'caja' && R2.cajas.length && R2.cajas.indexOf(x.caja) === -1) return false;
@@ -6331,7 +6373,7 @@ function vRep2(){
   var per = [['anio', 'Este año'], ['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['30', 'Últimos 30 días'], ['anioant', 'Año pasado'], ['todo', 'Todo'], ['rango', 'Elegir fechas…']];
   var filt = '<section class="panel"><div class="r2filt">' +
     '<label class="f">Tipo de movimiento<select data-r2="tipo">' + [['todos', 'Todo (con cambios de caja)'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']].map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Gabai (asignado)' + sel('gab', R2.gab, S.gabaim || [], 'Todos') + '</label>' +
+    '<div class="f fms">Gabai (asignado)' + gabMs('r2') + '</div>' +
     '<label class="f">Concepto' + sel('con', R2.con, uniq('concepto'), 'Todos') + '</label>' +
     '<label class="f">Donador' + '<select id="r2Don" data-r2="don"><option value="">Todos los donadores</option>' + dons.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === R2.don ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Modalidad' + sel('mod', R2.mod, uniq('mod'), 'Todas') + '</label>' +
@@ -6395,7 +6437,7 @@ function vRep2(){
   var fg = filas, gabs = {}; fg.forEach(function(x){ var k = x.cambio ? '⇄ Cambios de caja' : x.gabai || '(sin gabai)'; gabs[k] = gabs[k] || []; gabs[k].push(x); });
   var tot = {im: 0, em: 0, iu: 0, eu: 0};
   var tGab = '<section class="panel"><h2>Por gabai (asignado)</h2><div class="tablewrap"><table class="t"><thead><tr><th>Gabai</th><th class="n r2in">Ingreso MXN</th><th class="n r2eg">Egreso MXN</th><th class="n r2inu">Ingreso USD</th><th class="n r2eg">Egreso USD</th></tr></thead><tbody>' + Object.keys(gabs).sort().map(function(k){ var xs = gabs[k], im = sum(xs, 'MXN', 'ing'), em = sum(xs, 'MXN', 'egr'), iu = sum(xs, 'USD', 'ing'), eu = sum(xs, 'USD', 'egr'); tot.im += im; tot.em += em; tot.iu += iu; tot.eu += eu;
-    return '<tr' + (k === '⇄ Cambios de caja' ? '' : ' data-a="r2Gab" data-v="' + esc(k === '(sin gabai)' ? '' : k) + '"') + (R2.gab && R2.gab === k ? ' class="on"' : '') + '><td>' + (k === '⇄ Cambios de caja' ? '<span class="pill t-info">⇄ Cambios de caja</span>' : r2Gab(k === '(sin gabai)' ? '' : k)) + '</td><td class="n r2in r2pos">' + mN(im) + '</td><td class="n r2eg r2neg">' + (em ? '-' : '') + mN(Math.abs(em)) + '</td><td class="n r2inu r2usd">' + mN(iu) + '</td><td class="n r2eg r2neg">' + (eu ? '-' : '') + mN(Math.abs(eu)) + '</td></tr>'; }).join('') +
+    return '<tr' + (k === '⇄ Cambios de caja' ? '' : ' data-a="r2Gab" data-v="' + esc(k === '(sin gabai)' ? '' : k) + '"') + (R2.gab && gabArr(R2.gab).indexOf(k === '(sin gabai)' ? '' : k) !== -1 ? ' class="on"' : '') + '><td>' + (k === '⇄ Cambios de caja' ? '<span class="pill t-info">⇄ Cambios de caja</span>' : r2Gab(k === '(sin gabai)' ? '' : k)) + '</td><td class="n r2in r2pos">' + mN(im) + '</td><td class="n r2eg r2neg">' + (em ? '-' : '') + mN(Math.abs(em)) + '</td><td class="n r2inu r2usd">' + mN(iu) + '</td><td class="n r2eg r2neg">' + (eu ? '-' : '') + mN(Math.abs(eu)) + '</td></tr>'; }).join('') +
     '<tr class="r2tot"><td>Total</td><td class="n r2in r2pos">' + mN(tot.im) + '</td><td class="n r2eg r2neg">' + (tot.em ? '-' : '') + mN(Math.abs(tot.em)) + '</td><td class="n r2inu r2usd">' + mN(tot.iu) + '</td><td class="n r2eg r2neg">' + (tot.eu ? '-' : '') + mN(Math.abs(tot.eu)) + '</td></tr></tbody></table></div></section>';
   // detalle
   var r2Val = function(x, k){ return k === 'monto' ? x.monto : k === 'nombre' ? sinAcento(x.nombre) : k === 'gabai' ? (x.gabai || '\uffff') : k === 'folio' ? String(x.folio) : k === 'mes' ? x.mesD : k === 'concepto' ? sinAcento(x.concepto) : k === 'caja' ? x.caja : k === 'divisa' ? x.mon : k === 'tipo' ? x.tipo : x.fecha; };
@@ -6417,7 +6459,7 @@ document.addEventListener('click', function(ev){
   var b = ev.target.closest && ev.target.closest('[data-a]'); if(!b) return; var a = b.getAttribute('data-a'), v = b.getAttribute('data-v') || '';
   if(a === 'r2Caja'){ var i = R2.cajas.indexOf(v); if(i === -1) R2.cajas.push(v); else R2.cajas.splice(i, 1); render(); }
   else if(a === 'r2Mes'){ R2.mesSel = R2.mesSel === v ? '' : v; render(); }
-  else if(a === 'r2Gab'){ R2.gab = R2.gab === v ? '' : v; render(); }
+  else if(a === 'r2Gab'){ var r2a = gabToggle(R2.gab || 'todos', v); R2.gab = r2a.length ? r2a : ''; render(); }
   else if(a === 'r2Sort'){ var kk = b.getAttribute('data-k'), d0 = (kk === 'monto' || kk === 'fecha') ? -1 : 1, ix = -1; R2S.keys.forEach(function(o, i){ if(o.k === kk) ix = i; }); if(ix === -1) R2S.keys.push({k: kk, dir: d0}); else if(R2S.keys[ix].dir === d0) R2S.keys[ix].dir = -d0; else R2S.keys.splice(ix, 1); render(); }
   else if(a === 'r2SortCol'){ var kc = b.getAttribute('data-k'), cur = R2S.keys.length === 1 && R2S.keys[0].k === kc ? R2S.keys[0].dir : 0; R2S.keys = [{k: kc, dir: cur ? -cur : ((kc === 'monto' || kc === 'fecha') ? -1 : 1)}]; render(); }
   else if(a === 'r2SortClr'){ R2S.keys = []; render(); }
