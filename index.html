@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v171</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v172</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2007,7 +2007,6 @@ function abrirCompEd(cid){
   if(c.gabai && (S.gabaim || []).indexOf(c.gabai) === -1) S.gabaim.push(c.gabai);
   openModal(head('Corregir compromiso', esc(d.nombre) + ' · ' + c.anio) +
     '<div class="form">' + formComp('ce') +
-      '<label class="f">Caja<select id="ceCaja">' + CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === c.caja ? ' selected' : '') + '>' + esc(k.nombre) + '</option>'; }).join('') + '</select></label>' +
       gmForm(c, qs) +
       '<label class="ck full"><input type="checkbox" id="cePagos" checked> Aplicar los cambios también a los pagos ya registrados</label></div>' +
     '<div class="err" id="ceErr" hidden></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="ceSave" data-id="' + c.id + '">Guardar cambios</button></div>');
@@ -2015,7 +2014,7 @@ function abrirCompEd(cid){
   var setv = function(id, v){ var e = $(id); if(e) e.value = v; };
   setv('ceModalidad', c.modalidad || 'Recurrente'); setv('ceConcepto', c.concepto || ''); setv('ceDesc', c.descripcion || '');
   setv('ceMes', c.fechaInicio || (c.anio + '-' + pad(c.mesIni) + '-01')); setv('ceCuota', (c.cuotaC / 100).toFixed(2)); setv('cePer', c.periodo || 'Mensual');
-  setv('ceForma', c.forma || ''); setv('ceGabai', c.gabai || ''); setv('ceCom', c.comisionPct || 0);
+  setv('ceForma', c.forma || ''); setv('ceGabai', c.gabai || ''); setv('ceCom', c.comisionPct || 0); setv('ceCaja', c.caja || 'USD'); setv('ceMonPago', c.monPago || caja(c.caja || 'USD').mon);
   var cant = $('ceCant'); if(cant){ cant.dataset.user = '1'; cant.value = String(Math.min(12, qs.length || 1)); }
   ui.mg = ui.mg || {}; var vals = {}; qs.forEach(function(q){ vals[q.mes] = String(q.montoC / 100); });
   ui.mg.ce = {user: true, vals: vals};
@@ -3654,6 +3653,8 @@ function formComp(pref){
     '<label class="f">Día de cobro<input id="' + P('Dia') + '" readonly tabindex="-1" class="ro" value="1"></label>' +
     '<div class="f mgw"><span>Meses y monto de cada pago (USD)</span><div class="mgrid" id="' + P('Grid') + '">' + [1,2,3,4,5,6,7,8,9,10,11,12].map(function(m){ return '<label class="mgc"><span>' + Mes(m).slice(0, 3) + '</span><input inputmode="decimal" data-mg="' + pref + '" data-m="' + m + '" placeholder="—"></label>'; }).join('') + '</div></div>';
   var der = '<label class="f">' + hd('Método de pago', 'formas', 'Forma') + '<select id="' + P('Forma') + '">' + formas().map(function(x){ return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label>' + filaEdit('formas', P('Forma')) + filaNuevo('formas', P('Forma'), 'Nuevo método de pago') +
+    '<label class="f">Divisa en que paga el donador<select id="' + P('MonPago') + '"><option value="USD">USD · dólares</option><option value="MXN">MXN · pesos</option></select><small class="sub">El monto del compromiso queda en USD como referencia; aquí eliges en qué moneda lo paga.</small></label>' +
+    '<label class="f">Caja<select id="' + P('Caja') + '">' + CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === 'USD' ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
     '<label class="f">' + hd('Asignado (gabai) *', 'gabaim', 'Gabai') + '<select id="' + P('Gabai') + '">' + optsGabai('', false) + '</select></label>' + filaEdit('gabaim', P('Gabai')) + filaNuevo('gabaim', P('Gabai'), 'Nombre del gabai') +
     '<label class="f">Porcentaje comisión<input id="' + P('Com') + '" inputmode="decimal" placeholder="0" maxlength="6"></label>' +
     '<label class="f">Monto comisión<input id="' + P('ComM') + '" readonly tabindex="-1" class="ro" value="—"></label>' +
@@ -5929,6 +5930,8 @@ document.addEventListener('change', function(ev){
   else if(t.name === 'pmModo'){ PM.modo = t.value; $('pmElegir').hidden = PM.modo !== 'elegir'; pmPrev(); }
   else if(t.hasAttribute && t.hasAttribute('data-pmq')){ var qid = t.getAttribute('data-pmq'); PM.sel = PM.sel.filter(function(x){ return x !== qid; }); if(t.checked) PM.sel.push(qid); pmPrev(); }
   else if(t.id === 'pmMon' || t.id === 'pmFecha'){ if(t.id === 'pmMon' && caja($('pmCaja').value).mon !== t.value){ $('pmCaja').value = cajaDef(t.value); $('pmNY').hidden = true; } pmPrev(); }
+  else if(/^(cc|ce|nd|nc)MonPago$/.test(t.id || '')){ var pf2 = t.id.slice(0, 2), kj = $(pf2 + 'Caja'); if(kj && caja(kj.value).mon !== t.value) kj.value = cajaDef(t.value); }
+  else if(/^(cc|ce|nd|nc)Caja$/.test(t.id || '')){ var pf3 = t.id.slice(0, 2), mp = $(pf3 + 'MonPago'); if(mp) mp.value = caja(t.value).mon; }
   else if(t.id === 'ndMon' || t.id === 'ncMon') { syncCaja(t.id.slice(0, 2)); fcCalc(t.id.slice(0, 2)); }
   else if(/^(nd|nc|ce)(Mes|Modalidad|Cant|Per)$/.test(t.id)) fcCalc(t.id.slice(0, 2));
   else if(t.id === 'lf-mon' || t.id === 'lf-mes') linkPrev();
