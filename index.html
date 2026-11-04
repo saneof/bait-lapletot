@@ -214,6 +214,14 @@ html.nologin .app{display:none}
 .ini-kpi span{font-size:13px;color:var(--muted)}
 .ini-kpi strong{font-size:26px;font-weight:700}
 .ini-kpi small{font-size:12px;color:var(--muted)}
+.ini-cajas{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
+.ini-caja{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface,#fff);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;transition:transform .15s,box-shadow .15s}
+.ini-caja:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.ini-caja .cjh{display:flex;justify-content:space-between;align-items:center;gap:8px}.ini-caja .cjh b{font-size:16px}
+.ini-caja .cjn{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ini-caja .cjn div{display:flex;flex-direction:column;gap:2px;min-width:0}.ini-caja .cjn span{font-size:12.5px;color:var(--muted)}
+.ini-caja .cjn strong{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ini-cjbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 0}.ini-cjbar .ini-sec{margin:0}
 .ini-sec{margin:26px 0 10px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .ini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
 .ini-tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface,#fff);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;gap:14px;align-items:flex-start;transition:transform .15s,box-shadow .15s,border-color .15s}
@@ -522,7 +530,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v159</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v160</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -5195,6 +5203,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'gbCob'){ ui.cob.gab = S.gabaim[+b.getAttribute('data-k')]; ui.cob.rap = true; ui.cob.mes = String(mesAct()); ui.view = 'cobranza'; render(); window.scrollTo(0, 0); }
   else if(a === 'impPlantilla') plantillaXls();
   else if(a === 'egiPlantilla') egiPlantilla();
+  else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); render(); }
   else if(a === 'egiCancel'){ ui.egi = null; render(); }
   else if(a === 'egiGo') egiGo();
   else if(a === 'impCancel'){ ui.imp = null; render(); }
@@ -5925,12 +5934,29 @@ function vInicio(){
     (puede('rep2') || puede('conta') ? kpi(puede('rep2') ? 'rep2' : 'conta', 'Cobrado en ' + mesNom(M) + ' · MXN', mN(cobMX), nPag + ' pagos este mes', '#1f7a4d') + kpi(puede('rep2') ? 'rep2' : 'conta', 'Cobrado en ' + mesNom(M) + ' · USD', mN(cobUS), 'en dólares', '#b91c1c') : '') +
     (puede('cobranza') ? kpi('cobranza', 'Pendientes del mes', pendMes, 'cuotas por cobrar en ' + mesNom(M), '#a16207') + kpi('cobranza', 'Vencidas', venc, 'cuotas atrasadas', venc ? '#b3261e' : '') : '') +
     (puede('recordat') ? kpi('recordat', 'Recordatorios de hoy', rg, 'pendientes por atender', rg ? '#12324F' : '') : '') + '</div>';
+  var cajasHtml = '';
+  if(puede('rep2') || puede('conta')){
+    var per = ui.iniPer || 'mes', perTxt = {mes: mesNom(M) + ' ' + Y, anio: 'Año ' + Y, todo: 'Desde el inicio'}[per];
+    var enPer = function(f){ f = f || ''; return per === 'todo' ? true : per === 'anio' ? f.slice(0, 4) === String(Y) : f.slice(0, 7) === mesK; };
+    var tot = {}; CAJAS.filter(function(k){ return !k.externa; }).forEach(function(k){ tot[k.id] = {ing: 0, egr: 0, n: 0}; });
+    movimientos().forEach(function(x){ var t = tot[x.caja]; if(!t || !enPer(x.fecha)) return; if(x.tipo === 'ing') t.ing += x.montoC; else t.egr += x.montoC; t.n++; });
+    cajasHtml = '<div class="ini-cjbar"><div class="ini-sec">Cajas · ' + esc(perTxt) + '</div><div class="chips">' +
+      [['mes', 'Este mes'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (per === o[0] ? ' on' : '') + '" data-a="iniPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+      '<div class="ini-cajas">' + CAJAS.filter(function(k){ return !k.externa; }).map(function(k){
+        var t = tot[k.id], sal = t.ing - t.egr, fm = function(c){ return money(c, k.mon).replace(' ' + k.mon, ''); };
+        return '<button type="button" class="ini-caja" data-a="go" data-v="' + (puede('rep2') ? 'rep2' : 'conta') + '"><span class="cjh"><b>' + esc(k.nombre) + '</b><span class="pill t-info">' + k.mon + '</span></span>' +
+          '<span class="cjn"><div><span>Ingresos</span><strong style="color:var(--ok)">' + fm(t.ing) + '</strong></div>' +
+          '<div><span>Egresos</span><strong style="color:var(--bad)">' + fm(t.egr) + '</strong></div>' +
+          '<div><span>Saldo</span><strong' + (sal < 0 ? ' style="color:var(--bad)"' : '') + '>' + fm(sal) + '</strong></div></span>' +
+          '<small class="sub">' + t.n + (t.n === 1 ? ' movimiento' : ' movimientos') + '</small></button>';
+      }).join('') + '</div>';
+  }
   var DESC = {donantes: 'Altas, datos y búsqueda de donadores', nuevocomp: 'Nuevos compromisos y renovaciones', seg2: 'Avance de cada compromiso', cobranza: 'Registrar y aplicar pagos', aprobar: 'Pagos por autorizar y reporte de entregas', avisos: 'Mensajes a quienes deben', recordat: 'Tus pendientes y reglas', comis: 'Comisiones de cada gabai', conta: 'Ingresos y egresos', rep2: 'Tablero contable con filtros', egresos: 'Registrar salidas de caja', direccion: 'Resumen para Dirección', exportar: 'Excel, PDF y respaldos', portal: 'Estado de cuenta del donante', config: 'Ajustes del sistema', permisos: 'Usuarios y accesos'};
   var oc = navOc();
   var tiles = vistasOrden().concat(VIEWS.filter(function(v){ return v[0] === 'portal'; })).filter(function(v){ return v[0] !== 'inicio' && v[0] !== 'grp' && puede(v[0]) && oc.indexOf(v[0]) === -1; });
   var cnt = function(k){ if(k === 'avisos'){ try{ var n = porEnviar().filter(function(x){ return !x.omitir && (x.tipo === 'venc' || x.tipo === 'varias'); }).length; return n ? '<span class="cnt">' + n + '</span>' : ''; }catch(e){ return ''; } } if(k === 'aprobar'){ try{ var a = porAprobar().length; return a ? '<span class="cnt">' + a + '</span>' : ''; }catch(e){ return ''; } } return ''; };
   return '<section class="ini-hero"><div class="ini-top"><div class="ini-logo">' + logo + '</div><div><div class="ini-he" dir="rtl">ברוכים הבאים · בית לפליטות</div><h2 class="ini-h1">Bienvenido a <b>Bait Lapletot</b></h2><div class="ini-sub">' + saludo + ', <b>' + esc(u.nombre) + '</b> · ' + esc(fechaTxt) + '</div></div></div><div class="ini-gold"></div><div class="ini-frase">' + esc(frase) + '</div></section>' +
-    kpis + '<div class="ini-sec">¿Qué quieres hacer hoy?</div><div class="ini-grid">' + tiles.map(function(v){ return '<button type="button" class="ini-tile" data-a="go" data-v="' + v[0] + '"><span class="ic">' + ico(v[0]) + '</span><span><b>' + esc(v[1]) + '</b><small>' + esc(DESC[v[0]] || '') + '</small></span>' + cnt(v[0]) + '</button>'; }).join('') + '</div>';
+    kpis + cajasHtml + '<div class="ini-sec">¿Qué quieres hacer hoy?</div><div class="ini-grid">' + tiles.map(function(v){ return '<button type="button" class="ini-tile" data-a="go" data-v="' + v[0] + '"><span class="ic">' + ico(v[0]) + '</span><span><b>' + esc(v[1]) + '</b><small>' + esc(DESC[v[0]] || '') + '</small></span>' + cnt(v[0]) + '</button>'; }).join('') + '</div>';
 }
 
 /* ================= Reporte contable (estilo tablero) ================= */
