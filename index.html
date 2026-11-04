@@ -222,6 +222,26 @@ html.nologin .app{display:none}
 .ini-caja .cjn div{display:flex;flex-direction:column;gap:2px;min-width:0}.ini-caja .cjn span{font-size:12.5px;color:var(--muted)}
 .ini-caja .cjn strong{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .ini-cjbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 0}.ini-cjbar .ini-sec{margin:0}
+.ctabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.ctabs .btn{min-height:42px}
+.ctabs .btn.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.fl-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.fl-kpi{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface,#fff);display:flex;flex-direction:column;gap:4px;min-width:0}
+.fl-kpi span{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fl-kpi strong{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fl-kpi small{color:var(--muted)}
+.fl-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.fl-chart{width:100%;height:150px;display:block;margin-top:6px}
+.fl-chart .ln{fill:none;stroke:var(--brand);stroke-width:2.2;vector-effect:non-scaling-stroke}
+.fl-chart .ar{fill:var(--brand);opacity:.08}.fl-chart .z{stroke:var(--bad);stroke-dasharray:4 4;stroke-width:1;vector-effect:non-scaling-stroke}
+.fl-res{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.fl-res h3{margin:0 0 8px;font-size:15px}
+.fl-rr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.fl-rr .bb{grid-column:1/-1;height:6px;border-radius:4px;background:var(--line);overflow:hidden}.fl-rr .bb i{display:block;height:100%;border-radius:4px}
+.fl-rr b{font-variant-numeric:tabular-nums}
+.flt td.n,.flt th.n{text-align:right;font-variant-numeric:tabular-nums}
+.flt tr.flini td{background:var(--mute-soft);font-weight:700}
+.flt tr.flsep td{background:var(--brand-soft);font-weight:600;font-size:13px}
+.cj-prev{min-height:20px;color:var(--muted);font-size:14px}.cj-prev b{color:var(--ink)}
 .ini-sec{margin:26px 0 10px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .ini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
 .ini-tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface,#fff);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;gap:14px;align-items:flex-start;transition:transform .15s,box-shadow .15s,border-color .15s}
@@ -530,7 +550,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v161</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v162</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1312,6 +1332,7 @@ function render0(){
   if(ui.view === 'donantes') restoreNd();
   if(ui.view === 'nuevocomp') restoreCc();
   if(ui.view === 'egresos') restoreEg();
+  if(ui.view === 'conta' && ui.contTab === 'cam') restoreCj();
   document.querySelectorAll('.tw.cards td').forEach(function(td){ if(td.textContent.trim() === '—' && !td.querySelector('input,select,button')) td.classList.add('vac'); });
   var act = document.querySelector('#menu [aria-current=page]'); if(act && act.scrollIntoView && window.innerWidth < 760){ try{ act.scrollIntoView({inline: 'center', block: 'nearest'}); }catch(e){} }
   applyLang(); i18n(document.body);
@@ -2430,8 +2451,198 @@ function movimientos(){
   });
   return out;
 }
+/* ================= Cambios de caja ================= */
+var CONC_CJ = ['Cambio de divisa', 'Traspaso entre cajas', 'Costo Cambio'];
+var CJ_IDS = ['cjFecha', 'cjModal', 'cjOri', 'cjDes', 'cjEmisor', 'cjRecep', 'cjMontoE', 'cjMontoI', 'cjMonE', 'cjMonI', 'cjRef', 'cjConcepto', 'cjComent'];
+function cjCats(){ egCats(); if(!S.conceptosCj || !S.conceptosCj.length) S.conceptosCj = CONC_CJ.slice(); if(!S.cambiosCaja) S.cambiosCaja = []; }
+function cjMovs(){
+  var out = [];
+  (S.cambiosCaja || []).forEach(function(c){
+    var tcN = cjTc(c), extra = [c.coment, tcN ? 'T.C. ' + tcN.toFixed(4) : ''].filter(Boolean).join(' · ');
+    var eq = function(m, mon){ return mon === 'USD' ? m : (c.refC || Math.round(m / (tcN || S.cfg.tc || 1))); };
+    out.push({tipo: 'egr', cambio: true, fecha: c.fecha, folio: c.folio, concepto: c.concepto || 'Cambio de caja', nombre: c.receptor || caja(c.des).nombre, gabai: '', donId: '', eqC: eq(c.montoEC, c.monE), forma: c.modalidad || 'Cambio', caja: c.ori, otra: c.des, moneda: c.monE, montoC: c.montoEC, tc: tcN, obs: ['Pasa a ' + caja(c.des).nombre + ' (' + money(c.montoIC, c.monI) + ')', extra].filter(Boolean).join(' · '), id: c.id});
+    out.push({tipo: 'ing', cambio: true, fecha: c.fecha, folio: c.folio, concepto: c.concepto || 'Cambio de caja', nombre: c.emisor || caja(c.ori).nombre, gabai: '', donId: '', eqC: eq(c.montoIC, c.monI), forma: c.modalidad || 'Cambio', caja: c.des, otra: c.ori, moneda: c.monI, montoC: c.montoIC, tc: tcN, obs: ['Viene de ' + caja(c.ori).nombre + ' (' + money(c.montoEC, c.monE) + ')', extra].filter(Boolean).join(' · '), id: c.id});
+  });
+  return out;
+}
+function movCaja(){ return movimientos().concat(cjMovs()); }
+function cjTc(c){ if(c.monE === c.monI || !(c.montoEC > 0) || !(c.montoIC > 0)) return null; var mx = c.monE === 'MXN' ? c.montoEC : c.montoIC, us = c.monE === 'USD' ? c.montoEC : c.montoIC; return Math.round(mx / us * 10000) / 10000; }
+function vCambios(){
+  cjCats(); ui.cj = ui.cj || {};
+  var hd = function(t, cat, id){ return '<span class="row lblrow"><span>' + t + '</span><span class="row" style="gap:10px">' + editCat(cat, id) + addNuevo(cat, id) + '</span></span>'; };
+  var opts = function(l){ return l.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join(''); };
+  var cjOpts = function(sel){ return CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join(''); };
+  var monOpts = function(sel){ return ['MXN', 'USD'].map(function(m){ return '<option' + (m === sel ? ' selected' : '') + '>' + m + '</option>'; }).join(''); };
+  var izq = '<label class="f">Fecha *<input id="cjFecha" type="date" value="' + hoy() + '"></label>' +
+    '<label class="f">Caja Emisora *<select id="cjOri">' + cjOpts('MXN') + '</select></label>' +
+    '<label class="f">Emisor<input id="cjEmisor" maxlength="80" placeholder="Quién entrega"></label>' +
+    '<label class="f">Monto Egreso *<input id="cjMontoE" inputmode="decimal" placeholder="0.00"></label>' +
+    '<label class="f">Divisa Egreso<select id="cjMonE">' + monOpts('MXN') + '</select></label>' +
+    '<label class="f">Referencia Dólares<input id="cjRef" inputmode="decimal" placeholder="Se llena sola si un lado es USD"></label>' +
+    '<label class="f">' + hd('Concepto', 'conceptosCj', 'cjConcepto') + '<select id="cjConcepto">' + opts(S.conceptosCj) + '</select></label>' + filaEdit('conceptosCj', 'cjConcepto') + filaNuevo('conceptosCj', 'cjConcepto', 'Nuevo concepto');
+  var der = '<label class="f">' + hd('Modalidad', 'modalidadesEg', 'cjModal') + '<select id="cjModal">' + opts(S.modalidadesEg) + '</select></label>' + filaEdit('modalidadesEg', 'cjModal') + filaNuevo('modalidadesEg', 'cjModal', 'Nueva modalidad') +
+    '<label class="f">Caja Receptora *<select id="cjDes">' + cjOpts('USD') + '</select></label>' +
+    '<label class="f">Receptor<input id="cjRecep" maxlength="80" placeholder="Quién recibe"></label>' +
+    '<label class="f">Monto Ingreso *<input id="cjMontoI" inputmode="decimal" placeholder="0.00"></label>' +
+    '<label class="f">Divisa Ingreso<select id="cjMonI">' + monOpts('USD') + '</select></label>' +
+    '<label class="f">ID Recibo<input readonly tabindex="-1" class="ro" value="C-' + String((S.folioCj || 0) + 1).padStart(4, '0') + '"></label>' +
+    '<label class="f">Comentarios<textarea id="cjComent" maxlength="500"></textarea></label>';
+  var Y = String(anioAct()), mk = hoy().slice(0, 7), lst = S.cambiosCaja.slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || b.folio.localeCompare(a.folio); });
+  var mes = lst.filter(function(c){ return c.fecha.slice(0, 7) === mk; }), sumE = {MXN: 0, USD: 0}, sumI = {MXN: 0, USD: 0};
+  mes.forEach(function(c){ sumE[c.monE] += c.montoEC; sumI[c.monI] += c.montoIC; });
+  var tcs = mes.map(cjTc).filter(Boolean), tcP = tcs.length ? tcs.reduce(function(a, b){ return a + b; }, 0) / tcs.length : 0;
+  return '<section class="panel"><h2>⇄ Registrar cambio de caja</h2><p class="sub" style="margin-top:-4px">Lo que sale de la caja emisora cuenta como cargo y lo que entra a la caja receptora como abono. No cuenta como donativo ni como egreso de gasto, pero sí mueve el saldo de cada caja y el flujo de efectivo.</p>' +
+    '<div class="form"><div class="fc2 full"><div class="fcol">' + izq + '</div><div class="fcol">' + der + '</div></div></div>' +
+    '<div class="cj-prev" id="cjPrev"></div><div class="err" id="cjErr" hidden></div>' +
+    '<div class="row"><button type="button" class="btn primary" data-a="cjSave">Guardar cambio</button><button type="button" class="btn ghost" data-a="cjLimpiar">Limpiar</button></div></section>' +
+    '<section class="panel"><h2>Este mes · ' + esc(Mes(+mk.slice(5, 7))) + ' ' + Y + '</h2><div class="fl-kpis">' +
+      '<div class="fl-kpi"><span>Cambios</span><strong>' + mes.length + '</strong><small>registrados este mes</small></div>' +
+      '<div class="fl-kpi"><span>Salió</span><strong style="color:var(--bad)">' + mN(sumE.MXN) + ' <small>MXN</small></strong><small>' + mN(sumE.USD) + ' USD</small></div>' +
+      '<div class="fl-kpi"><span>Entró</span><strong style="color:var(--ok)">' + mN(sumI.USD) + ' <small>USD</small></strong><small>' + mN(sumI.MXN) + ' MXN</small></div>' +
+      '<div class="fl-kpi"><span>Tipo de cambio promedio</span><strong>' + (tcP ? '$' + tcP.toFixed(4) : '—') + '</strong><small>MXN por dólar</small></div></div></section>' +
+    '<section class="panel"><h2>Cambios de caja registrados</h2>' + (lst.length ? tbBar('cjs') + '<div class="tw cards"><table data-cf="cjs" data-tt="Cambios de caja" class="cobt"><thead><tr><th>Fecha</th><th>Folio</th><th>Sale de</th><th class="n">Monto egreso</th><th>Entra a</th><th class="n">Monto ingreso</th><th class="n">T.C.</th><th>Concepto</th><th>Emisor → Receptor</th><th>Comentarios</th><th></th></tr></thead><tbody>' +
+      lst.map(function(c){ var t = cjTc(c); return '<tr><td data-l="Fecha" class="nowrap">' + fFecha(c.fecha) + '</td><td data-l="Folio"><b>' + esc(c.folio) + '</b></td><td data-l="Sale de">' + cajaPill(c.ori) + '</td><td class="n" data-l="Monto egreso"><b style="color:var(--bad)">' + money(c.montoEC, c.monE) + '</b></td><td data-l="Entra a">' + cajaPill(c.des) + '</td><td class="n" data-l="Monto ingreso"><b style="color:var(--ok)">' + money(c.montoIC, c.monI) + '</b></td><td class="n" data-l="T.C.">' + (t ? t.toFixed(4) : '—') + '</td><td data-l="Concepto">' + esc(c.concepto || '—') + (c.modalidad ? '<div class="sub">' + esc(c.modalidad) + '</div>' : '') + '</td><td data-l="Emisor → Receptor">' + esc(c.emisor || '—') + ' → ' + esc(c.receptor || '—') + '</td><td data-l="Comentarios" style="white-space:pre-wrap;min-width:120px">' + (c.coment ? esc(c.coment) : '<span class="sub">—</span>') + '</td><td>' + bDel('data-a="cjDel" data-id="' + c.id + '"') + '</td></tr>'; }).join('') +
+      '</tbody></table></div>' : '<div class="empty">Aún no hay cambios de caja.</div>') + '</section>';
+}
+function cjSync(id){
+  var o = $('cjOri'), d = $('cjDes'), me = $('cjMonE'), mi = $('cjMonI'); if(!o || !d) return;
+  if(id === 'cjMonE' && caja(o.value).mon !== me.value) o.value = me.value;
+  if(id === 'cjMonI' && caja(d.value).mon !== mi.value) d.value = mi.value;
+  me.value = caja(o.value).mon; mi.value = caja(d.value).mon;
+  ui.cj = ui.cj || {}; ['cjOri', 'cjDes', 'cjMonE', 'cjMonI'].forEach(function(k){ ui.cj[k] = $(k).value; });
+}
+function cjPrev(){
+  var pv = $('cjPrev'); if(!pv) return;
+  var e = cents($('cjMontoE').value), i = cents($('cjMontoI').value), me = $('cjMonE').value, mi = $('cjMonI').value, t = '';
+  var ref = $('cjRef'); if(ref && !(ui.cj && ui.cj.refManual)){ var us = me === 'USD' ? e : mi === 'USD' ? i : 0; ref.value = us ? (us / 100).toFixed(2) : ''; if(ui.cj) ui.cj.cjRef = ref.value; }
+  if($('cjOri').value === $('cjDes').value) t = '<span style="color:var(--bad)">La caja emisora y la receptora son la misma.</span>';
+  else if(e > 0 && i > 0 && me !== mi){ var mx = me === 'MXN' ? e : i, ud = me === 'USD' ? e : i; t = 'Tipo de cambio: <b>$' + (mx / ud).toFixed(4) + ' MXN</b> por dólar · Sale <b>' + money(e, me) + '</b> y entra <b>' + money(i, mi) + '</b>'; }
+  else if(e > 0 && i > 0 && e !== i) t = 'Diferencia entre lo que sale y lo que entra: <b>' + money(i - e, me) + '</b>';
+  else if(e > 0 && i > 0) t = 'Sale <b>' + money(e, me) + '</b> de ' + esc(caja($('cjOri').value).nombre) + ' y entra a ' + esc(caja($('cjDes').value).nombre);
+  pv.innerHTML = t;
+}
+function restoreCj(){
+  ui.cj = ui.cj || {};
+  CJ_IDS.forEach(function(k){ var el = $(k); if(el && k in ui.cj) el.value = ui.cj[k]; });
+  cjSync(); cjPrev();
+}
+function cjSave(){
+  var er = $('cjErr'), fail = function(m){ er.textContent = m; er.hidden = false; };
+  cjSync();
+  var fecha = $('cjFecha').value, o = $('cjOri').value, d = $('cjDes').value, e = cents($('cjMontoE').value), i = cents($('cjMontoI').value), me = $('cjMonE').value, mi = $('cjMonI').value;
+  if(!fecha) return fail('Elige la fecha.');
+  if(o === d) return fail('La caja emisora y la receptora deben ser distintas.');
+  if(e <= 0) return fail('Escribe el monto que sale (Monto Egreso).');
+  if(i <= 0) return fail('Escribe el monto que entra (Monto Ingreso).');
+  var refC = cents($('cjRef').value) || (me === 'USD' ? e : mi === 'USD' ? i : 0);
+  if(me === 'MXN' && mi === 'MXN' && !refC) return fail('Escribe la referencia en dólares.');
+  S.folioCj = (S.folioCj || 0) + 1;
+  var c = {id: nid('cj'), folio: 'C-' + String(S.folioCj).padStart(4, '0'), fecha: fecha, modalidad: $('cjModal').value, ori: o, des: d, emisor: $('cjEmisor').value.trim(), receptor: $('cjRecep').value.trim(), montoEC: e, monE: me, montoIC: i, monI: mi, refC: refC, concepto: $('cjConcepto').value, coment: $('cjComent').value.trim(), usuario: user().nombre, creado: new Date().toISOString()};
+  S.cambiosCaja.push(c);
+  log('Registró cambio de caja ' + c.folio + ': ' + money(e, me) + ' de ' + caja(o).nombre + ' a ' + money(i, mi) + ' en ' + caja(d).nombre);
+  ui.cj = {}; render(); toast('Cambio ' + c.folio + ' registrado');
+}
+
+/* ================= Flujo de efectivo ================= */
+function flRango(p){
+  var d = new Date(), y = d.getFullYear(), m = d.getMonth() + 1, ult = function(yy, mm){ return new Date(yy, mm, 0).getDate(); };
+  if(p === 'mesant'){ var py = m === 1 ? y - 1 : y, pm = m === 1 ? 12 : m - 1; return [py + '-' + pad(pm) + '-01', py + '-' + pad(pm) + '-' + pad(ult(py, pm))]; }
+  if(p === 'anio') return [y + '-01-01', hoy()];
+  if(p === 'todo'){ var f0 = movCaja().reduce(function(a, x){ return x.fecha && x.fecha < a ? x.fecha : a; }, hoy()); return [f0, hoy()]; }
+  return [y + '-' + pad(m) + '-01', hoy()];
+}
+function flPasa(x, f, q){
+  if(f.tipo === 'ing' && (x.tipo !== 'ing' || x.cambio)) return false;
+  if(f.tipo === 'egr' && (x.tipo !== 'egr' || x.cambio)) return false;
+  if(f.tipo === 'cam' && !x.cambio) return false;
+  if(f.tipo === 'sin' && x.cambio) return false;
+  if(f.con && x.concepto !== f.con) return false;
+  if(f.gab !== 'todos' && (x.tipo !== 'ing' || x.cambio || (x.gabai || '') !== f.gab)) return false;
+  if(f.forma && x.forma !== f.forma) return false;
+  if(q && ((x.nombre || '') + ' ' + (x.folio || '') + ' ' + (x.concepto || '') + ' ' + (x.obs || '') + ' ' + (x.gabai || '') + ' ' + (x.corr || '')).toLowerCase().indexOf(q) === -1) return false;
+  return true;
+}
+function flFiltrado(f){ return f.tipo !== 'todos' || !!f.con || f.gab !== 'todos' || !!f.forma || !!(f.q || '').trim(); }
+function vFlujo(){
+  cjCats();
+  if(!ui.fl){ var r0 = flRango('mes'); ui.fl = {caja: 'MXN', desde: r0[0], hasta: r0[1], per: 'mes', tipo: 'todos', con: '', gab: 'todos', forma: '', q: ''}; }
+  var f = ui.fl, k = caja(f.caja), q = (f.q || '').toLowerCase();
+  var all = movCaja().filter(function(x){ return x.caja === f.caja && x.fecha; }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || (a.tipo === b.tipo ? 0 : a.tipo === 'ing' ? -1 : 1) || String(a.folio).localeCompare(String(b.folio), 'es', {numeric: true}); });
+  var sg = function(x){ return x.tipo === 'ing' ? x.montoC : -x.montoC; };
+  var si = 0; all.forEach(function(x){ if(x.fecha < f.desde) si += sg(x); });
+  var per = all.filter(function(x){ return x.fecha >= f.desde && x.fecha <= f.hasta; });
+  var run = si; per.forEach(function(x){ run += sg(x); x._sal = run; });
+  var sf = run, rows = per.filter(function(x){ return flPasa(x, f, q); });
+  var ab = 0, ca = 0, nA = 0, nC = 0; rows.forEach(function(x){ if(x.tipo === 'ing'){ ab += x.montoC; nA++; } else { ca += x.montoC; nC++; } });
+  var filt = flFiltrado(f);
+  // listas para filtros
+  var cons = {}, frm = {}; per.forEach(function(x){ if(x.concepto) cons[x.concepto] = 1; if(x.forma) frm[x.forma] = 1; });
+  var sel = function(id, op, v){ return '<select id="' + id + '">' + op.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
+  var chips = '<div class="chips">' + CAJAS.map(function(c){ return '<button type="button" class="chip' + (c.id === f.caja ? ' on' : '') + '" data-a="flCaja" data-c="' + c.id + '" aria-pressed="' + (c.id === f.caja) + '">' + esc(c.nombre) + ' · ' + c.mon + '</button>'; }).join('') + '</div>';
+  var perB = '<div class="chips">' + [['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (f.per === o[0] ? ' on' : '') + '" data-a="flPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  // gráfica del saldo por día
+  var dias = {}, ordenD = []; per.forEach(function(x){ if(!(x.fecha in dias)) ordenD.push(x.fecha); dias[x.fecha] = x._sal; });
+  var pts = [[f.desde, si]].concat(ordenD.map(function(d){ return [d, dias[d]]; })); if(pts[pts.length - 1][0] < f.hasta) pts.push([f.hasta, sf]);
+  var t0 = Date.parse(f.desde), t1 = Math.max(Date.parse(f.hasta), t0 + 864e5), vs = pts.map(function(p){ return p[1]; }), mn = Math.min.apply(null, vs.concat([0])), mx = Math.max.apply(null, vs.concat([0])); if(mx === mn) mx = mn + 1;
+  var X = function(d){ return ((Date.parse(d) - t0) / (t1 - t0) * 1000).toFixed(1); }, Yv = function(v){ return (140 - (v - mn) / (mx - mn) * 130).toFixed(1); };
+  var path = ''; pts.forEach(function(p, i){ var x = X(p[0]), y = Yv(p[1]); path += (i ? ' H' + x + ' V' + y : 'M' + x + ' ' + y); });
+  var chart = '<svg class="fl-chart" viewBox="0 0 1000 150" preserveAspectRatio="none" role="img" aria-label="Saldo de ' + esc(k.nombre) + ' en el periodo">' + (mn < 0 ? '<line class="z" x1="0" x2="1000" y1="' + Yv(0) + '" y2="' + Yv(0) + '"/>' : '') + '<path class="ar" d="' + path + ' V150 H' + X(pts[0][0]) + ' Z"/><path class="ln" d="' + path + '"/></svg>' +
+    '<div class="row sub" style="justify-content:space-between"><span>' + fFecha(f.desde) + '</span><span>Máx. ' + mN(Math.max.apply(null, vs)) + ' · Mín. ' + mN(Math.min.apply(null, vs)) + '</span><span>' + fFecha(f.hasta) + '</span></div>';
+  // tabla
+  var mon = k.mon, multiMes = f.desde.slice(0, 7) !== f.hasta.slice(0, 7), mesAct = '';
+  var tag = function(x){
+    if(x.cambio) return '<span class="pill t-info">⇄ ' + esc(x.concepto) + '</span>';
+    if(x.tipo === 'ing') return x.gabai ? '<span class="pill t-ok" dir="auto">' + esc(x.gabai) + '</span>' : '<span class="sub">Sin gabai</span>';
+    return '<span class="pill t-bad">' + esc(x.concepto || 'Egreso') + '</span>';
+  };
+  var desc = function(x){
+    if(x.cambio) return '<b>' + (x.tipo === 'ing' ? 'Entra de ' : 'Sale a ') + esc(caja(x.otra).nombre) + '</b><div class="sub">' + esc(x.obs) + '</div>';
+    if(x.tipo === 'ing') return '<b>Pago ' + esc(x.nombre) + '</b><div class="sub">' + esc([x.concepto, x.corr, x.obs].filter(Boolean).join(' · ')) + '</div>';
+    return '<b>' + esc(x.nombre) + '</b>' + (x.obs ? '<div class="sub">' + esc(x.obs) + '</div>' : '');
+  };
+  var resMes = {}; rows.forEach(function(x){ var m = x.fecha.slice(0, 7); resMes[m] = resMes[m] || {a: 0, c: 0}; resMes[m][x.tipo === 'ing' ? 'a' : 'c'] += x.montoC; });
+  var cuerpo = '<tr class="flini"><td data-l="Fecha" class="nowrap">' + fFecha(f.desde) + '</td><td data-l="Folio"></td><td data-l="Tipo"></td><td data-l="Movimiento">Saldo inicial</td><td data-l="Gabai / Concepto"></td><td data-l="Forma"></td><td class="n" data-l="Cargo"></td><td class="n" data-l="Abono"></td><td class="n" data-l="Saldo"><b>' + mN(si) + '</b></td></tr>' +
+    rows.map(function(x){
+      var m = x.fecha.slice(0, 7), sep = '';
+      if(multiMes && m !== mesAct){ mesAct = m; var rm = resMes[m]; sep = '<tr class="flsep" data-sep="' + esc(Mes(+m.slice(5, 7)) + ' ' + m.slice(0, 4)) + '"><td colspan="9">' + esc(Mes(+m.slice(5, 7)) + ' ' + m.slice(0, 4)) + ' · <span style="color:var(--ok)">+' + mN(rm.a) + '</span> · <span style="color:var(--bad)">−' + mN(rm.c) + '</span></td></tr>'; }
+      var tp = x.cambio ? '<span class="pill t-info">Cambio</span>' : '<span class="pill ' + (x.tipo === 'ing' ? 't-ok">Ingreso' : 't-bad">Egreso') + '</span>';
+      return sep + '<tr><td data-l="Fecha" class="nowrap">' + fFecha(x.fecha) + '</td><td data-l="Folio"><b>' + esc(x.folio || '') + '</b></td><td data-l="Tipo">' + tp + '</td><td data-l="Movimiento">' + desc(x) + '</td><td data-l="Gabai / Concepto">' + tag(x) + '</td><td data-l="Forma">' + esc(x.forma || '—') + '</td>' +
+        '<td class="n" data-l="Cargo">' + (x.tipo === 'egr' ? '<b style="color:var(--bad)">' + mN(x.montoC) + '</b>' : '') + '</td><td class="n" data-l="Abono">' + (x.tipo === 'ing' ? '<b style="color:var(--ok)">' + mN(x.montoC) + '</b>' : '') + '</td><td class="n" data-l="Saldo"><b' + (x._sal < 0 ? ' style="color:var(--bad)"' : '') + '>' + mN(x._sal) + '</b></td></tr>';
+    }).join('');
+  // resumen por gabai y por concepto de egreso
+  var grp = function(fn, filtro){ var o = {}; rows.forEach(function(x){ if(!filtro(x)) return; var g = fn(x); o[g] = (o[g] || 0) + x.montoC; }); return Object.keys(o).map(function(g){ return [g, o[g]]; }).sort(function(a, b){ return b[1] - a[1]; }); };
+  var lista = function(arr, col, vacio){ var tt = arr.reduce(function(a, b){ return a + b[1]; }, 0); return arr.length ? arr.map(function(r){ var pc = tt ? r[1] / tt * 100 : 0; return '<div class="fl-rr"><span dir="auto">' + esc(r[0]) + '</span><b>' + mN(r[1]) + ' <small class="sub">' + pc.toFixed(0) + '%</small></b><div class="bb"><i style="width:' + pc.toFixed(1) + '%;background:' + col + '"></i></div></div>'; }).join('') : '<div class="empty">' + vacio + '</div>'; };
+  var gA = grp(function(x){ return x.gabai || 'Sin gabai'; }, function(x){ return x.tipo === 'ing' && !x.cambio; });
+  var gC = grp(function(x){ return x.concepto || 'Sin concepto'; }, function(x){ return x.tipo === 'egr' && !x.cambio; });
+  var gX = grp(function(x){ return (x.tipo === 'ing' ? 'Entró de ' : 'Salió a ') + caja(x.otra).nombre; }, function(x){ return x.cambio; });
+  return '<section class="panel"><div class="fl-bar"><h2 style="margin:0">Flujo de efectivo · ' + esc(k.nombre) + '</h2>' + perB + '</div>' +
+    '<div style="margin-top:12px">' + chips + '</div>' +
+    '<div class="form" style="margin-top:12px">' +
+      '<label class="f">Desde<input id="flDesde" type="date" value="' + esc(f.desde) + '"></label>' +
+      '<label class="f">Hasta<input id="flHasta" type="date" value="' + esc(f.hasta) + '"></label>' +
+      '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (ingresos)'], ['egr', 'Solo cargos (egresos)'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
+      '<label class="f">Gabai<select id="flGab">' + optsGabai(f.gab, true) + '</select></label>' +
+      '<label class="f">Concepto' + sel('flCon', [['', 'Todos los conceptos']].concat(Object.keys(cons).sort().map(function(c){ return [c, c]; })), f.con) + '</label>' +
+      '<label class="f">Forma de pago' + sel('flForma', [['', 'Todas']].concat(Object.keys(frm).sort().map(function(c){ return [c, c]; })), f.forma) + '</label>' +
+      '<label class="f">Buscar<input id="flQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre, folio, gabai…"></label></div>' +
+    (filt ? '<div class="row" style="margin-top:8px;gap:8px"><span class="pill t-warn">Con filtros</span><span class="sub">Abonos y cargos muestran solo lo filtrado; el saldo de cada renglón es el saldo real de la caja.</span><button type="button" class="btn ghost sm" data-a="flLimpiar">Quitar filtros</button></div>' : '') +
+    '<div class="fl-kpis">' +
+      '<div class="fl-kpi"><span>Saldo inicial</span><strong' + (si < 0 ? ' style="color:var(--bad)"' : '') + '>' + mN(si) + '</strong><small>' + fFecha(f.desde) + ' · ' + mon + '</small></div>' +
+      '<div class="fl-kpi"><span>Abonos</span><strong style="color:var(--ok)">' + mN(ab) + '</strong><small>' + nA + (nA === 1 ? ' movimiento' : ' movimientos') + '</small></div>' +
+      '<div class="fl-kpi"><span>Cargos</span><strong style="color:var(--bad)">' + mN(ca) + '</strong><small>' + nC + (nC === 1 ? ' movimiento' : ' movimientos') + '</small></div>' +
+      '<div class="fl-kpi"><span>Saldo final</span><strong' + (sf < 0 ? ' style="color:var(--bad)"' : '') + '>' + mN(sf) + '</strong><small>' + fFecha(f.hasta) + (filt ? ' · neto filtrado ' + mN(ab - ca) : ' · ' + (sf - si >= 0 ? '+' : '−') + mN(Math.abs(sf - si)) + ' en el periodo') + '</small></div></div>' +
+    chart + '</section>' +
+    '<section class="panel">' + tbBar('flujo') + '<div class="tw cards"><table data-cf="flujo" data-tt="Flujo de efectivo · ' + esc(k.nombre) + ' · ' + fFecha(f.desde) + ' a ' + fFecha(f.hasta) + '" class="cobt flt"><thead><tr><th>Fecha</th><th>Folio</th><th>Tipo</th><th>Movimiento</th><th>Gabai / Concepto</th><th>Forma</th><th class="n">Cargo</th><th class="n">Abono</th><th class="n">Saldo</th></tr></thead><tbody>' + cuerpo + '</tbody>' +
+      '<tfoot><tr><td colspan="6"><b>Total · ' + rows.length + ' movimientos</b></td><td class="n"><b style="color:var(--bad)">' + mN(ca) + '</b></td><td class="n"><b style="color:var(--ok)">' + mN(ab) + '</b></td><td class="n"><b>' + mN(sf) + '</b></td></tr></tfoot></table></div>' +
+      (rows.length ? '' : '<div class="empty">Sin movimientos en este periodo con estos filtros.</div>') + '</section>' +
+    '<section class="panel"><h2>¿De dónde vino y a dónde se fue?</h2><div class="fl-res">' +
+      '<div><h3>Abonos por gabai</h3>' + lista(gA, 'var(--ok)', 'Sin abonos') + '</div>' +
+      '<div><h3>Cargos por concepto</h3>' + lista(gC, 'var(--bad)', 'Sin cargos') + '</div>' +
+      '<div><h3>Cambios de caja</h3>' + lista(gX, 'var(--brand)', 'Sin cambios de caja') + '</div></div></section>';
+}
 function contPasa(x, f, q){
-  if(f.tipo !== 'todos' && x.tipo !== f.tipo) return false;
+  if(f.tipo === 'cam'){ if(!x.cambio) return false; }
+  else if(f.tipo !== 'todos' && (x.tipo !== f.tipo || x.cambio)) return false;
   if(f.mes !== 'todos' && +x.fecha.slice(5, 7) !== +f.mes) return false;
   if(f.caja !== 'todos' && x.caja !== f.caja) return false;
   if(f.con && x.concepto !== f.con) return false;
@@ -2482,7 +2693,7 @@ var CONT_COLS = [
   ['corr', 'Corresponde a', '', function(x){ return x.corr ? '<b>' + esc(x.corr) + '</b>' : '<span class="sub">—</span>'; }, function(x){ return x.corr || ''; }],
   ['cuota', 'Compromiso mensual', 'n', function(x){ return x.cuotaC != null ? money(x.cuotaC, x.cuotaMon) : '<span class="sub">—</span>'; }, function(x){ return x.cuotaC != null ? x.cuotaC / 100 : ''; }],
   ['folio', 'Recibo / folio', '', function(x){ return '<b>' + esc(x.folio) + '</b>'; }, function(x){ return x.folio; }],
-  ['tipo', 'Tipo', '', function(x){ return '<span class="pill ' + (x.tipo === 'ing' ? 't-ok' : 't-bad') + '">' + (x.tipo === 'ing' ? 'Ingreso' : 'Egreso') + '</span>'; }, function(x){ return x.tipo === 'ing' ? 'Ingreso' : 'Egreso'; }],
+  ['tipo', 'Tipo', '', function(x){ if(x.cambio) return '<span class="pill t-info">⇄ Cambio ' + (x.tipo === 'ing' ? 'entra' : 'sale') + '</span>'; return '<span class="pill ' + (x.tipo === 'ing' ? 't-ok' : 't-bad') + '">' + (x.tipo === 'ing' ? 'Ingreso' : 'Egreso') + '</span>'; }, function(x){ return x.cambio ? 'Cambio ' + (x.tipo === 'ing' ? 'entra' : 'sale') : x.tipo === 'ing' ? 'Ingreso' : 'Egreso'; }],
   ['concepto', 'Concepto', '', function(x){ return esc(x.concepto) + (x.obs ? '<div class="sub">' + esc(x.obs) + '</div>' : ''); }, function(x){ return x.concepto; }],
   ['nombre', 'Nombre', '', function(x){ return esc(x.nombre); }, function(x){ return x.nombre; }],
   ['gabai', 'Gabai', '', function(x){ return gabTxt(x.gabai); }, function(x){ return x.gabai || ''; }],
@@ -2533,7 +2744,12 @@ function contFiltrado(f){ return f.tipo !== 'todos' || f.mes !== 'todos' || f.ca
 function vConta(){
   ui.cont = ui.cont || {tipo: 'todos', mes: 'todos', caja: 'todos', con: '', q: '', anio: String(anioAct())};
   if(!ui.cont.gab) ui.cont.gab = 'todos'; if(ui.cont.don == null) ui.cont.don = '';
-  var f = ui.cont, all = movimientos();
+  var ctab = ui.contTab || 'mov';
+  var tabs = '<div class="ctabs" role="tablist">' + [['mov', '📒 Movimientos'], ['cam', '⇄ Cambios Caja'], ['flujo', '📈 Flujo de efectivo']].map(function(o){ return '<button type="button" role="tab" class="btn ghost' + (ctab === o[0] ? ' on' : '') + '" aria-selected="' + (ctab === o[0]) + '" data-a="contTab" data-t="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  if(ctab === 'cam') return tabs + vCambios();
+  if(ctab === 'flujo') return tabs + vFlujo();
+  cjCats();
+  var f = ui.cont, all = movCaja();
   var anios = {}; all.forEach(function(x){ anios[x.fecha.slice(0, 4)] = 1; }); anios[String(anioAct())] = 1;
   var delAnio = all.filter(function(x){ return x.fecha.slice(0, 4) === f.anio; });
   var conceptos = {}; delAnio.forEach(function(x){ conceptos[x.concepto] = 1; });
@@ -2546,8 +2762,8 @@ function vConta(){
   rows.forEach(function(x){ porCaja[x.caja][x.tipo] += x.montoC; porCaja[x.caja].eq = (porCaja[x.caja].eq || 0) + (x.tipo === 'ing' ? 1 : -1) * (x.eqC || 0); });
   var tot = {ing: {MXN: 0, USD: 0}, egr: {MXN: 0, USD: 0}}; rows.forEach(function(x){ tot[x.tipo][x.moneda] += x.montoC; });
   var sel = function(id, opts, v){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
-  return '<section class="panel">' +
-    '<div class="seg" role="group" aria-label="Tipo">' + [['todos', 'Todos'], ['ing', 'Ingresos'], ['egr', 'Egresos']].map(function(x){ return '<button type="button" class="' + (f.tipo === x[0] ? 'on' : '') + '" data-a="contTipo" data-t="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+  return tabs + '<section class="panel">' +
+    '<div class="seg" role="group" aria-label="Tipo">' + [['todos', 'Todos'], ['ing', 'Ingresos'], ['egr', 'Egresos'], ['cam', 'Cambios caja']].map(function(x){ return '<button type="button" class="' + (f.tipo === x[0] ? 'on' : '') + '" data-a="contTipo" data-t="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>' +
     '<div class="form">' +
       '<label class="f">Año' + sel('contAnio', Object.keys(anios).sort().reverse().map(function(a){ return [a, a]; }), f.anio) + '</label>' +
       '<label class="f">Mes' + sel('contMes', [['todos', 'Todo el año']].concat(MESES.es.map(function(n, k){ return [String(k + 1), Mes(k + 1)]; })), f.mes) + '</label>' +
@@ -2564,7 +2780,7 @@ function vConta(){
   (!contFiltrado(f) ? '' : contTabla(rows, tot)) + contResumenGab();
 }
 function contFilas(){
-  var f = ui.cont, all = movimientos(), q = (f.q || '').toLowerCase();
+  var f = ui.cont, all = movCaja(), q = (f.q || '').toLowerCase();
   return all.filter(function(x){ return x.fecha.slice(0, 4) === f.anio && contPasa(x, f, q); })
     .sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || a.folio.localeCompare(b.folio); });
 }
@@ -4017,7 +4233,7 @@ function borrarDonantes(ids){
   BORRAR = null; closeModal(); render(); toast(nombres.length === 1 ? 'Donador eliminado' : nombres.length + ' donadores eliminados');
 }
 var FIJOS = {formas: ['Cargo recurrente']};
-var _catLbl = {gabaim: 'gabaim', conceptos: 'conceptos', formas: 'métodos de pago', conceptosEg: 'conceptos de egreso', receptoresEg: 'receptores de egreso', modalidadesEg: 'modalidades de egreso'};
+var _catLbl = {gabaim: 'gabaim', conceptos: 'conceptos', formas: 'métodos de pago', conceptosEg: 'conceptos de egreso', receptoresEg: 'receptores de egreso', modalidadesEg: 'modalidades de egreso', conceptosCj: 'conceptos de cambio de caja'};
 var ICO_SAVE = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
 var ICO_ADD = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 function bSave(attrs){ return '<button type="button" class="ibtn" ' + attrs + ' title="Guardar" aria-label="Guardar">' + ICO_SAVE + '</button>'; }
@@ -5273,6 +5489,14 @@ document.addEventListener('click', function(ev){
   else if(a === 'colcTodas'){ S.cfg.contOcultas = []; render(); var cp3 = document.querySelector('.ccp'); if(cp3) cp3.open = true; }
   else if(a === 'colsTodas'){ S.cfg.colsQ = []; render(); var dp = document.querySelector('.colpick'); if(dp) dp.open = true; }
   else if(a === 'egSave') egSave();
+  else if(a === 'contTab'){ ui.contTab = b.getAttribute('data-t'); render(); window.scrollTo(0, 0); }
+  else if(a === 'cjSave') cjSave();
+  else if(a === 'cjLimpiar'){ ui.cj = {}; render(); }
+  else if(a === 'cjDel'){ var cd = (S.cambiosCaja || []).find(function(x){ return x.id === b.getAttribute('data-id'); }); if(!cd) return; openModal(head('Eliminar cambio de caja', esc(cd.folio)) + '<div>¿Eliminar el cambio <b>' + esc(cd.folio) + '</b>: ' + money(cd.montoEC, cd.monE) + ' de ' + esc(caja(cd.ori).nombre) + ' a ' + money(cd.montoIC, cd.monI) + ' en ' + esc(caja(cd.des).nombre) + '?</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="cjDelOk" data-id="' + cd.id + '">Eliminar</button></div>'); }
+  else if(a === 'cjDelOk'){ var ci = (S.cambiosCaja || []).findIndex(function(x){ return x.id === b.getAttribute('data-id'); }); if(ci !== -1){ var cx = S.cambiosCaja.splice(ci, 1)[0]; log('Eliminó el cambio de caja ' + cx.folio); } closeModal(); render(); toast('Cambio de caja eliminado'); }
+  else if(a === 'flCaja'){ ui.fl.caja = b.getAttribute('data-c'); render(); }
+  else if(a === 'flPer'){ var fr = flRango(b.getAttribute('data-p')); ui.fl.per = b.getAttribute('data-p'); ui.fl.desde = fr[0]; ui.fl.hasta = fr[1]; render(); }
+  else if(a === 'flLimpiar'){ Object.assign(ui.fl, {tipo: 'todos', con: '', gab: 'todos', forma: '', q: ''}); render(); }
   else if(a === 'respBajar'){ log('Descargó un respaldo completo'); save(); var txt = JSON.stringify({app: 'bait-lapletot-compromisos', exportado: new Date().toISOString(), version: 5, datos: estadoGuardable()}, null, 1); guardar(respNombre() + '.json', new TextEncoder().encode(txt)); }
   else if(a === 'respOk') respAplicar();
   else if(a === 'modOcAbrir' || a === 'modOcFoot'){ abrirModOc(b.getAttribute('data-g') || ''); }
@@ -5439,6 +5663,8 @@ document.addEventListener('input', function(ev){
   else if(t.id === 'dnH'){ MDH = !!t.value.trim(); }
   else if(t.id === 'donQ'){ ui.don.q = t.value; var p3 = t.selectionStart; render(); var n3 = $('donQ'); n3.focus(); try{ n3.setSelectionRange(p3, p3); }catch(e){} }
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; }
+  else if(t.id && CJ_IDS.indexOf(t.id) !== -1){ ui.cj = ui.cj || {}; ui.cj[t.id] = t.value; if(t.id === 'cjRef') ui.cj.refManual = !!t.value.trim(); if(/^cj(Ori|Des|MonE|MonI)$/.test(t.id)) cjSync(t.id); cjPrev(); }
+  else if(t.id === 'flQ'){ ui.fl.q = t.value; var p7 = t.selectionStart; render(); var n7 = $('flQ'); n7.focus(); try{ n7.setSelectionRange(p7, p7); }catch(e){} }
   else if(t.id === 'contQ'){ ui.cont.q = t.value; var p6 = t.selectionStart; render(); var n6 = $('contQ'); n6.focus(); try{ n6.setSelectionRange(p6, p6); }catch(e){} }
   else if(t.id === 'segQ'){ ui.seg.q = t.value; var p5 = t.selectionStart; render(); var n5 = $('segQ'); n5.focus(); try{ n5.setSelectionRange(p5, p5); }catch(e){} }
   else if(t.id === 'compQ'){ ui.comp.q = t.value; var p2 = t.selectionStart; render(); var n2 = $('compQ'); n2.focus(); try{ n2.setSelectionRange(p2, p2); }catch(e){} }
@@ -5498,6 +5724,7 @@ document.addEventListener('change', function(ev){
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; if(t.id === 'egMon') egSync(); if(t.id === 'egCaja'){ var ck3 = caja(t.value); $('egMon').value = ck3.mon; ui.eg.egMon = ck3.mon; } }
   else if(/^ccl(Anio|Mes|Don|Gab)$/.test(t.id || '')){ ui.ccl[{cclAnio: 'anio', cclMes: 'mes', cclDon: 'don', cclGab: 'gab'}[t.id]] = t.value; render(); }
   else if(t.id === 'contSortSel'){ var sv = t.value.split('|'); ui.cont.sort = sv[0] ? {id: sv[0], dir: sv[1]} : {}; render(); }
+  else if(/^fl(Desde|Hasta|Tipo|Gab|Con|Forma)$/.test(t.id || '')){ var fk = {flDesde: 'desde', flHasta: 'hasta', flTipo: 'tipo', flGab: 'gab', flCon: 'con', flForma: 'forma'}[t.id]; if((fk === 'desde' || fk === 'hasta') && !t.value) return; ui.fl[fk] = t.value; if(fk === 'desde' || fk === 'hasta'){ ui.fl.per = ''; if(ui.fl.desde > ui.fl.hasta){ if(fk === 'desde') ui.fl.hasta = ui.fl.desde; else ui.fl.desde = ui.fl.hasta; } } render(); }
   else if(/^cont(Anio|Mes|Caja|Con|Gab|Don)$/.test(t.id || '')){ ui.cont[{contAnio: 'anio', contMes: 'mes', contCaja: 'caja', contCon: 'con', contGab: 'gab', contDon: 'don'}[t.id]] = t.value; render(); }
   else if(t.id === 'comGab'){ ui.com.gab = t.value; ui.com.don = ''; render(); }
   else if(t.id === 'comDon'){ ui.com.don = t.value; render(); }
@@ -5939,7 +6166,7 @@ function vInicio(){
     var per = ui.iniPer || 'mes', perTxt = {mes: mesNom(M) + ' ' + Y, anio: 'Año ' + Y, todo: 'Desde el inicio'}[per];
     var enPer = function(f){ f = f || ''; return per === 'todo' ? true : per === 'anio' ? f.slice(0, 4) === String(Y) : f.slice(0, 7) === mesK; };
     var tot = {}; CAJAS.filter(function(k){ return !k.externa; }).forEach(function(k){ tot[k.id] = {ing: 0, egr: 0, n: 0}; });
-    movimientos().forEach(function(x){ var t = tot[x.caja]; if(!t || !enPer(x.fecha)) return; if(x.tipo === 'ing') t.ing += x.montoC; else t.egr += x.montoC; t.n++; });
+    movCaja().forEach(function(x){ var t = tot[x.caja]; if(!t || !enPer(x.fecha)) return; if(x.tipo === 'ing') t.ing += x.montoC; else t.egr += x.montoC; t.n++; });
     cajasHtml = '<div class="ini-cjbar"><div class="ini-sec">Cajas · ' + esc(perTxt) + '</div><div class="chips">' +
       [['mes', 'Este mes'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (per === o[0] ? ' on' : '') + '" data-a="iniPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="ini-cajas">' + CAJAS.filter(function(k){ return !k.externa; }).map(function(k){
