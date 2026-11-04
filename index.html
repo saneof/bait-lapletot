@@ -216,6 +216,11 @@ html.nologin .app{display:none}
 .ini-kpi small{font-size:12px;color:var(--muted)}
 .ini-cajas{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
 .ini-caja{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface,#fff);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;transition:transform .15s,box-shadow .15s}
+.ini-caja.on{border-color:#12324F;box-shadow:0 0 0 2px #12324F inset}
+.ini-det{margin-top:14px;text-align:left}
+.ini-det .idg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:12px 0}
+.ini-det table.t tr[data-a]{cursor:pointer}
+.ini-det table.t tr.on td{background:rgba(18,50,79,.09);font-weight:600}
 .ini-caja:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
 .ini-caja .cjh{display:flex;justify-content:space-between;align-items:center;gap:8px}.ini-caja .cjh b{font-size:16px}
 .ini-caja .cjn{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -550,7 +555,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v162</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v163</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2471,7 +2476,7 @@ function vCambios(){
   cjCats(); ui.cj = ui.cj || {};
   var hd = function(t, cat, id){ return '<span class="row lblrow"><span>' + t + '</span><span class="row" style="gap:10px">' + editCat(cat, id) + addNuevo(cat, id) + '</span></span>'; };
   var opts = function(l){ return l.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join(''); };
-  var cjOpts = function(sel){ return CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join(''); };
+  var cjOpts = function(sel){ return CAJAS.filter(function(k){ return !k.externa; }).map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join(''); };
   var monOpts = function(sel){ return ['MXN', 'USD'].map(function(m){ return '<option' + (m === sel ? ' selected' : '') + '>' + m + '</option>'; }).join(''); };
   var izq = '<label class="f">Fecha *<input id="cjFecha" type="date" value="' + hoy() + '"></label>' +
     '<label class="f">Caja Emisora *<select id="cjOri">' + cjOpts('MXN') + '</select></label>' +
@@ -2479,7 +2484,7 @@ function vCambios(){
     '<label class="f">Monto Egreso *<input id="cjMontoE" inputmode="decimal" placeholder="0.00"></label>' +
     '<label class="f">Divisa Egreso<select id="cjMonE">' + monOpts('MXN') + '</select></label>' +
     '<label class="f">Referencia Dólares<input id="cjRef" inputmode="decimal" placeholder="Se llena sola si un lado es USD"></label>' +
-    '<label class="f">' + hd('Concepto', 'conceptosCj', 'cjConcepto') + '<select id="cjConcepto">' + opts(S.conceptosCj) + '</select></label>' + filaEdit('conceptosCj', 'cjConcepto') + filaNuevo('conceptosCj', 'cjConcepto', 'Nuevo concepto');
+    '<label class="f">' + hd('Concepto', 'conceptosCj', 'cjConcepto') + '<select id="cjConcepto">' + S.conceptosCj.map(function(x){ return '<option' + (x === 'Traspaso entre cajas' ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select></label>' + filaEdit('conceptosCj', 'cjConcepto') + filaNuevo('conceptosCj', 'cjConcepto', 'Nuevo concepto');
   var der = '<label class="f">' + hd('Modalidad', 'modalidadesEg', 'cjModal') + '<select id="cjModal">' + opts(S.modalidadesEg) + '</select></label>' + filaEdit('modalidadesEg', 'cjModal') + filaNuevo('modalidadesEg', 'cjModal', 'Nueva modalidad') +
     '<label class="f">Caja Receptora *<select id="cjDes">' + cjOpts('USD') + '</select></label>' +
     '<label class="f">Receptor<input id="cjRecep" maxlength="80" placeholder="Quién recibe"></label>' +
@@ -2491,10 +2496,11 @@ function vCambios(){
   var mes = lst.filter(function(c){ return c.fecha.slice(0, 7) === mk; }), sumE = {MXN: 0, USD: 0}, sumI = {MXN: 0, USD: 0};
   mes.forEach(function(c){ sumE[c.monE] += c.montoEC; sumI[c.monI] += c.montoIC; });
   var tcs = mes.map(cjTc).filter(Boolean), tcP = tcs.length ? tcs.reduce(function(a, b){ return a + b; }, 0) / tcs.length : 0;
-  return '<section class="panel"><h2>⇄ Registrar cambio de caja</h2><p class="sub" style="margin-top:-4px">Lo que sale de la caja emisora cuenta como cargo y lo que entra a la caja receptora como abono. No cuenta como donativo ni como egreso de gasto, pero sí mueve el saldo de cada caja y el flujo de efectivo.</p>' +
+  var forma = ui.cjOk ? '<section class="panel"><div class="row" style="justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">✓ Cambio ' + esc(ui.cjOk) + ' guardado</h2><div class="sub">Ya se reflejó en el saldo de las cajas, Inicio, Reportes y el flujo de efectivo.</div></div><button type="button" class="btn primary" data-a="cjNuevo">＋ Registrar otro cambio</button></div></section>' : '<section class="panel"><h2>⇄ Registrar cambio de caja</h2><p class="sub" style="margin-top:-4px">Lo que sale de la caja emisora cuenta como cargo y lo que entra a la caja receptora como abono. No cuenta como donativo ni como egreso de gasto, pero sí mueve el saldo de cada caja y el flujo de efectivo.</p>' +
     '<div class="form"><div class="fc2 full"><div class="fcol">' + izq + '</div><div class="fcol">' + der + '</div></div></div>' +
     '<div class="cj-prev" id="cjPrev"></div><div class="err" id="cjErr" hidden></div>' +
-    '<div class="row"><button type="button" class="btn primary" data-a="cjSave">Guardar cambio</button><button type="button" class="btn ghost" data-a="cjLimpiar">Limpiar</button></div></section>' +
+    '<div class="row"><button type="button" class="btn primary" data-a="cjSave">Guardar cambio</button><button type="button" class="btn ghost" data-a="cjLimpiar">Limpiar</button></div></section>';
+  return forma +
     '<section class="panel"><h2>Este mes · ' + esc(Mes(+mk.slice(5, 7))) + ' ' + Y + '</h2><div class="fl-kpis">' +
       '<div class="fl-kpi"><span>Cambios</span><strong>' + mes.length + '</strong><small>registrados este mes</small></div>' +
       '<div class="fl-kpi"><span>Salió</span><strong style="color:var(--bad)">' + mN(sumE.MXN) + ' <small>MXN</small></strong><small>' + mN(sumE.USD) + ' USD</small></div>' +
@@ -2506,8 +2512,11 @@ function vCambios(){
 }
 function cjSync(id){
   var o = $('cjOri'), d = $('cjDes'), me = $('cjMonE'), mi = $('cjMonI'); if(!o || !d) return;
-  if(id === 'cjMonE' && caja(o.value).mon !== me.value) o.value = me.value;
-  if(id === 'cjMonI' && caja(d.value).mon !== mi.value) d.value = mi.value;
+  var otra = function(v){ return v === 'USD' ? 'MXN' : 'USD'; };
+  if(id === 'cjMonE'){ o.value = me.value; d.value = otra(o.value); }
+  else if(id === 'cjMonI'){ d.value = mi.value; o.value = otra(d.value); }
+  else if(id === 'cjOri') d.value = otra(o.value);
+  else if(id === 'cjDes') o.value = otra(d.value);
   me.value = caja(o.value).mon; mi.value = caja(d.value).mon;
   ui.cj = ui.cj || {}; ['cjOri', 'cjDes', 'cjMonE', 'cjMonI'].forEach(function(k){ ui.cj[k] = $(k).value; });
 }
@@ -2540,7 +2549,63 @@ function cjSave(){
   var c = {id: nid('cj'), folio: 'C-' + String(S.folioCj).padStart(4, '0'), fecha: fecha, modalidad: $('cjModal').value, ori: o, des: d, emisor: $('cjEmisor').value.trim(), receptor: $('cjRecep').value.trim(), montoEC: e, monE: me, montoIC: i, monI: mi, refC: refC, concepto: $('cjConcepto').value, coment: $('cjComent').value.trim(), usuario: user().nombre, creado: new Date().toISOString()};
   S.cambiosCaja.push(c);
   log('Registró cambio de caja ' + c.folio + ': ' + money(e, me) + ' de ' + caja(o).nombre + ' a ' + money(i, mi) + ' en ' + caja(d).nombre);
-  ui.cj = {}; render(); toast('Cambio ' + c.folio + ' registrado');
+  ui.cj = {}; ui.cjOk = c.folio; render(); toast('Cambio ' + c.folio + ' registrado');
+}
+
+/* ================= Inicio: detalle por caja ================= */
+function iniDet(per, mesK, Y){
+  var cid = ui.iniCaja; if(!cid) return '';
+  var k = caja(cid), mon = k.mon;
+  var f = ui.iniF = ui.iniF || {tipo: 'todos', gab: '', con: '', q: '', desde: '', hasta: ''};
+  var d0 = f.desde || (per === 'mes' ? mesK + '-01' : per === 'anio' ? Y + '-01-01' : ''), h0 = f.hasta || (per === 'mes' ? mesK + '-31' : per === 'anio' ? Y + '-12-31' : '');
+  var base = movCaja().filter(function(x){ return x.caja === cid && x.fecha && (!d0 || x.fecha >= d0) && (!h0 || x.fecha <= h0); });
+  var q = sinAcento((f.q || '').trim());
+  var gabDe = function(x){ return x.gabai || 'Sin gabai'; }, conDe = function(x){ return x.concepto || 'Sin concepto'; };
+  var pasa = function(x, sinGC){
+    if(f.tipo === 'ing' && (x.tipo !== 'ing' || x.cambio)) return false;
+    if(f.tipo === 'egr' && (x.tipo !== 'egr' || x.cambio)) return false;
+    if(f.tipo === 'cam' && !x.cambio) return false;
+    if(f.tipo === 'sin' && x.cambio) return false;
+    if(!sinGC && f.gab && (x.tipo !== 'ing' || x.cambio || gabDe(x) !== f.gab)) return false;
+    if(!sinGC && f.con && (x.tipo !== 'egr' || x.cambio || conDe(x) !== f.con)) return false;
+    if(q && sinAcento([x.folio, x.nombre, x.gabai, x.concepto, x.forma, x.obs].join(' ')).indexOf(q) === -1) return false;
+    return true; };
+  var rows = base.filter(function(x){ return pasa(x); }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || String(a.folio).localeCompare(String(b.folio), 'es', {numeric: true}); });
+  var paraRes = base.filter(function(x){ return pasa(x, true); });
+  var grp = function(fn, fl){ var o = {}; paraRes.forEach(function(x){ if(!fl(x)) return; var g = fn(x); o[g] = o[g] || {n: 0, m: 0}; o[g].n++; o[g].m += x.montoC; }); return Object.keys(o).map(function(g){ return [g, o[g].n, o[g].m]; }).sort(function(a, b){ return b[2] - a[2]; }); };
+  var gI = grp(gabDe, function(x){ return x.tipo === 'ing' && !x.cambio; }), gE = grp(conDe, function(x){ return x.tipo === 'egr' && !x.cambio; });
+  var gX = grp(function(x){ return (x.tipo === 'ing' ? 'Entró de ' : 'Salió a ') + caja(x.otra).nombre; }, function(x){ return x.cambio; });
+  var tabla = function(tit, arr, act, selV, col, vacio){ var tt = arr.reduce(function(a, r){ return a + r[2]; }, 0), tn = arr.reduce(function(a, r){ return a + r[1]; }, 0);
+    return '<div><h3 style="margin:0 0 6px">' + tit + '</h3>' + (arr.length ? '<div class="tablewrap"><table class="t"><thead><tr><th>' + (act === 'iniGab' ? 'Gabai' : act === 'iniCon' ? 'Concepto' : 'Movimiento') + '</th><th class="n">Movs.</th><th class="n">Total ' + mon + '</th><th class="n">%</th></tr></thead><tbody>' +
+      arr.map(function(r){ return '<tr' + (act ? ' data-a="' + act + '" data-v="' + esc(r[0]) + '" title="Filtrar el detalle por ' + esc(r[0]) + '"' : '') + (selV === r[0] ? ' class="on"' : '') + '><td dir="auto">' + esc(r[0]) + '</td><td class="n">' + r[1] + '</td><td class="n"><b style="color:' + col + '">' + mN(r[2]) + '</b></td><td class="n">' + (tt ? (r[2] / tt * 100).toFixed(1) : '0') + '%</td></tr>'; }).join('') +
+      '<tr class="r2tot"><td>Total</td><td class="n">' + tn + '</td><td class="n"><b>' + mN(tt) + '</b></td><td class="n">100%</td></tr></tbody></table></div>' : '<div class="empty">' + vacio + '</div>') + '</div>'; };
+  var sel = function(id, v, opts){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
+  var uniq = function(fn, fl){ var m = {}; base.forEach(function(x){ if(fl(x)) m[fn(x)] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }).map(function(g){ return [g, g]; }); };
+  var ab = 0, ca = 0; rows.forEach(function(x){ if(x.tipo === 'ing') ab += x.montoC; else ca += x.montoC; });
+  var filt = f.tipo !== 'todos' || f.gab || f.con || (f.q || '').trim() || f.desde || f.hasta;
+  var perTxt = (d0 ? fFecha(d0) : 'el inicio') + ' a ' + (h0 ? fFecha(h0) : 'hoy');
+  return '<section class="panel ini-det"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h2 style="margin:0">' + esc(k.nombre) + ' · movimientos <span class="sub">(' + esc(perTxt) + ')</span></h2>' +
+      '<div class="row" style="gap:8px">' + (filt ? '<button type="button" class="btn ghost sm" data-a="iniFLimpiar">✕ Quitar filtros</button>' : '') + '<button type="button" class="btn ghost sm" data-a="iniCaja" data-c="' + cid + '">Cerrar ✕</button></div></div>' +
+    '<div class="form" style="margin-top:10px">' +
+      '<label class="f">Desde<input id="iniFDesde" type="date" value="' + esc(d0) + '"></label>' +
+      '<label class="f">Hasta<input id="iniFHasta" type="date" value="' + esc(h0) + '"></label>' +
+      '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
+      '<label class="f">Gabai (ingresos)' + sel('iniFGab', f.gab, [['', 'Todos']].concat(uniq(gabDe, function(x){ return x.tipo === 'ing' && !x.cambio; }))) + '</label>' +
+      '<label class="f">Concepto (egresos)' + sel('iniFCon', f.con, [['', 'Todos']].concat(uniq(conDe, function(x){ return x.tipo === 'egr' && !x.cambio; }))) + '</label>' +
+      '<label class="f">Buscar<input id="iniFQ" type="search" value="' + esc(f.q || '') + '" placeholder="Nombre, folio, comentario…"></label></div>' +
+    '<div class="fl-kpis" style="margin-top:12px">' +
+      '<div class="fl-kpi"><span>Ingresos</span><strong style="color:var(--ok)">' + mN(ab) + '</strong><small>' + rows.filter(function(x){ return x.tipo === 'ing'; }).length + ' movs. · ' + mon + '</small></div>' +
+      '<div class="fl-kpi"><span>Egresos</span><strong style="color:var(--bad)">' + mN(ca) + '</strong><small>' + rows.filter(function(x){ return x.tipo === 'egr'; }).length + ' movs. · ' + mon + '</small></div>' +
+      '<div class="fl-kpi"><span>Neto</span><strong' + (ab - ca < 0 ? ' style="color:var(--bad)"' : '') + '>' + (ab - ca < 0 ? '−' : '') + mN(Math.abs(ab - ca)) + '</strong><small>' + (filt ? 'con los filtros' : 'del periodo') + '</small></div>' +
+      '<div class="fl-kpi"><span>Movimientos</span><strong>' + rows.length + '</strong><small>en el detalle</small></div></div>' +
+    '<div class="idg">' + tabla('Ingresos por gabai', gI, 'iniGab', f.gab, 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Egresos por concepto', gE, 'iniCon', f.con, 'var(--bad)', 'Sin egresos en este periodo.') + (gX.length ? tabla('Cambios de caja', gX, '', '', '#12324F', '') : '') + '</div>' +
+    '<p class="sub" style="margin:0 0 6px">Toca un gabai o un concepto para ver solo esos movimientos abajo. Cada columna también se puede filtrar.</p>' +
+    tbBar('inidet') + (rows.length ? '<div class="tw cards"><table data-cf="inidet" data-tt="' + esc(k.nombre) + ' · ' + esc(perTxt) + '" class="cobt"><thead><tr><th>Fecha</th><th>Folio</th><th>Tipo</th><th>Donador / Receptor</th><th>Gabai / Concepto</th><th>Forma</th><th class="n">Ingreso</th><th class="n">Egreso</th><th>Comentarios</th></tr></thead><tbody>' +
+      rows.map(function(x){ var tp = x.cambio ? '<span class="pill t-info">⇄ Cambio ' + (x.tipo === 'ing' ? 'entra' : 'sale') + '</span>' : '<span class="pill ' + (x.tipo === 'ing' ? 't-ok">Ingreso' : 't-bad">Egreso') + '</span>';
+        var gc = x.cambio ? (x.tipo === 'ing' ? 'De ' : 'A ') + caja(x.otra).nombre : x.tipo === 'ing' ? gabDe(x) : conDe(x);
+        return '<tr><td data-l="Fecha" class="nowrap">' + fFecha(x.fecha) + '</td><td data-l="Folio"><b>' + esc(x.folio || '') + '</b></td><td data-l="Tipo">' + tp + '</td><td data-l="Donador / Receptor">' + esc(x.nombre || '—') + '</td><td data-l="Gabai / Concepto" dir="auto">' + esc(gc) + '</td><td data-l="Forma">' + esc(x.forma || '') + '</td>' +
+          '<td class="n" data-l="Ingreso">' + (x.tipo === 'ing' ? '<b style="color:var(--ok)">' + mN(x.montoC) + '</b>' : '') + '</td><td class="n" data-l="Egreso">' + (x.tipo === 'egr' ? '<b style="color:var(--bad)">' + mN(x.montoC) + '</b>' : '') + '</td><td data-l="Comentarios" style="white-space:pre-wrap;min-width:140px">' + esc(x.obs || '') + '</td></tr>'; }).join('') +
+      '</tbody><tfoot><tr><td colspan="6"><b>Total · ' + rows.length + ' movs.</b></td><td class="n"><b>' + mN(ab) + '</b></td><td class="n"><b>' + mN(ca) + '</b></td><td></td></tr></tfoot></table></div>' : '<div class="empty">Sin movimientos con estos filtros.</div>') + '</section>';
 }
 
 /* ================= Flujo de efectivo ================= */
@@ -2618,6 +2683,8 @@ function vFlujo(){
   return '<section class="panel"><div class="fl-bar"><h2 style="margin:0">Flujo de efectivo · ' + esc(k.nombre) + '</h2>' + perB + '</div>' +
     '<div style="margin-top:12px">' + chips + '</div>' +
     '<div class="form" style="margin-top:12px">' +
+      (function(){ var ms = {}; all.forEach(function(x){ ms[x.fecha.slice(0, 7)] = 1; }); ms[hoy().slice(0, 7)] = 1; var ymS = f.desde.slice(0, 7), ultD = new Date(+ymS.slice(0, 4), +ymS.slice(5, 7), 0).getDate(), esMes = f.desde.slice(8) === '01' && f.hasta === ymS + '-' + pad(ultD) ? ymS : '';
+        return '<label class="f">Mes<select id="flMes"><option value="">' + (esMes ? 'Elegir mes…' : 'Varios meses / rango') + '</option>' + Object.keys(ms).sort().reverse().map(function(m){ return '<option value="' + m + '"' + (m === esMes ? ' selected' : '') + '>' + esc(Mes(+m.slice(5, 7))) + ' ' + m.slice(0, 4) + '</option>'; }).join('') + '</select></label>'; })() +
       '<label class="f">Desde<input id="flDesde" type="date" value="' + esc(f.desde) + '"></label>' +
       '<label class="f">Hasta<input id="flHasta" type="date" value="' + esc(f.hasta) + '"></label>' +
       '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (ingresos)'], ['egr', 'Solo cargos (egresos)'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
@@ -5419,7 +5486,11 @@ document.addEventListener('click', function(ev){
   else if(a === 'gbCob'){ ui.cob.gab = S.gabaim[+b.getAttribute('data-k')]; ui.cob.rap = true; ui.cob.mes = String(mesAct()); ui.view = 'cobranza'; render(); window.scrollTo(0, 0); }
   else if(a === 'impPlantilla') plantillaXls();
   else if(a === 'egiPlantilla') egiPlantilla();
-  else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); render(); }
+  else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); if(ui.iniF){ ui.iniF.desde = ''; ui.iniF.hasta = ''; } render(); }
+  else if(a === 'iniCaja'){ var ic = b.getAttribute('data-c'); ui.iniCaja = ui.iniCaja === ic ? '' : ic; render(); }
+  else if(a === 'iniGab'){ ui.iniF.gab = ui.iniF.gab === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.con = ''; render(); }
+  else if(a === 'iniCon'){ ui.iniF.con = ui.iniF.con === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.gab = ''; render(); }
+  else if(a === 'iniFLimpiar'){ ui.iniF = null; render(); }
   else if(a === 'egiCancel'){ ui.egi = null; render(); }
   else if(a === 'egiGo') egiGo();
   else if(a === 'impCancel'){ ui.imp = null; render(); }
@@ -5492,6 +5563,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'contTab'){ ui.contTab = b.getAttribute('data-t'); render(); window.scrollTo(0, 0); }
   else if(a === 'cjSave') cjSave();
   else if(a === 'cjLimpiar'){ ui.cj = {}; render(); }
+  else if(a === 'cjNuevo'){ ui.cj = {}; ui.cjOk = ''; render(); var cf = $('cjMontoE'); if(cf) cf.focus(); }
   else if(a === 'cjDel'){ var cd = (S.cambiosCaja || []).find(function(x){ return x.id === b.getAttribute('data-id'); }); if(!cd) return; openModal(head('Eliminar cambio de caja', esc(cd.folio)) + '<div>¿Eliminar el cambio <b>' + esc(cd.folio) + '</b>: ' + money(cd.montoEC, cd.monE) + ' de ' + esc(caja(cd.ori).nombre) + ' a ' + money(cd.montoIC, cd.monI) + ' en ' + esc(caja(cd.des).nombre) + '?</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="cjDelOk" data-id="' + cd.id + '">Eliminar</button></div>'); }
   else if(a === 'cjDelOk'){ var ci = (S.cambiosCaja || []).findIndex(function(x){ return x.id === b.getAttribute('data-id'); }); if(ci !== -1){ var cx = S.cambiosCaja.splice(ci, 1)[0]; log('Eliminó el cambio de caja ' + cx.folio); } closeModal(); render(); toast('Cambio de caja eliminado'); }
   else if(a === 'flCaja'){ ui.fl.caja = b.getAttribute('data-c'); render(); }
@@ -5521,6 +5593,7 @@ document.addEventListener('click', function(ev){
     hoja('Cuotas', S.cuotas.map(function(q){ var c = comp(q.compId) || {}, d = don(c.donanteId) || {}; return {Compromiso: q.compId, Donador: d.nombre || '', Num: q.num, Mes: q.mes, Vence: q.venc, Monto: q.montoC / 100, Aplicado: q.aplicadoC / 100, Estado: EST[estadoQ(q)][0], Pausada: q.pausada ? 'Sí' : '', Nota: q.nota || ''}; }));
     hoja('Pagos', S.donativos.map(function(p){ var c = comp(p.compId) || {}, d = don(c.donanteId) || {}; return {Recibo: p.recibo, Fecha: p.fecha, Donador: d.nombre || '', Moneda: p.moneda, Monto: p.montoC / 100, 'Referencia USD': (p.montoCompC || 0) / 100, Forma: p.forma, Caja: caja(p.caja || cajaDef(p.moneda)).nombre, Cubre: p.cubre.map(function(x){ return Mes(x.mes); }).join(', '), Observaciones: p.obs || ''}; }));
     hoja('Egresos', (S.egresos || []).map(function(e){ return {Folio: e.folio, Fecha: e.fecha, Receptor: e.benef, Modalidad: e.modalidad || '', Concepto: e.concepto, Estatus: e.estatus || 'Activo', Descripcion: e.desc || '', Moneda: e.moneda, Monto: e.montoC / 100, Forma: e.forma, Caja: caja(e.caja).nombre, Comentarios: e.coment || '', Factura: e.factura || '', Gabai: e.gabai || ''}; }));
+    hoja('Cambios caja', (S.cambiosCaja || []).map(function(c){ return {Folio: c.folio, Fecha: c.fecha, Modalidad: c.modalidad || '', 'Caja emisora': caja(c.ori).nombre, 'Caja receptora': caja(c.des).nombre, Emisor: c.emisor || '', Receptor: c.receptor || '', 'Monto egreso': c.montoEC / 100, 'Divisa egreso': c.monE, 'Monto ingreso': c.montoIC / 100, 'Divisa ingreso': c.monI, 'Referencia USD': (c.refC || 0) / 100, Concepto: c.concepto || '', Comentarios: c.coment || ''}; }));
     guardar(respNombre() + '.xlsx', XLSX.write(wbr, {bookType: 'xlsx', type: 'array'}));
   }
   else if(a === 'lgEntrar') lgEntrar();
@@ -5664,6 +5737,7 @@ document.addEventListener('input', function(ev){
   else if(t.id === 'donQ'){ ui.don.q = t.value; var p3 = t.selectionStart; render(); var n3 = $('donQ'); n3.focus(); try{ n3.setSelectionRange(p3, p3); }catch(e){} }
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; }
   else if(t.id && CJ_IDS.indexOf(t.id) !== -1){ ui.cj = ui.cj || {}; ui.cj[t.id] = t.value; if(t.id === 'cjRef') ui.cj.refManual = !!t.value.trim(); if(/^cj(Ori|Des|MonE|MonI)$/.test(t.id)) cjSync(t.id); cjPrev(); }
+  else if(t.id === 'iniFQ'){ ui.iniF.q = t.value; var p8 = t.selectionStart; render(); var n8 = $('iniFQ'); if(n8){ n8.focus(); try{ n8.setSelectionRange(p8, p8); }catch(e){} } }
   else if(t.id === 'flQ'){ ui.fl.q = t.value; var p7 = t.selectionStart; render(); var n7 = $('flQ'); n7.focus(); try{ n7.setSelectionRange(p7, p7); }catch(e){} }
   else if(t.id === 'contQ'){ ui.cont.q = t.value; var p6 = t.selectionStart; render(); var n6 = $('contQ'); n6.focus(); try{ n6.setSelectionRange(p6, p6); }catch(e){} }
   else if(t.id === 'segQ'){ ui.seg.q = t.value; var p5 = t.selectionStart; render(); var n5 = $('segQ'); n5.focus(); try{ n5.setSelectionRange(p5, p5); }catch(e){} }
@@ -5724,6 +5798,8 @@ document.addEventListener('change', function(ev){
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; if(t.id === 'egMon') egSync(); if(t.id === 'egCaja'){ var ck3 = caja(t.value); $('egMon').value = ck3.mon; ui.eg.egMon = ck3.mon; } }
   else if(/^ccl(Anio|Mes|Don|Gab)$/.test(t.id || '')){ ui.ccl[{cclAnio: 'anio', cclMes: 'mes', cclDon: 'don', cclGab: 'gab'}[t.id]] = t.value; render(); }
   else if(t.id === 'contSortSel'){ var sv = t.value.split('|'); ui.cont.sort = sv[0] ? {id: sv[0], dir: sv[1]} : {}; render(); }
+  else if(/^iniF(Desde|Hasta|Tipo|Gab|Con)$/.test(t.id || '')){ var ik = t.id.slice(4).toLowerCase(); ui.iniF[ik] = t.value; if(ik === 'tipo' && t.value !== 'ing') ui.iniF.gab = ''; if(ik === 'tipo' && t.value !== 'egr') ui.iniF.con = ''; render(); }
+  else if(t.id === 'flMes'){ if(!t.value) return; var fy = +t.value.slice(0, 4), fmm = +t.value.slice(5, 7); ui.fl.desde = t.value + '-01'; ui.fl.hasta = t.value + '-' + pad(new Date(fy, fmm, 0).getDate()); ui.fl.per = ''; render(); }
   else if(/^fl(Desde|Hasta|Tipo|Gab|Con|Forma)$/.test(t.id || '')){ var fk = {flDesde: 'desde', flHasta: 'hasta', flTipo: 'tipo', flGab: 'gab', flCon: 'con', flForma: 'forma'}[t.id]; if((fk === 'desde' || fk === 'hasta') && !t.value) return; ui.fl[fk] = t.value; if(fk === 'desde' || fk === 'hasta'){ ui.fl.per = ''; if(ui.fl.desde > ui.fl.hasta){ if(fk === 'desde') ui.fl.hasta = ui.fl.desde; else ui.fl.desde = ui.fl.hasta; } } render(); }
   else if(/^cont(Anio|Mes|Caja|Con|Gab|Don)$/.test(t.id || '')){ ui.cont[{contAnio: 'anio', contMes: 'mes', contCaja: 'caja', contCon: 'con', contGab: 'gab', contDon: 'don'}[t.id]] = t.value; render(); }
   else if(t.id === 'comGab'){ ui.com.gab = t.value; ui.com.don = ''; render(); }
@@ -6171,12 +6247,12 @@ function vInicio(){
       [['mes', 'Este mes'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (per === o[0] ? ' on' : '') + '" data-a="iniPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
       '<div class="ini-cajas">' + CAJAS.filter(function(k){ return !k.externa; }).map(function(k){
         var t = tot[k.id], sal = t.ing - t.egr, fm = function(c){ return money(c, k.mon).replace(' ' + k.mon, ''); };
-        return '<button type="button" class="ini-caja" data-a="go" data-v="' + (puede('rep2') ? 'rep2' : 'conta') + '"><span class="cjh"><b>' + esc(k.nombre) + '</b><span class="pill t-info">' + k.mon + '</span></span>' +
+        return '<button type="button" class="ini-caja' + (ui.iniCaja === k.id ? ' on' : '') + '" data-a="iniCaja" data-c="' + k.id + '" aria-expanded="' + (ui.iniCaja === k.id) + '"><span class="cjh"><b>' + esc(k.nombre) + '</b><span class="pill t-info">' + k.mon + '</span></span>' +
           '<span class="cjn"><div><span>Ingresos</span><strong style="color:var(--ok)">' + fm(t.ing) + '</strong></div>' +
           '<div><span>Egresos</span><strong style="color:var(--bad)">' + fm(t.egr) + '</strong></div>' +
           '<div><span>Saldo</span><strong' + (sal < 0 ? ' style="color:var(--bad)"' : '') + '>' + fm(sal) + '</strong></div></span>' +
-          '<small class="sub">' + t.n + (t.n === 1 ? ' movimiento' : ' movimientos') + '</small></button>';
-      }).join('') + '</div>';
+          '<small class="sub">' + t.n + (t.n === 1 ? ' movimiento' : ' movimientos') + ' · ' + (ui.iniCaja === k.id ? 'ocultar detalle ▴' : 'ver detalle ▾') + '</small></button>';
+      }).join('') + '</div>' + iniDet(per, mesK, String(Y));
   }
   var DESC = {donantes: 'Altas, datos y búsqueda de donadores', nuevocomp: 'Nuevos compromisos y renovaciones', seg2: 'Avance de cada compromiso', cobranza: 'Registrar y aplicar pagos', aprobar: 'Pagos por autorizar y reporte de entregas', avisos: 'Mensajes a quienes deben', recordat: 'Tus pendientes y reglas', comis: 'Comisiones de cada gabai', conta: 'Ingresos y egresos', rep2: 'Tablero contable con filtros', egresos: 'Registrar salidas de caja', direccion: 'Resumen para Dirección', exportar: 'Excel, PDF y respaldos', portal: 'Estado de cuenta del donante', config: 'Ajustes del sistema', permisos: 'Usuarios y accesos'};
   var oc = navOc();
@@ -6199,6 +6275,9 @@ function r2Filas(){
   (S.egresos || []).filter(egActivo).forEach(function(e){
     out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio || '', mesD: e.fecha.slice(0, 7), concepto: e.concepto || 'Egreso', gabai: e.gabai || '', nombre: e.benef || '—', donId: '', caja: e.caja || (e.moneda === 'USD' ? 'USD' : 'MXN'), mon: e.moneda, monto: -e.montoC, mod: '', obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · ')});
   });
+  cjMovs().forEach(function(x){
+    out.push({tipo: x.tipo, cambio: true, fecha: x.fecha, folio: x.folio || '', mesD: x.fecha.slice(0, 7), concepto: x.concepto, gabai: '', nombre: x.nombre || '—', donId: '', caja: x.caja, otra: x.otra, mon: x.moneda, monto: x.tipo === 'ing' ? x.montoC : -x.montoC, mod: x.forma || '', obs: x.obs || ''});
+  });
   return out;
 }
 function r2Rango(){
@@ -6214,7 +6293,7 @@ function r2Rango(){
 function r2Pasa(x, sin, rgF){
   var rg = rgF || r2Rango(); sin = sin || '';
   if(x.fecha < rg[0] || x.fecha > rg[1]) return false;
-  if(R2.tipo !== 'todos' && x.tipo !== R2.tipo) return false;
+  if(R2.tipo === 'cam' ? !x.cambio : R2.tipo === 'sin' ? x.cambio : (R2.tipo !== 'todos' && (x.tipo !== R2.tipo || x.cambio))) return false;
   if(sin !== 'gab' && R2.gab && x.gabai !== R2.gab) return false;
   if(R2.con && x.concepto !== R2.con) return false;
   if(R2.don && x.donId !== R2.don) return false;
@@ -6237,7 +6316,7 @@ function vRep2(){
   var dons = S.donantes.slice().sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); }).map(function(d){ return [d.id, d.nombre]; });
   var per = [['anio', 'Este año'], ['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['30', 'Últimos 30 días'], ['anioant', 'Año pasado'], ['todo', 'Todo'], ['rango', 'Elegir fechas…']];
   var filt = '<section class="panel"><div class="r2filt">' +
-    '<label class="f">Tipo de movimiento<select data-r2="tipo">' + [['todos', 'Ingresos y egresos'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos']].map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Tipo de movimiento<select data-r2="tipo">' + [['todos', 'Todo (con cambios de caja)'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']].map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Gabai (asignado)' + sel('gab', R2.gab, S.gabaim || [], 'Todos') + '</label>' +
     '<label class="f">Concepto' + sel('con', R2.con, uniq('concepto'), 'Todos') + '</label>' +
     '<label class="f">Donador' + '<select id="r2Don" data-r2="don"><option value="">Todos los donadores</option>' + dons.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === R2.don ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>' +
@@ -6299,10 +6378,10 @@ function vRep2(){
       return '<tr><td title="' + (r.venc ? 'Con meses vencidos' : 'Solo el mes actual') + '">' + (r.venc ? '🔴' : '🟡') + '</td><td><b>' + esc(r.d.nombre) + '</b></td><td>' + r2Gab(r.g) + '</td><td>' + r.meses.map(function(m){ return esc(mesNom(+m.slice(5, 7)).slice(0, 3)); }).join(', ') + ' <span class="sub">(' + r.meses.length + ')</span></td><td class="n r2debe"><b>' + mN(r.debe) + '</b></td><td>' + esc(r.mon) + '</td></tr>';
     }).join('') + '</tbody></table></div>' : '<div class="empty">🎉 Nadie debe en este periodo con los filtros elegidos.</div>') + '</section>');
   // por gabai
-  var fg = filas, gabs = {}; fg.forEach(function(x){ var k = x.gabai || '(sin gabai)'; gabs[k] = gabs[k] || []; gabs[k].push(x); });
+  var fg = filas, gabs = {}; fg.forEach(function(x){ var k = x.cambio ? '⇄ Cambios de caja' : x.gabai || '(sin gabai)'; gabs[k] = gabs[k] || []; gabs[k].push(x); });
   var tot = {im: 0, em: 0, iu: 0, eu: 0};
   var tGab = '<section class="panel"><h2>Por gabai (asignado)</h2><div class="tablewrap"><table class="t"><thead><tr><th>Gabai</th><th class="n r2in">Ingreso MXN</th><th class="n r2eg">Egreso MXN</th><th class="n r2inu">Ingreso USD</th><th class="n r2eg">Egreso USD</th></tr></thead><tbody>' + Object.keys(gabs).sort().map(function(k){ var xs = gabs[k], im = sum(xs, 'MXN', 'ing'), em = sum(xs, 'MXN', 'egr'), iu = sum(xs, 'USD', 'ing'), eu = sum(xs, 'USD', 'egr'); tot.im += im; tot.em += em; tot.iu += iu; tot.eu += eu;
-    return '<tr data-a="r2Gab" data-v="' + esc(k === '(sin gabai)' ? '' : k) + '"' + (R2.gab && R2.gab === k ? ' class="on"' : '') + '><td>' + r2Gab(k === '(sin gabai)' ? '' : k) + '</td><td class="n r2in r2pos">' + mN(im) + '</td><td class="n r2eg r2neg">' + (em ? '-' : '') + mN(Math.abs(em)) + '</td><td class="n r2inu r2usd">' + mN(iu) + '</td><td class="n r2eg r2neg">' + (eu ? '-' : '') + mN(Math.abs(eu)) + '</td></tr>'; }).join('') +
+    return '<tr' + (k === '⇄ Cambios de caja' ? '' : ' data-a="r2Gab" data-v="' + esc(k === '(sin gabai)' ? '' : k) + '"') + (R2.gab && R2.gab === k ? ' class="on"' : '') + '><td>' + (k === '⇄ Cambios de caja' ? '<span class="pill t-info">⇄ Cambios de caja</span>' : r2Gab(k === '(sin gabai)' ? '' : k)) + '</td><td class="n r2in r2pos">' + mN(im) + '</td><td class="n r2eg r2neg">' + (em ? '-' : '') + mN(Math.abs(em)) + '</td><td class="n r2inu r2usd">' + mN(iu) + '</td><td class="n r2eg r2neg">' + (eu ? '-' : '') + mN(Math.abs(eu)) + '</td></tr>'; }).join('') +
     '<tr class="r2tot"><td>Total</td><td class="n r2in r2pos">' + mN(tot.im) + '</td><td class="n r2eg r2neg">' + (tot.em ? '-' : '') + mN(Math.abs(tot.em)) + '</td><td class="n r2inu r2usd">' + mN(tot.iu) + '</td><td class="n r2eg r2neg">' + (tot.eu ? '-' : '') + mN(Math.abs(tot.eu)) + '</td></tr></tbody></table></div></section>';
   // detalle
   var r2Val = function(x, k){ return k === 'monto' ? x.monto : k === 'nombre' ? sinAcento(x.nombre) : k === 'gabai' ? (x.gabai || '\uffff') : k === 'folio' ? String(x.folio) : k === 'mes' ? x.mesD : k === 'concepto' ? sinAcento(x.concepto) : k === 'caja' ? x.caja : k === 'divisa' ? x.mon : k === 'tipo' ? x.tipo : x.fecha; };
@@ -6311,7 +6390,7 @@ function vRep2(){
   var th = function(k, t, n){ var ix = r2Pos(k), on = ix !== -1; return '<th' + (n ? ' class="n"' : '') + '><button type="button" class="r2sort' + (on ? ' on' : '') + '" data-a="r2SortCol" data-k="' + k + '" title="Ordenar solo por ' + t.toLowerCase() + '">' + t + ' <span>' + (on ? (R2S.keys.length > 1 ? (ix + 1) : '') + (R2S.keys[ix].dir > 0 ? '▲' : '▼') : '⇅') + '</span></button></th>'; };
   var ordBtns = '<div class="r2act" style="margin:6px 0 4px"><span class="sub">Ordenar por:</span>' + [['nombre', 'Nombre'], ['gabai', 'Gabai'], ['monto', 'Monto'], ['fecha', 'Fecha']].map(function(o){ var ix = r2Pos(o[0]), on = ix !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="r2Sort" data-k="' + o[0] + '">' + (on ? '<b class="r2n">' + (ix + 1) + '</b> ' : '') + o[1] + (on ? (R2S.keys[ix].dir > 0 ? ' ▲' : ' ▼') : '') + '</button>'; }).join('') + (R2S.keys.length ? '<button type="button" class="btn ghost sm" data-a="r2SortClr">✕ Quitar orden</button>' : '') + '</div><div class="sub" style="margin-bottom:10px">El primero que tocas manda; los siguientes ordenan dentro del anterior. Toca otra vez para invertir (▲▼) y una tercera vez para quitarlo.</div>';
   var tDet = '<section class="panel"><h2>Detalle de movimientos <span class="sub">(' + det.length + ')</span></h2>' + ordBtns + tbBar('rep2') + '<div class="tablewrap"><table class="t" data-cf="rep2"><thead><tr>' + th('folio', 'Recibo') + th('fecha', 'Fecha de pago') + th('nombre', 'Donador / Beneficiario') + th('monto', 'Monto', 1) + th('divisa', 'Divisa') + th('tipo', 'Tipo') + th('gabai', 'Gabai') + th('mes', 'Mes del donativo') + th('concepto', 'Concepto') + th('caja', 'Caja') + '<th>Comentarios</th></tr></thead><tbody>' +
-    det.slice(0, 1500).map(function(x){ return '<tr><td>' + esc(x.folio) + '</td><td>' + esc(fFecha(x.fecha)) + '</td><td>' + esc(x.nombre) + '</td><td class="n ' + (x.tipo === 'ing' ? (x.mon === 'USD' ? 'r2usd' : 'r2pos') : 'r2neg') + '"><b>' + (x.monto < 0 ? '-' : '') + mN(Math.abs(x.monto)) + '</b></td><td>' + esc(x.mon) + '</td><td>' + (x.tipo === 'ing' ? (x.mon === 'USD' ? '<span class="pill t-usd">Ingreso USD</span>' : '<span class="pill t-ok">Ingreso MXN</span>') : '<span class="pill t-egr">Egreso ' + esc(x.mon) + '</span>') + '</td><td>' + r2Gab(x.gabai) + '</td><td>' + esc(r2Mes(x.mesD)) + '</td><td>' + esc(x.concepto) + '</td><td>' + esc(caja(x.caja).nombre) + '</td><td>' + esc(x.obs) + '</td></tr>'; }).join('') +
+    det.slice(0, 1500).map(function(x){ return '<tr><td>' + esc(x.folio) + '</td><td>' + esc(fFecha(x.fecha)) + '</td><td>' + esc(x.nombre) + '</td><td class="n ' + (x.tipo === 'ing' ? (x.mon === 'USD' ? 'r2usd' : 'r2pos') : 'r2neg') + '"><b>' + (x.monto < 0 ? '-' : '') + mN(Math.abs(x.monto)) + '</b></td><td>' + esc(x.mon) + '</td><td>' + (x.cambio ? '<span class="pill t-info">⇄ Cambio ' + (x.tipo === 'ing' ? 'entra ' : 'sale ') + esc(x.mon) + '</span>' : x.tipo === 'ing' ? (x.mon === 'USD' ? '<span class="pill t-usd">Ingreso USD</span>' : '<span class="pill t-ok">Ingreso MXN</span>') : '<span class="pill t-egr">Egreso ' + esc(x.mon) + '</span>') + '</td><td>' + (x.cambio ? '<span class="sub">' + (x.tipo === 'ing' ? 'de ' : 'a ') + esc(caja(x.otra).nombre) + '</span>' : r2Gab(x.gabai)) + '</td><td>' + esc(r2Mes(x.mesD)) + '</td><td>' + esc(x.concepto) + '</td><td>' + esc(caja(x.caja).nombre) + '</td><td>' + esc(x.obs) + '</td></tr>'; }).join('') +
     '</tbody></table></div>' + (det.length > 1500 ? '<div class="sub">Se muestran los primeros 1,500; usa los filtros para acotar.</div>' : '') + '</section>';
   return filt + kpis + '<div class="r2grid">' + tCaja + tMes + '</div>' + tGab + tTop + tDet;
 }
