@@ -218,7 +218,14 @@ html.nologin .app{display:none}
 .ini-caja{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface,#fff);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;transition:transform .15s,box-shadow .15s}
 .ini-caja.on{border-color:#12324F;box-shadow:0 0 0 2px #12324F inset}
 .ini-det{margin-top:14px;text-align:left}
-.ini-det .idg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:12px 0}
+.ini-det .idg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;margin:14px 0}
+.ini-det .idg>div{min-width:0}
+.ini-det .idg .tablewrap{overflow-x:auto}
+.ini-det .idg table.t{width:100%;table-layout:auto}
+.ini-det .idg table.t th,.ini-det .idg table.t td{padding:8px 10px}
+.ini-det .idg table.t td:first-child{min-width:110px;overflow-wrap:break-word}
+.ini-det .idg table.t td.n,.ini-det .idg table.t th.n{white-space:nowrap;width:1%}
+.ini-det .idg h3{font-size:16px}
 .ini-det table.t tr[data-a]{cursor:pointer}
 .ini-det table.t tr.on td{background:rgba(18,50,79,.09);font-weight:600}
 .ini-caja:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
@@ -229,10 +236,10 @@ html.nologin .app{display:none}
 .ini-cjbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 0}.ini-cjbar .ini-sec{margin:0}
 .ctabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.ctabs .btn{min-height:42px}
 .ctabs .btn.on{background:var(--brand);border-color:var(--brand);color:#fff}
-.fl-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.fl-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;margin-top:14px}
 .fl-kpi{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface,#fff);display:flex;flex-direction:column;gap:4px;min-width:0}
 .fl-kpi span{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.fl-kpi strong{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fl-kpi strong{font-size:clamp(17px,1.7vw,24px);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fl-kpi small{color:var(--muted)}
 .fl-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .fl-chart{width:100%;height:150px;display:block;margin-top:6px}
@@ -555,7 +562,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v165</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v166</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
