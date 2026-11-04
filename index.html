@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v179</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v180</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3570,7 +3570,7 @@ function vDonantes(){
     '<form id="addForm" class="form" novalidate>' +
       '<label class="f">Nombre(s) *<input id="afNom" autocomplete="given-name" maxlength="60"></label>' +
       '<label class="f">Apellidos *<input id="afApe" autocomplete="family-name" maxlength="80"></label>' +
-      '<label class="f">Teléfono con lada *<input id="afTel" type="tel" autocomplete="tel" placeholder="+52 55 1234 5678" maxlength="30"></label>' +
+      '<label class="f">Teléfono con lada <span class="sub">(opcional)</span><input id="afTel" type="tel" autocomplete="tel" placeholder="+52 55 1234 5678" maxlength="30"></label>' +
       '<label class="f">Correo electrónico<input id="afCorreo" type="email" autocomplete="email" placeholder="nombre@correo.com" maxlength="120"></label>' +
       '<label class="f"><span class="row" style="justify-content:space-between;gap:6px"><span>Nombre en hebreo</span><button type="button" class="back" data-a="hebClaude" data-for="af" id="afHebBtn" hidden>Revisar con Claude</button></span><input id="afHeb" dir="rtl" lang="he" maxlength="80" style="text-align:right;font-size:16px"><small class="sub" id="afHebHint"></small></label>' +
       '<label class="f">Idioma de los mensajes<select id="afIdioma"><option value="es">Español</option><option value="he">Hebreo</option><option value="en">Inglés</option></select></label>' +
@@ -3670,7 +3670,7 @@ function afSave(){
   var g = function(k){ return $(k).value.trim(); }, e = $('afErr'), fail = function(m){ e.textContent = m; e.hidden = false; };
   var nom = g('afNom'), ape = g('afApe'), tel = g('afTel'), correo = g('afCorreo'), con = !!($('afConComp') && $('afConComp').checked), cu = $('afCuota') ? cents($('afCuota').value) : 0;
   if(!nom || !ape) return fail('Escribe nombre y apellidos.');
-  if(!/^\+\d[\d\s-]{6,}$/.test(tel)) return fail('Escribe el teléfono con lada internacional, empezando con + (por ejemplo +52 55 1234 5678 o +972 52 123 4567).');
+  if(tel && !/^\+\d[\d\s-]{6,}$/.test(tel)) return fail('Escribe el teléfono con lada internacional, empezando con + (por ejemplo +52 55 1234 5678 o +972 52 123 4567), o déjalo vacío.');
   if(correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fail('Revisa el correo; debe tener la forma nombre@correo.com.');
   var dup = S.donantes.find(function(x){ return sinAcento(x.nombre) === sinAcento(nom + ' ' + ape); });
   if(dup && !ui.nd.dupOk){ ui.nd.dupOk = true; return fail('Ya existe un donador llamado ' + dup.nombre + '. Si es otra persona, presiona “Agregar donador” de nuevo.'); }
@@ -3766,7 +3766,7 @@ function syncCaja(pref){
 function abrirNuevoDonante(){
   openModal(head('Nuevo donante', 'Datos de contacto y su compromiso ' + anioAct()) +
     '<div class="form"><label class="f full">Nombre completo *<input id="ndN" maxlength="80"></label>' +
-    '<label class="f">Teléfono con lada internacional *<input id="ndT" type="tel" placeholder="+52 55 1234 5678" maxlength="30"></label>' +
+    '<label class="f">Teléfono con lada internacional <span class="sub">(opcional)</span><input id="ndT" type="tel" placeholder="+52 55 1234 5678" maxlength="30"></label>' +
     '<label class="f">Correo<input id="ndC" type="email" maxlength="120"></label>' +
     '<label class="f">Idioma<select id="ndI"><option value="es">Español</option><option value="he">Hebreo</option><option value="en">Inglés</option></select></label>' +
     '<label class="f">Domicilio<input id="ndD" maxlength="160"></label>' +
@@ -3777,7 +3777,7 @@ function ndSave(){
   var e = $('ndErr'), n = $('ndN').value.trim(), tel = $('ndT').value.trim(), correo = $('ndC').value.trim(), con = $('ndConComp').checked, cu = cents($('ndCuota').value);
   var fail = function(m){ e.textContent = m; e.hidden = false; };
   if(!n) return fail('Escribe el nombre del donante.');
-  if(!/^\+\d[\d\s-]{6,}$/.test(tel)) return fail('Escribe el teléfono con lada internacional, empezando con + (por ejemplo +52 55 1234 5678).');
+  if(tel && !/^\+\d[\d\s-]{6,}$/.test(tel)) return fail('Escribe el teléfono con lada internacional, empezando con + (por ejemplo +52 55 1234 5678), o déjalo vacío.');
   if(correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fail('Revisa el correo; debe tener la forma nombre@correo.com.');
   if(con && cu <= 0 && !planTot('nd')) return fail('Escribe la cuota mensual o desmarca el compromiso.');
   if(con && !$('ndGabai').value) return fail('Elige el gabai del compromiso.');
