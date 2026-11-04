@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v173</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v174</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -895,7 +895,7 @@ function crearCompromiso(o){
   var anual = Math.round(o.anualC || (o.cuotaC || 0) * n);
   var base = Math.floor(anual / n), rem = anual - base * n;
   var c = {id: nid('c'), donanteId: o.donanteId, anio: o.anio, anualC: anual, cuotaC: plan.length ? o.cuotaC : base, mesIni: o.mesIni, n: n, dia: 1,
-    moneda: o.moneda, monPago: o.monPago || 'USD', forma: o.forma, caja: o.caja || cajaDef(o.moneda), gabai: o.gabai || '', emisor: o.emisor || (S.emisores || [''])[0], modalidad: o.modalidad || 'Recurrente', periodo: plan.length ? 'Personalizado' : n > 1 ? (o.periodo || 'Mensual') : 'Mensual', concepto: o.concepto || (S.conceptos || [''])[0], descripcion: o.descripcion || '', comisionPct: o.comisionPct || 0, fechaInicio: o.fechaInicio || (o.anio + '-' + pad(o.mesIni) + '-01'), estatus: o.estatus || 'activo', ajustes: [], notas: [], creado: hoy(), token: token(), origen: o.origen || 'interno', invRenov: false};
+    moneda: o.moneda, monPago: o.monPago || 'USD', montoPagoC: o.monPago === 'MXN' ? (o.montoPagoC || 0) : 0, forma: o.forma, caja: o.caja || cajaDef(o.moneda), gabai: o.gabai || '', emisor: o.emisor || (S.emisores || [''])[0], modalidad: o.modalidad || 'Recurrente', periodo: plan.length ? 'Personalizado' : n > 1 ? (o.periodo || 'Mensual') : 'Mensual', concepto: o.concepto || (S.conceptos || [''])[0], descripcion: o.descripcion || '', comisionPct: o.comisionPct || 0, fechaInicio: o.fechaInicio || (o.anio + '-' + pad(o.mesIni) + '-01'), estatus: o.estatus || 'activo', ajustes: [], notas: [], creado: hoy(), token: token(), origen: o.origen || 'interno', invRenov: false};
   if(o.comentarios) c.notas.push({fecha: hoy(), usuario: user().nombre, texto: o.comentarios});
   S.compromisos.push(c);
   for(var i = 0; i < n; i++){
@@ -1851,7 +1851,7 @@ function abrirQEdit(qid){
       '<label class="f">Caja<select id="qaCaja">' + opt(CAJAS.map(function(k){ return [k.id, k.nombre]; }), pl.caja) + '</select></label>' +
       '<label class="f">Divisa del pago recibido<select id="qaMon">' + opt(['MXN', 'USD'], pl.mon) + '</select></label>' +
       '<label class="f">ID promesa<input class="ro" readonly tabindex="-1" value="' + esc(q.id.toUpperCase()) + ' · ' + Mes(q.mes) + ' ' + c.anio + '"></label>' +
-      '<label class="f">Monto recibido<input id="qaMonto" inputmode="decimal" value="' + (ps.length && fa <= 0 ? (ps.reduce(function(a, p){ return a + (p.moneda === ps[0].moneda ? p.montoC : 0); }, 0) / 100).toFixed(2) : pl.mon === 'USD' && fa > 0 ? (fa / 100).toFixed(2) : '') + '" placeholder="' + (pl.mon === 'MXN' ? 'Pesos' : '0.00') + '"></label>' +
+      '<label class="f">Monto recibido<input id="qaMonto" inputmode="decimal" value="' + (ps.length && fa <= 0 ? (ps.reduce(function(a, p){ return a + (p.moneda === ps[0].moneda ? p.montoC : 0); }, 0) / 100).toFixed(2) : pl.mon === 'USD' && fa > 0 ? (fa / 100).toFixed(2) : pl.mon === 'MXN' && fa > 0 && c.montoPagoC ? (c.montoPagoC / 100).toFixed(2) : '') + '" placeholder="' + (pl.mon === 'MXN' ? 'Pesos' : '0.00') + '"></label>' +
       '<label class="f">Fecha del pago<input id="qaFecha" type="date" value="' + (ps.length ? ps[ps.length - 1].fecha : hoy()) + '"></label>' +
       '<label class="f">Referencia dólares<input id="qaRef" inputmode="decimal" value="' + (fa > 0 ? (fa / 100).toFixed(2) : ps.length ? (q.aplicadoC / 100).toFixed(2) : '') + '"' + (pl.mon === 'USD' ? ' disabled' : '') + '></label>' +
       '<label class="f">Posponer hasta<input id="qaPos" type="date" value="' + addDias(q.venc > hoy() ? q.venc : hoy(), 30) + '"></label>' +
@@ -2014,7 +2014,7 @@ function abrirCompEd(cid){
   var setv = function(id, v){ var e = $(id); if(e) e.value = v; };
   setv('ceModalidad', c.modalidad || 'Recurrente'); setv('ceConcepto', c.concepto || ''); setv('ceDesc', c.descripcion || '');
   setv('ceMes', c.fechaInicio || (c.anio + '-' + pad(c.mesIni) + '-01')); setv('ceCuota', (c.cuotaC / 100).toFixed(2)); setv('cePer', c.periodo || 'Mensual');
-  setv('ceForma', c.forma || ''); setv('ceGabai', c.gabai || ''); setv('ceCom', c.comisionPct || 0); setv('ceCaja', c.caja || 'USD'); setv('ceMonPago', c.monPago || caja(c.caja || 'USD').mon);
+  setv('ceForma', c.forma || ''); setv('ceGabai', c.gabai || ''); setv('ceCom', c.comisionPct || 0); setv('ceCaja', c.caja || 'USD'); setv('ceMonPago', c.monPago || caja(c.caja || 'USD').mon); setv('ceMontoMx', c.montoPagoC ? (c.montoPagoC / 100).toFixed(2) : ''); fcMx('ce');
   var cant = $('ceCant'); if(cant){ cant.dataset.user = '1'; cant.value = String(Math.min(12, qs.length || 1)); }
   ui.mg = ui.mg || {}; var vals = {}; qs.forEach(function(q){ vals[q.mes] = String(q.montoC / 100); });
   ui.mg.ce = {user: true, vals: vals};
@@ -2037,7 +2037,7 @@ function ceSave(cid){
   var pct = Math.max(0, Math.min(100, parseFloat(String($('ceCom').value).replace(',', '.')) || 0));
   var antes = {gabai: c.gabai || '', forma: c.forma || '', caja: c.caja || '', pct: c.comisionPct || 0};
   var set = function(k, v, et){ if((c[k] || '') !== v){ cambios.push(et); c[k] = v; } };
-  set('concepto', $('ceConcepto').value, 'concepto'); set('modalidad', $('ceModalidad').value, 'modalidad'); set('gabai', $('ceGabai').value, 'gabai'); set('forma', $('ceForma').value, 'método de pago'); set('caja', $('ceCaja').value, 'caja'); set('descripcion', $('ceDesc').value.trim(), 'descripción');
+  set('concepto', $('ceConcepto').value, 'concepto'); set('modalidad', $('ceModalidad').value, 'modalidad'); set('gabai', $('ceGabai').value, 'gabai'); set('forma', $('ceForma').value, 'método de pago'); set('caja', $('ceCaja').value, 'caja'); set('monPago', $('ceMonPago').value, 'divisa en que paga'); var nmx = $('ceMonPago').value === 'MXN' ? cents($('ceMontoMx').value) : 0; if(nmx !== (c.montoPagoC || 0)){ cambios.push('monto en pesos ' + mN(nmx)); c.montoPagoC = nmx; } set('descripcion', $('ceDesc').value.trim(), 'descripción');
   if(fcFecha('ce') && fcFecha('ce') !== c.fechaInicio){ c.fechaInicio = fcFecha('ce'); cambios.push('fecha de inicio'); }
   if((c.comisionPct || 0) !== pct){ cambios.push('% comisión'); c.comisionPct = pct; }
   if(c.caja === 'NY') c.emisor = 'Bait Lapletot USA';
@@ -3647,14 +3647,15 @@ function formComp(pref){
     '<label class="f">Descripción<input id="' + P('Desc') + '" maxlength="160"></label>' +
     '<label class="f">Fecha de inicio *<input id="' + P('Mes') + '" type="date" value="' + fcDefFecha() + '"></label>' +
     '<label class="f">Monto *<small class="sub" id="' + P('CuotaTx') + '">Monto en USD de cada pago</small><input id="' + P('Cuota') + '" inputmode="decimal" placeholder="0.00"><select id="' + P('Mon') + '" hidden><option>USD</option></select></label>' +
+    '<label class="f">Divisa en que paga el donador<select id="' + P('MonPago') + '"><option value="USD">USD · dólares</option><option value="MXN">MXN · pesos</option></select><small class="sub">El monto de arriba es la referencia en USD; aquí eliges si lo paga en dólares o en pesos.</small></label>' +
+    '<label class="f" id="' + P('MxW') + '" style="display:none"><span id="' + P('MxTx') + '">Monto en pesos (MXN)</span><input id="' + P('MontoMx') + '" inputmode="decimal" placeholder="0.00"></label>' +
+    '<label class="f">Caja<select id="' + P('Caja') + '">' + CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === 'USD' ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
     '<label class="f">Monto total<input id="' + P('Total') + '" readonly tabindex="-1" class="ro" value="—"></label>' +
     '<label class="f">Parcialidad<select id="' + P('Per') + '"><option value="Mensual">1 · cada mes</option><option value="Bimestral">2 · cada 2 meses</option><option value="Trimestral">3 · cada 3 meses</option><option value="Personalizado">Personalizado (elegir meses)</option></select></label>' +
     '<label class="f">Cantidad de parcialidades<select id="' + P('Cant') + '">' + [1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Día de cobro<input id="' + P('Dia') + '" readonly tabindex="-1" class="ro" value="1"></label>' +
     '<div class="f mgw"><span>Meses y monto de cada pago (USD)</span><div class="mgrid" id="' + P('Grid') + '">' + [1,2,3,4,5,6,7,8,9,10,11,12].map(function(m){ return '<label class="mgc"><span>' + Mes(m).slice(0, 3) + '</span><input inputmode="decimal" data-mg="' + pref + '" data-m="' + m + '" placeholder="—"></label>'; }).join('') + '</div></div>';
   var der = '<label class="f">' + hd('Método de pago', 'formas', 'Forma') + '<select id="' + P('Forma') + '">' + formas().map(function(x){ return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label>' + filaEdit('formas', P('Forma')) + filaNuevo('formas', P('Forma'), 'Nuevo método de pago') +
-    '<label class="f">Divisa en que paga el donador<select id="' + P('MonPago') + '"><option value="USD">USD · dólares</option><option value="MXN">MXN · pesos</option></select><small class="sub">El monto del compromiso queda en USD como referencia; aquí eliges en qué moneda lo paga.</small></label>' +
-    '<label class="f">Caja<select id="' + P('Caja') + '">' + CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === 'USD' ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
     '<label class="f">' + hd('Asignado (gabai) *', 'gabaim', 'Gabai') + '<select id="' + P('Gabai') + '">' + optsGabai('', false) + '</select></label>' + filaEdit('gabaim', P('Gabai')) + filaNuevo('gabaim', P('Gabai'), 'Nombre del gabai') +
     '<label class="f">Porcentaje comisión<input id="' + P('Com') + '" inputmode="decimal" placeholder="0" maxlength="6"></label>' +
     '<label class="f">Monto comisión<input id="' + P('ComM') + '" readonly tabindex="-1" class="ro" value="—"></label>' +
@@ -3662,6 +3663,7 @@ function formComp(pref){
     '<label class="f">Comentarios<textarea id="' + P('Coment') + '" maxlength="500"></textarea></label>';
   return '<div class="fc2 full"><div class="fcol">' + izq + '</div><div class="fcol">' + der + '</div></div>';
 }
+function fcMx(pref){ var mp = $(pref + 'MonPago'), w = $(pref + 'MxW'), tx = $(pref + 'MxTx'); if(!mp || !w) return; w.style.display = mp.value === 'MXN' ? '' : 'none'; var dir = $(pref + 'Modalidad') && $(pref + 'Modalidad').value === 'Pago directo'; if(tx) tx.textContent = dir ? 'Monto en pesos (MXN) del pago directo' : 'Monto en pesos (MXN) de cada pago'; }
 function fcDefFecha(){ var m = mesAct(), Y = anioAct(); return m === 12 ? (Y + 1) + '-01-01' : Y + '-' + pad(m + 1) + '-01'; }
 function fcFecha(pref){ var v = $(pref + 'Mes') ? $(pref + 'Mes').value : ''; return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : ''; }
 function fcMes(pref){ var f = fcFecha(pref); return f ? +f.slice(5, 7) : Math.min(12, mesAct() + 1); }
@@ -3681,6 +3683,7 @@ function fcN(pref){
 function fcGrid(pref){
   var esDir = $(pref + 'Modalidad') && $(pref + 'Modalidad').value === 'Pago directo';
   ['Per', 'Cant', 'Dia'].forEach(function(k){ var e = $(pref + k), l = e && e.closest('label'); if(l) l.style.display = esDir ? 'none' : ''; });
+  fcMx(pref);
   var ctx = $(pref + 'CuotaTx'); if(ctx) ctx.textContent = esDir && pref === 'cc' ? 'Monto en USD del pago directo' : 'Monto en USD de cada pago';
   var g = $(pref + 'Grid'); if(!g) return;
   ui.mg = ui.mg || {};
@@ -3707,7 +3710,7 @@ function fcCalc(pref){
 }
 function compExtra(pref){
   var cj = $(pref + 'Caja') ? $(pref + 'Caja').value : 'USD';
-  return {anio: fcAnio(pref), mesIni: fcMes(pref), nCuotas: fcN(pref), periodo: fcPer(pref), plan: planDe(pref), fechaInicio: fcFecha(pref), caja: cj, monPago: $(pref + 'MonPago') ? $(pref + 'MonPago').value : 'USD', gabai: $(pref + 'Gabai').value, emisor: $(pref + 'Emisor') ? $(pref + 'Emisor').value : (S.emisores || [''])[0], modalidad: $(pref + 'Modalidad').value, concepto: $(pref + 'Concepto').value,
+  return {anio: fcAnio(pref), mesIni: fcMes(pref), nCuotas: fcN(pref), periodo: fcPer(pref), plan: planDe(pref), fechaInicio: fcFecha(pref), caja: cj, monPago: $(pref + 'MonPago') ? $(pref + 'MonPago').value : 'USD', montoPagoC: $(pref + 'MontoMx') ? cents($(pref + 'MontoMx').value) : 0, gabai: $(pref + 'Gabai').value, emisor: $(pref + 'Emisor') ? $(pref + 'Emisor').value : (S.emisores || [''])[0], modalidad: $(pref + 'Modalidad').value, concepto: $(pref + 'Concepto').value,
     descripcion: $(pref + 'Desc').value.trim(), comisionPct: Math.max(0, Math.min(100, parseFloat(String($(pref + 'Com').value).replace(',', '.')) || 0)), comentarios: $(pref + 'Coment').value.trim()};
 }
 function syncCaja(pref){
@@ -5931,8 +5934,8 @@ document.addEventListener('change', function(ev){
   else if(t.name === 'pmModo'){ PM.modo = t.value; $('pmElegir').hidden = PM.modo !== 'elegir'; pmPrev(); }
   else if(t.hasAttribute && t.hasAttribute('data-pmq')){ var qid = t.getAttribute('data-pmq'); PM.sel = PM.sel.filter(function(x){ return x !== qid; }); if(t.checked) PM.sel.push(qid); pmPrev(); }
   else if(t.id === 'pmMon' || t.id === 'pmFecha'){ if(t.id === 'pmMon' && caja($('pmCaja').value).mon !== t.value){ $('pmCaja').value = cajaDef(t.value); $('pmNY').hidden = true; } pmPrev(); }
-  else if(/^(cc|ce|nd|nc)MonPago$/.test(t.id || '')){ var pf2 = t.id.slice(0, 2), kj = $(pf2 + 'Caja'); if(kj && caja(kj.value).mon !== t.value) kj.value = cajaDef(t.value); }
-  else if(/^(cc|ce|nd|nc)Caja$/.test(t.id || '')){ var pf3 = t.id.slice(0, 2), mp = $(pf3 + 'MonPago'); if(mp) mp.value = caja(t.value).mon; }
+  else if(/^(cc|ce|nd|nc)MonPago$/.test(t.id || '')){ var pf2 = t.id.slice(0, 2), kj = $(pf2 + 'Caja'); if(kj && caja(kj.value).mon !== t.value) kj.value = cajaDef(t.value); fcMx(pf2); }
+  else if(/^(cc|ce|nd|nc)Caja$/.test(t.id || '')){ var pf3 = t.id.slice(0, 2), mp = $(pf3 + 'MonPago'); if(mp) mp.value = caja(t.value).mon; fcMx(pf3); }
   else if(t.id === 'ndMon' || t.id === 'ncMon') { syncCaja(t.id.slice(0, 2)); fcCalc(t.id.slice(0, 2)); }
   else if(/^(nd|nc|ce)(Mes|Modalidad|Cant|Per)$/.test(t.id)) fcCalc(t.id.slice(0, 2));
   else if(t.id === 'lf-mon' || t.id === 'lf-mes') linkPrev();
