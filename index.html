@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v172</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v173</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3646,7 +3646,7 @@ function formComp(pref){
     '<label class="f">' + hd('Concepto *', 'conceptos', 'Concepto') + '<select id="' + P('Concepto') + '"><option value="">— Selecciona —</option>' + (S.conceptos || []).map(function(x){ return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label>' + filaEdit('conceptos', P('Concepto')) + filaNuevo('conceptos', P('Concepto'), 'Nuevo concepto') +
     '<label class="f">Descripción<input id="' + P('Desc') + '" maxlength="160"></label>' +
     '<label class="f">Fecha de inicio *<input id="' + P('Mes') + '" type="date" value="' + fcDefFecha() + '"></label>' +
-    '<label class="f">Monto *<small class="sub">Monto en USD de cada pago</small><input id="' + P('Cuota') + '" inputmode="decimal" placeholder="0.00"><select id="' + P('Mon') + '" hidden><option>USD</option></select></label>' +
+    '<label class="f">Monto *<small class="sub" id="' + P('CuotaTx') + '">Monto en USD de cada pago</small><input id="' + P('Cuota') + '" inputmode="decimal" placeholder="0.00"><select id="' + P('Mon') + '" hidden><option>USD</option></select></label>' +
     '<label class="f">Monto total<input id="' + P('Total') + '" readonly tabindex="-1" class="ro" value="—"></label>' +
     '<label class="f">Parcialidad<select id="' + P('Per') + '"><option value="Mensual">1 · cada mes</option><option value="Bimestral">2 · cada 2 meses</option><option value="Trimestral">3 · cada 3 meses</option><option value="Personalizado">Personalizado (elegir meses)</option></select></label>' +
     '<label class="f">Cantidad de parcialidades<select id="' + P('Cant') + '">' + [1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('') + '</select></label>' +
@@ -3681,6 +3681,7 @@ function fcN(pref){
 function fcGrid(pref){
   var esDir = $(pref + 'Modalidad') && $(pref + 'Modalidad').value === 'Pago directo';
   ['Per', 'Cant', 'Dia'].forEach(function(k){ var e = $(pref + k), l = e && e.closest('label'); if(l) l.style.display = esDir ? 'none' : ''; });
+  var ctx = $(pref + 'CuotaTx'); if(ctx) ctx.textContent = esDir && pref === 'cc' ? 'Monto en USD del pago directo' : 'Monto en USD de cada pago';
   var g = $(pref + 'Grid'); if(!g) return;
   ui.mg = ui.mg || {};
   var dir = $(pref + 'Modalidad') && $(pref + 'Modalidad').value === 'Pago directo', per = fcPer(pref), st = ui.mg[pref] = ui.mg[pref] || {user: false, vals: {}};
