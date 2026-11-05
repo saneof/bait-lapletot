@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v185</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v186</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2324,13 +2324,32 @@ function vEgresos(){
     '<label class="f">Caja<select id="egCaja">' + CAJAS.map(function(k){ return '<option value="' + k.id + '">' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
     '<label class="f">ID Recibo<input readonly tabindex="-1" class="ro" value="E-' + String((S.folioEg || 0) + 1).padStart(4, '0') + '"></label>' +
     '<label class="f">Comentarios<textarea id="egComent" maxlength="500"></textarea></label>';
-  var lst = (S.egresos || []).slice().sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || b.folio.localeCompare(a.folio); }).slice(0, 15);
+  var L = ui.egL = ui.egL || {meses: [], cons: [], cajas: [], formas: [], q: ''}, todosEg = (S.egresos || []).slice(), qL = sinAcento((L.q || '').trim());
+  var lst = todosEg.filter(function(e){
+    if(L.meses.length && L.meses.indexOf((e.fecha || '').slice(0, 7)) === -1) return false;
+    if(L.cons.length && L.cons.indexOf(e.concepto || '') === -1) return false;
+    if(L.cajas.length && L.cajas.indexOf(e.caja) === -1) return false;
+    if(L.formas.length && L.formas.indexOf(e.forma || '') === -1) return false;
+    if(qL && sinAcento([e.folio, e.benef, e.concepto, e.desc, e.coment, e.modalidad].join(' ')).indexOf(qL) === -1) return false;
+    return true; }).sort(function(a, b){ return b.fecha.localeCompare(a.fecha) || b.folio.localeCompare(a.folio); });
+  var uq = function(fn){ var m = {}; todosEg.forEach(function(e){ var v = fn(e); if(v) m[v] = 1; }); return Object.keys(m); };
+  var mesP = function(ym){ return '<span class="r2g" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '">' + esc(Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4)) + '</span>'; };
+  var msF = function(id, key, items, todos, pills){ var sel = L[key]; var sum = !sel.length ? '<span>' + todos + '</span>' : pills ? (sel.length <= 3 ? '<span class="gsum">' + sel.slice().sort().map(pills).join('') + '</span>' : '<span>' + sel.length + ' elegidos</span>') : '<span>' + esc(sel.length === 1 ? sel[0] : sel.length + ' elegidos') + '</span>'; var h = msHtml(id, items, sel, sum); MS[id].set = function(a){ L[key] = a; }; return h; };
+  var totEg = {MXN: 0, USD: 0}; lst.forEach(function(e){ if(egActivo(e)) totEg[e.moneda === 'USD' ? 'USD' : 'MXN'] += e.montoC; });
+  var egFiltros = '<div class="form" style="margin-top:6px">' +
+      '<div class="f fms">Meses (puedes elegir varios)' + msF('egms', 'meses', uq(function(e){ return (e.fecha || '').slice(0, 7); }).sort().reverse().map(function(ym){ return [ym, mesP(ym)]; }), 'Todos los meses', mesP) + '</div>' +
+      '<div class="f fms">Concepto' + msF('egcn', 'cons', uq(function(e){ return e.concepto; }).sort(function(a, b){ return a.localeCompare(b, 'es'); }).map(function(c){ return [c, esc(c)]; }), 'Todos los conceptos') + '</div>' +
+      '<div class="f fms">Caja' + msF('egcj', 'cajas', CAJAS.map(function(k){ return [k.id, cajaPill(k.id)]; }), 'Todas las cajas', cajaPill) + '</div>' +
+      '<div class="f fms">Forma de pago' + msF('egfo', 'formas', uq(function(e){ return e.forma; }).sort().map(function(c){ return [c, esc(c)]; }), 'Todas') + '</div>' +
+      '<label class="f">Buscar<input id="egLQ" type="search" value="' + esc(L.q || '') + '" placeholder="Folio, receptor, comentario…"></label></div>' +
+    '<div class="fl-kpis"><div class="fl-kpi"><span>Egresos</span><strong>' + lst.length + '</strong><small>con los filtros</small></div><div class="fl-kpi"><span>Total MXN</span><strong style="color:var(--bad)">' + mN(totEg.MXN) + '</strong><small>activos</small></div><div class="fl-kpi"><span>Total USD</span><strong style="color:var(--bad)">' + mN(totEg.USD) + '</strong><small>activos</small></div>' +
+    (L.meses.length || L.cons.length || L.cajas.length || L.formas.length || L.q ? '<div class="fl-kpi" style="justify-content:center"><button type="button" class="btn ghost sm" data-a="egLLimpiar">✕ Quitar filtros</button></div>' : '') + '</div>';
   return '<section class="panel tint-eg"><h2>Registrar egreso</h2><div class="form"><div class="fc2 full"><div class="fcol">' + izq + '</div><div class="fcol">' + der + '</div></div></div>' +
     '<div class="err" id="egErr" hidden></div><div class="row"><button type="button" class="btn danger" data-a="egSave">Registrar egreso</button><button type="button" class="btn ghost" data-a="egLimpiar">Limpiar</button></div></section>' +
   vEgImport() +
-  '<section class="panel"><h2>Últimos egresos</h2>' + (lst.length ? tbBar('egr') + '<div class="tw cards"><table data-cf="egr" data-tt="Egresos" class="cobt"><thead><tr><th>Fecha</th><th>Folio</th><th>Concepto</th><th>Receptor</th><th class="n">Monto</th><th>Forma</th><th>Caja</th><th>Comentarios</th><th></th></tr></thead><tbody>' +
+  '<section class="panel"><h2>Egresos registrados <span class="sub">(' + lst.length + ' de ' + todosEg.length + ')</span></h2>' + egFiltros + (lst.length ? tbBar('egr') + '<div class="tw cards"><table data-cf="egr" data-tt="Egresos" class="cobt"><thead><tr><th>Fecha</th><th>Folio</th><th>Concepto</th><th>Receptor</th><th class="n">Monto</th><th>Forma</th><th>Caja</th><th>Comentarios</th><th></th></tr></thead><tbody>' +
     lst.map(function(e){ var cx = !egActivo(e); return '<tr' + (cx ? ' class="off"' : '') + '><td data-l="Fecha" class="nowrap">' + fFecha(e.fecha) + '</td><td data-l="Folio">' + esc(e.folio) + (cx ? '<div><span class="pill t-bad">Cancelado</span></div>' : '') + '</td><td data-l="Concepto">' + esc(e.concepto) + (e.desc ? '<div class="sub">' + esc(e.desc) + '</div>' : '') + '</td><td data-l="Receptor"><b>' + esc(e.benef) + '</b>' + (e.modalidad ? '<div class="sub">' + esc(e.modalidad) + '</div>' : '') + '</td><td class="n" data-l="Monto"><b style="color:var(--bad)">' + money(e.montoC, e.moneda) + '</b></td><td data-l="Forma">' + esc(e.forma) + '</td><td data-l="Caja">' + cajaPill(e.caja) + '</td><td data-l="Comentarios" style="white-space:pre-wrap;min-width:140px">' + (e.coment ? esc(e.coment) : '<span class="sub">—</span>') + '</td><td>' + bDel('data-a="egDel" data-id="' + e.id + '"') + '</td></tr>'; }).join('') +
-    '</tbody></table></div>' : '<div class="empty">Sin egresos registrados.</div>') + '</section>';
+    '</tbody></table></div>' : '<div class="empty">' + (todosEg.length ? 'Sin egresos con estos filtros.' : 'Sin egresos registrados.') + '</div>') + '</section>';
 }
 function restoreEg(){
   ui.eg = ui.eg || {};
@@ -5631,6 +5650,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'iniGab'){ var igv = b.getAttribute('data-v'), iga = gabToggle(ui.iniF.gab || 'todos', igv === 'Sin gabai' ? '' : igv); ui.iniF.gab = iga.length ? iga : ''; ui.iniF.con = ''; render(); }
   else if(a === 'iniCon'){ ui.iniF.con = ui.iniF.con === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.gab = ''; ui.iniF.coni = ''; render(); }
   else if(a === 'iniConI'){ ui.iniF.coni = ui.iniF.coni === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.con = ''; render(); }
+  else if(a === 'egLLimpiar'){ ui.egL = null; render(); }
   else if(a === 'iniFLimpiar'){ ui.iniF = null; render(); }
   else if(a === 'egiCancel'){ ui.egi = null; render(); }
   else if(a === 'egiGo') egiGo();
@@ -5880,6 +5900,7 @@ document.addEventListener('input', function(ev){
   else if(t.id === 'donQ'){ ui.don.q = t.value; var p3 = t.selectionStart; render(); var n3 = $('donQ'); n3.focus(); try{ n3.setSelectionRange(p3, p3); }catch(e){} }
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; }
   else if(t.id && CJ_IDS.indexOf(t.id) !== -1){ ui.cj = ui.cj || {}; ui.cj[t.id] = t.value; if(t.id === 'cjRef') ui.cj.refManual = !!t.value.trim(); if(/^cj(Ori|Des|MonE|MonI)$/.test(t.id)) cjSync(t.id); cjPrev(); }
+  else if(t.id === 'egLQ'){ ui.egL.q = t.value; var p9 = t.selectionStart; render(); var n9 = $('egLQ'); if(n9){ n9.focus(); try{ n9.setSelectionRange(p9, p9); }catch(e){} } }
   else if(t.id === 'iniFQ'){ ui.iniF.q = t.value; var p8 = t.selectionStart; render(); var n8 = $('iniFQ'); if(n8){ n8.focus(); try{ n8.setSelectionRange(p8, p8); }catch(e){} } }
   else if(t.id === 'flQ'){ ui.fl.q = t.value; var p7 = t.selectionStart; render(); var n7 = $('flQ'); n7.focus(); try{ n7.setSelectionRange(p7, p7); }catch(e){} }
   else if(t.id === 'contQ'){ ui.cont.q = t.value; var p6 = t.selectionStart; render(); var n6 = $('contQ'); n6.focus(); try{ n6.setSelectionRange(p6, p6); }catch(e){} }
