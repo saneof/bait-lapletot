@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v190</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v191</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2697,6 +2697,7 @@ function iniDet(per, mesK, Y){
   var cid = ui.iniCaja; if(!cid) return '';
   var f = ui.iniF = ui.iniF || {tipo: 'todos', gab: '', con: '', q: '', desde: '', hasta: ''};
   if(!f.cajas || !f.cajas.length) f.cajas = [cid];
+  var aArr = function(v){ return Array.isArray(v) ? v : v ? [v] : []; }; f.con = aArr(f.con); f.coni = aArr(f.coni);
   var cjs = f.cajas, mixed = cjs.some(function(id){ return caja(id).mon !== caja(cjs[0]).mon; }), mon = mixed ? 'USD (equivalente)' : caja(cjs[0]).mon, k = {nombre: cjs.map(function(id){ return caja(id).nombre; }).join(' + ')}, V = function(x){ return mixed ? (x.eqC || 0) : x.montoC; };
   var d0 = f.desde || (per === 'mes' ? mesK + '-01' : per === 'anio' ? Y + '-01-01' : ''), h0 = f.hasta || (per === 'mes' ? mesK + '-31' : per === 'anio' ? Y + '-12-31' : '');
   f.meses = f.meses || [];
@@ -2712,8 +2713,8 @@ function iniDet(per, mesK, Y){
     if(f.tipo === 'cam' && !x.cambio) return false;
     if(f.tipo === 'sin' && x.cambio) return false;
     if(!sinGC && gabArr(f.gab || 'todos').length && (x.tipo !== 'ing' || x.cambio || !gabOk(f.gab, x.gabai))) return false;
-    if(!sinGC && f.con && (x.tipo !== 'egr' || x.cambio || conDe(x) !== f.con)) return false;
-    if(!sinGC && f.coni && (x.tipo !== 'ing' || x.cambio || conDe(x) !== f.coni)) return false;
+    if(!sinGC && f.con.length && (x.tipo !== 'egr' || x.cambio || f.con.indexOf(conDe(x)) === -1)) return false;
+    if(!sinGC && f.coni.length && (x.tipo !== 'ing' || x.cambio || f.coni.indexOf(conDe(x)) === -1)) return false;
     if(q && sinAcento([x.folio, x.nombre, x.gabai, x.concepto, x.forma, x.obs].join(' ')).indexOf(q) === -1) return false;
     return true; };
   var rows = base.filter(function(x){ return pasa(x); }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || String(a.folio).localeCompare(String(b.folio), 'es', {numeric: true}); });
@@ -2730,7 +2731,7 @@ function iniDet(per, mesK, Y){
   var sel = function(id, v, opts){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
   var uniq = function(fn, fl){ var m = {}; base.forEach(function(x){ if(fl(x)) m[fn(x)] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }).map(function(g){ return [g, g]; }); };
   var ab = 0, ca = 0; rows.forEach(function(x){ if(x.tipo === 'ing') ab += V(x); else ca += V(x); });
-  var filt = f.tipo !== 'todos' || f.gab || f.con || f.coni || (f.q || '').trim() || f.desde || f.hasta || f.meses.length;
+  var filt = f.tipo !== 'todos' || f.gab || f.con.length || f.coni.length || (f.q || '').trim() || f.desde || f.hasta || f.meses.length;
   var mesPill = function(ym){ return '<span class="r2g" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '">' + esc(Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4)) + '</span>'; };
   var perTxt = f.meses.length ? f.meses.slice().sort().map(function(ym){ return Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4); }).join(', ') : (d0 ? fFecha(d0) : 'el inicio') + ' a ' + (h0 ? fFecha(h0) : 'hoy');
   return '<section class="panel ini-det"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h2 style="margin:0">' + esc(k.nombre) + ' · movimientos <span class="sub">(' + esc(perTxt) + ')</span></h2>' +
@@ -2742,8 +2743,11 @@ function iniDet(per, mesK, Y){
       '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos (con cambios que entran)'], ['egr', 'Solo egresos (con cambios que salen)'], ['ingx', 'Solo ingresos, sin cambios'], ['egrx', 'Solo egresos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
       '<div class="f fms">Caja (puedes elegir varias)' + (function(){ var h = msHtml('inicj', CAJAS.map(function(kk){ return [kk.id, cajaPill(kk.id)]; }), cjs, '<span class="gsum">' + cjs.map(cajaPill).join('') + '</span>'); MS.inicj.set = function(a){ f.cajas = a.length ? a : [cid]; }; return h; })() + '</div>' +
       '<div class="f fms">Gabai (ingresos)' + gabMs('ini') + '</div>' +
-      '<label class="f">Concepto (ingresos)' + sel('iniFConi', f.coni || '', [['', 'Todos']].concat(uniq(conDe, function(x){ return x.tipo === 'ing' && !x.cambio; }))) + '</label>' +
-      '<label class="f">Concepto (egresos)' + sel('iniFCon', f.con, [['', 'Todos']].concat(uniq(conDe, function(x){ return x.tipo === 'egr' && !x.cambio; }))) + '</label>' +
+      (function(){ var lista = function(cat, tipo, selA){ var l = (cat || []).slice(); todosCj.forEach(function(x){ if(x.tipo === tipo && !x.cambio){ var c = conDe(x); if(l.indexOf(c) === -1) l.push(c); } }); selA.forEach(function(c){ if(l.indexOf(c) === -1) l.push(c); }); return l.map(function(c){ return [c, esc(c)]; }); };
+        var sumC = function(a, todos){ return '<span>' + esc(!a.length ? todos : a.length === 1 ? a[0] : a.length + ' conceptos elegidos') + '</span>'; };
+        var hI = msHtml('inici', lista(S.conceptos, 'ing', f.coni), f.coni, sumC(f.coni, 'Todos los conceptos')); MS.inici.set = function(a){ f.coni = a; if(a.length) f.con = []; };
+        var hE = msHtml('inice', lista(S.conceptosEg, 'egr', f.con), f.con, sumC(f.con, 'Todos los conceptos')); MS.inice.set = function(a){ f.con = a; if(a.length){ f.gab = ''; f.coni = []; } };
+        return '<div class="f fms">Concepto (ingresos)' + hI + '</div><div class="f fms">Concepto (egresos)' + hE + '</div>'; })() +
       '<label class="f">Buscar<input id="iniFQ" type="search" value="' + esc(f.q || '') + '" placeholder="Nombre, folio, comentario…"></label></div>' +
     '<div class="fl-kpis" style="margin-top:12px">' +
       '<div class="fl-kpi"><span>Ingresos</span><strong style="color:var(--ok)">' + mN(ab) + '</strong><small>' + rows.filter(function(x){ return x.tipo === 'ing'; }).length + ' movs. · ' + mon + '</small></div>' +
@@ -2795,7 +2799,7 @@ function vFlujo(){
   var ab = 0, ca = 0, nA = 0, nC = 0; rows.forEach(function(x){ if(x.tipo === 'ing'){ ab += x.montoC; nA++; } else { ca += x.montoC; nC++; } });
   var filt = flFiltrado(f);
   // listas para filtros
-  var cons = {}, frm = {}; per.forEach(function(x){ if(x.concepto) cons[x.concepto] = 1; if(x.forma) frm[x.forma] = 1; });
+  var cons = {}, frm = {}; (S.conceptos || []).concat(S.conceptosEg || []).forEach(function(c){ cons[c] = 1; }); per.forEach(function(x){ if(x.concepto) cons[x.concepto] = 1; if(x.forma) frm[x.forma] = 1; });
   var sel = function(id, op, v){ return '<select id="' + id + '">' + op.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
   var chips = '<div class="chips">' + CAJAS.map(function(c){ return '<button type="button" class="chip' + (c.id === f.caja ? ' on' : '') + '" data-a="flCaja" data-c="' + c.id + '" aria-pressed="' + (c.id === f.caja) + '">' + esc(c.nombre) + ' · ' + c.mon + '</button>'; }).join('') + '</div>';
   var perB = '<div class="chips">' + [['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (f.per === o[0] ? ' on' : '') + '" data-a="flPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
@@ -3011,7 +3015,7 @@ function vConta(){
   var f = ui.cont, all = movCaja();
   var anios = {}; all.forEach(function(x){ anios[x.fecha.slice(0, 4)] = 1; }); anios[String(anioAct())] = 1;
   var delAnio = all.filter(function(x){ return x.fecha.slice(0, 4) === f.anio; });
-  var conceptos = {}; delAnio.forEach(function(x){ conceptos[x.concepto] = 1; });
+  var conceptos = {}; (S.conceptos || []).concat(S.conceptosEg || []).forEach(function(c){ conceptos[c] = 1; }); delAnio.forEach(function(x){ conceptos[x.concepto] = 1; });
   var q = (f.q || '').toLowerCase();
   var donsC = {}; delAnio.forEach(function(x){ if(x.donId && gabOk(f.gab, x.gabai)) donsC[x.donId] = 1; });
   if(f.don && !donsC[f.don]) f.don = '';
@@ -5692,8 +5696,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); if(ui.iniF){ ui.iniF.desde = ''; ui.iniF.hasta = ''; ui.iniF.meses = []; } render(); }
   else if(a === 'iniCaja'){ var ic = b.getAttribute('data-c'); ui.iniCaja = ui.iniCaja === ic ? '' : ic; if(ui.iniF) ui.iniF.cajas = ui.iniCaja ? [ui.iniCaja] : []; render(); }
   else if(a === 'iniGab'){ var igv = b.getAttribute('data-v'), iga = gabToggle(ui.iniF.gab || 'todos', igv === 'Sin gabai' ? '' : igv); ui.iniF.gab = iga.length ? iga : ''; ui.iniF.con = ''; render(); }
-  else if(a === 'iniCon'){ ui.iniF.con = ui.iniF.con === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.gab = ''; ui.iniF.coni = ''; render(); }
-  else if(a === 'iniConI'){ ui.iniF.coni = ui.iniF.coni === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.con = ''; render(); }
+  else if(a === 'iniCon'){ ui.iniF.con = gabToggle(Array.isArray(ui.iniF.con) ? ui.iniF.con : ui.iniF.con ? [ui.iniF.con] : [], b.getAttribute('data-v')); ui.iniF.gab = ''; ui.iniF.coni = []; render(); }
+  else if(a === 'iniConI'){ ui.iniF.coni = gabToggle(Array.isArray(ui.iniF.coni) ? ui.iniF.coni : ui.iniF.coni ? [ui.iniF.coni] : [], b.getAttribute('data-v')); ui.iniF.con = []; render(); }
   else if(a === 'cjLLimpiar'){ ui.cjL = null; render(); }
   else if(a === 'egLLimpiar'){ ui.egL = null; render(); }
   else if(a === 'iniFLimpiar'){ ui.iniF = null; render(); }
