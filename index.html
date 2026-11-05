@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v203</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v204</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2663,6 +2663,25 @@ function cjMovs(){
   return out;
 }
 function movCaja(){ return movimientos().concat(cjMovs()); }
+/* Saldo inicial por caja (ej. saldo al 31/12/2025). No es ingreso: solo arranca los saldos. Los movimientos con fecha hasta ese día ya están dentro del saldo inicial. */
+function salIni(cid){ var o = ((S.cfg || {}).saldosIni || {})[cid]; return o && o.fecha ? o : null; }
+function salCuenta(cid, x){ var o = salIni(cid); return !o || x.fecha > o.fecha; }
+function saldoAl(cid, hasta, movs){ var o = salIni(cid), s = o && o.fecha <= hasta ? o.montoC : 0; (movs || movCaja()).forEach(function(x){ if(x.caja === cid && x.fecha && x.fecha <= hasta && (!o || x.fecha > o.fecha)) s += x.tipo === 'ing' ? x.montoC : -x.montoC; }); return s; }
+function abrirSalIni(){
+  var cs = CAJAS.filter(function(k){ return !k.externa; });
+  openModal(head('Saldos iniciales de cajas', 'El saldo con el que arranca cada caja (por ejemplo, al 31 de diciembre de 2025)') +
+    '<div class="note" style="margin-bottom:8px">No cuenta como ingreso; solo hace que los saldos de Inicio y Flujo de efectivo empiecen con ese monto. Los movimientos con fecha hasta ese día se consideran ya incluidos.</div>' +
+    '<div class="form">' + cs.map(function(k){ var o = salIni(k.id) || {}; return '<label class="f">' + esc(k.nombre) + ' · fecha del saldo<input type="date" data-sif="' + k.id + '" value="' + esc(o.fecha || '2025-12-31') + '"></label><label class="f">Saldo inicial (' + k.mon + ')<input inputmode="decimal" data-sim="' + k.id + '" value="' + (o.montoC != null && o.fecha ? (o.montoC / 100).toFixed(2) : '') + '" placeholder="0.00"></label>'; }).join('') + '</div>' +
+    '<div class="err" id="siErr" hidden></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="salIniOk">Guardar saldos</button></div>');
+}
+function salIniOk(){
+  var nv = {}, cam = [];
+  CAJAS.filter(function(k){ return !k.externa; }).forEach(function(k){ var fe = document.querySelector('[data-sif="' + k.id + '"]').value, t = document.querySelector('[data-sim="' + k.id + '"]').value.trim(), o = salIni(k.id);
+    if(t !== '' && fe){ var m = Math.round(parseFloat(t.replace(/[^0-9.\-]/g, '')) * 100); if(isFinite(m)){ nv[k.id] = {fecha: fe, montoC: m}; if(!o || o.fecha !== fe || o.montoC !== m) cam.push(k.nombre + ': ' + money(m, k.mon) + ' al ' + fFecha(fe)); } }
+    else if(o) cam.push(k.nombre + ': sin saldo inicial'); });
+  S.cfg.saldosIni = nv; if(cam.length) log('Saldos iniciales de cajas → ' + cam.join('; '));
+  closeModal(); render(); toast(cam.length ? 'Saldos iniciales guardados' : 'Sin cambios');
+}
 function cjTc(c){ if(c.monE === c.monI || !(c.montoEC > 0) || !(c.montoIC > 0)) return null; var mx = c.monE === 'MXN' ? c.montoEC : c.montoIC, us = c.monE === 'USD' ? c.montoEC : c.montoIC; return Math.round(mx / us * 10000) / 10000; }
 function vCambios(){
   cjCats(); ui.cj = ui.cj || {};
@@ -2866,7 +2885,7 @@ function vFlujo(){
   var f = ui.fl, k = caja(f.caja), q = (f.q || '').toLowerCase();
   var all = movCaja().filter(function(x){ return x.caja === f.caja && x.fecha; }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || (a.tipo === b.tipo ? 0 : a.tipo === 'ing' ? -1 : 1) || String(a.folio).localeCompare(String(b.folio), 'es', {numeric: true}); });
   var sg = function(x){ return x.tipo === 'ing' ? x.montoC : -x.montoC; };
-  var si = 0; all.forEach(function(x){ if(x.fecha < f.desde) si += sg(x); });
+  var oIni = salIni(f.caja), si = oIni && oIni.fecha < f.desde ? oIni.montoC : 0; all.forEach(function(x){ if(x.fecha < f.desde && salCuenta(f.caja, x)) si += sg(x); });
   var per = all.filter(function(x){ return x.fecha >= f.desde && x.fecha <= f.hasta; });
   var run = si; per.forEach(function(x){ run += sg(x); x._sal = run; });
   var sf = run, rows = per.filter(function(x){ return flPasa(x, f, q); });
@@ -2925,7 +2944,7 @@ function vFlujo(){
       '<label class="f">Buscar<input id="flQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre, folio, gabai…"></label></div>' +
     (filt ? '<div class="row" style="margin-top:8px;gap:8px"><span class="pill t-warn">Con filtros</span><span class="sub">Abonos y cargos muestran solo lo filtrado; el saldo de cada renglón es el saldo real de la caja.</span><button type="button" class="btn ghost sm" data-a="flLimpiar">Quitar filtros</button></div>' : '') +
     '<div class="fl-kpis">' +
-      '<div class="fl-kpi"><span>Saldo inicial</span><strong' + (si < 0 ? ' style="color:var(--bad)"' : '') + '>' + mN(si) + '</strong><small>' + fFecha(f.desde) + ' · ' + mon + '</small></div>' +
+      '<div class="fl-kpi"><span>Saldo inicial <button type="button" class="back" data-a="salIniEd" title="Capturar saldo inicial de las cajas">editar</button></span><strong' + (si < 0 ? ' style="color:var(--bad)"' : '') + '>' + mN(si) + '</strong><small>' + fFecha(f.desde) + ' · ' + mon + (oIni ? ' · incluye saldo al ' + fFecha(oIni.fecha) + ' de ' + mN(oIni.montoC) : '') + '</small></div>' +
       '<div class="fl-kpi"><span>Abonos</span><strong style="color:var(--ok)">' + mN(ab) + '</strong><small>' + nA + (nA === 1 ? ' movimiento' : ' movimientos') + '</small></div>' +
       '<div class="fl-kpi"><span>Cargos</span><strong style="color:var(--bad)">' + mN(ca) + '</strong><small>' + nC + (nC === 1 ? ' movimiento' : ' movimientos') + '</small></div>' +
       '<div class="fl-kpi"><span>Saldo final</span><strong' + (sf < 0 ? ' style="color:var(--bad)"' : '') + '>' + mN(sf) + '</strong><small>' + fFecha(f.hasta) + (filt ? ' · neto filtrado ' + mN(ab - ca) : ' · ' + (sf - si >= 0 ? '+' : '−') + mN(Math.abs(sf - si)) + ' en el periodo') + '</small></div></div>' +
@@ -5821,6 +5840,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'qPagada' || a === 'qParcial'){ var q = S.cuotas.find(function(x){ return x.id === id; }); abrirPago(q.compId, {qid: q.id, monto: a === 'qPagada' ? falta(q) : 0}); }
   else if(a === 'pmSave') pmSave();
   else if(a === 'cfOpen'){ cfAbrir(b); }
+  else if(a === 'salIniEd'){ abrirSalIni(); }
+  else if(a === 'salIniOk'){ salIniOk(); }
   else if(a === 'cfClear'){ if(ui.cf) delete ui.cf[b.getAttribute('data-k')]; render(); }
   else if(a === 'datosRecargar'){ openModal(head('Volver a cargar datos del Excel', '') + '<div>Se reemplazan donadores, compromisos y pagos por los del Excel que está cargado en el sistema. Se conservan los usuarios y contraseñas. Lo que hayas capturado a mano se pierde.</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="datosRecargarOk">Volver a cargar</button></div>'); }
   else if(a === 'datosRecargarOk'){ var nS = JSON.parse(JSON.stringify(DATOS_INI)); nS.usuarios = S.usuarios; if(S.permisos) nS.permisos = S.permisos; nS.cfg = Object.assign({}, nS.cfg, {tabs: S.cfg.tabs, colsQ: S.cfg.colsQ, contCols: S.cfg.contCols, contOcultas: S.cfg.contOcultas}); var yo = user(); migrar(nS); S = nS; aplicarIngresosNuevos(); S.user = Math.max(0, S.usuarios.indexOf(S.usuarios.find(function(u){ return u.id === yo.id; }))); closeModal(); ui.cob.sel = {}; if(ui.cf) ui.cf = {}; render(); toast('Datos del Excel cargados'); }
@@ -6567,16 +6588,18 @@ function vInicio(){
     var per = ui.iniPer || 'mes', perTxt = {mes: mesNom(M) + ' ' + Y, anio: 'Año ' + Y, todo: 'Desde el inicio'}[per];
     var enPer = function(f){ f = f || ''; return per === 'todo' ? true : per === 'anio' ? f.slice(0, 4) === String(Y) : f.slice(0, 7) === mesK; };
     var tot = {}; CAJAS.filter(function(k){ return !k.externa; }).forEach(function(k){ tot[k.id] = {ing: 0, egr: 0, n: 0}; });
-    movCaja().forEach(function(x){ var t = tot[x.caja]; if(!t || !enPer(x.fecha)) return; if(x.tipo === 'ing') t.ing += x.montoC; else t.egr += x.montoC; t.n++; });
+    var MOVS_INI = movCaja(); MOVS_INI.forEach(function(x){ var t = tot[x.caja]; if(!t || !enPer(x.fecha)) return; if(x.tipo === 'ing') t.ing += x.montoC; else t.egr += x.montoC; t.n++; });
     cajasHtml = '<div class="ini-cjbar"><div class="ini-sec">Cajas · ' + esc(perTxt) + '</div><div class="chips">' +
-      [['mes', 'Este mes'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (per === o[0] ? ' on' : '') + '" data-a="iniPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+      [['mes', 'Este mes'], ['anio', 'Este año'], ['todo', 'Todo']].map(function(o){ return '<button type="button" class="chip' + (per === o[0] ? ' on' : '') + '" data-a="iniPer" data-p="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '<button type="button" class="chip" data-a="salIniEd" title="Saldo con el que arranca cada caja">Saldos iniciales</button></div></div>' +
       '<div class="ini-cajas">' + CAJAS.filter(function(k){ return !k.externa; }).map(function(k){
-        var t = tot[k.id], sal = t.ing - t.egr, fm = function(c){ return money(c, k.mon).replace(' ' + k.mon, ''); };
+        var t = tot[k.id], fm = function(c){ return money(c, k.mon).replace(' ' + k.mon, ''); };
+        var finP = per === 'todo' ? '9999-12-31' : per === 'anio' ? Y + '-12-31' : mesK + '-31', iniP = per === 'todo' ? '' : per === 'anio' ? Y + '-01-01' : mesK + '-01';
+        var oI = salIni(k.id), sIni = iniP ? saldoAl(k.id, addDias(iniP, -1), MOVS_INI) : (oI ? oI.montoC : 0), sal = saldoAl(k.id, finP, MOVS_INI);
         return '<button type="button" class="ini-caja' + (ui.iniCaja === k.id ? ' on' : '') + '" data-a="iniCaja" data-c="' + k.id + '" aria-expanded="' + (ui.iniCaja === k.id) + '"><span class="cjh"><b>' + esc(k.nombre) + '</b><span class="pill t-info">' + k.mon + '</span></span>' +
           '<span class="cjn"><div><span>Ingresos</span><strong style="color:var(--ok)">' + fm(t.ing) + '</strong></div>' +
           '<div><span>Egresos</span><strong style="color:var(--bad)">' + fm(t.egr) + '</strong></div>' +
           '<div><span>Saldo</span><strong' + (sal < 0 ? ' style="color:var(--bad)"' : '') + '>' + fm(sal) + '</strong></div></span>' +
-          '<small class="sub">' + t.n + (t.n === 1 ? ' movimiento' : ' movimientos') + ' · ' + (ui.iniCaja === k.id ? 'ocultar detalle ▴' : 'ver detalle ▾') + '</small></button>';
+          '<small class="sub">' + (sIni || oI ? 'Saldo inicial ' + fm(sIni) + ' · ' : '') + t.n + (t.n === 1 ? ' movimiento' : ' movimientos') + ' · ' + (ui.iniCaja === k.id ? 'ocultar detalle ▴' : 'ver detalle ▾') + '</small></button>';
       }).join('') + '</div>' + iniDet(per, mesK, String(Y));
   }
   var DESC = {donantes: 'Altas, datos y búsqueda de donadores', nuevocomp: 'Nuevos compromisos y renovaciones', seg2: 'Avance de cada compromiso', cobranza: 'Registrar y aplicar pagos', aprobar: 'Pagos por autorizar y reporte de entregas', avisos: 'Mensajes a quienes deben', recordat: 'Tus pendientes y reglas', comis: 'Comisiones de cada gabai', conta: 'Ingresos y egresos', rep2: 'Tablero contable con filtros', egresos: 'Registrar salidas de caja', direccion: 'Resumen para Dirección', exportar: 'Excel, PDF y respaldos', portal: 'Estado de cuenta del donante', config: 'Ajustes del sistema', permisos: 'Usuarios y accesos'};
