@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v204</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v205</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2037,7 +2037,7 @@ function vNuevoComp(){
   var Y = anioAct();
   var recAll = S.compromisos.slice().sort(function(a, b){ return (b.creado || '').localeCompare(a.creado || '') || ((parseInt(String(b.id).slice(1), 10) || 0) - (parseInt(String(a.id).slice(1), 10) || 0)); });
   return '<section class="panel"><h2>Nuevo compromiso</h2>' +
-    '<div class="form"><label class="f full">Donador *<select id="ccDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? '— בחרו —' : LANG === 'en' ? '— Select —' : '— Selecciona —') + '</option>' + dons.map(function(d){ return '<option value="' + d.id + '">' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
+    '<div class="form"><label class="f full"><span class="row lblrow"><span>Donador *</span><span class="row" style="gap:10px"><button type="button" class="back addn" data-a="ccDonEd" title="Editar los datos del donador elegido">Editar</button><button type="button" class="back addn" data-a="ccDonNuevo" title="Dar de alta un donador sin salir de aquí">+ Nuevo</button></span></span><select id="ccDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? '— בחרו —' : LANG === 'en' ? '— Select —' : '— Selecciona —') + '</option>' + dons.map(function(d){ return '<option value="' + d.id + '">' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
       formComp('cc') + '</div>' +
     '<div class="err" id="ccErr" hidden></div>' +
     '<div class="row"><button type="button" class="btn primary" data-a="ccSave">Crear compromiso</button><button type="button" class="btn ghost" data-a="ccLimpiar">Limpiar</button></div></section>' + listaComps();
@@ -3852,6 +3852,28 @@ async function hebClaude(pref){
     hint.textContent = perm ? 'No se permitió consultar a Claude; queda la sugerencia automática.' : 'No se pudo consultar a Claude ahora; queda la sugerencia automática.';
     if(perm){ SAMPLE = null; btn.hidden = true; }
   }finally{ btn.disabled = false; }
+}
+/* Alta rápida de donador desde Nuevo compromiso: queda también en Donadores y se elige solo. */
+function abrirDonRapido(){
+  openModal(head('Nuevo donador', 'Se agrega a Donadores y queda elegido en este compromiso') +
+    '<div class="form"><label class="f">Nombre(s) *<input id="qdNom" maxlength="60"></label><label class="f">Apellidos *<input id="qdApe" maxlength="80"></label>' +
+    '<label class="f">Teléfono con lada <span class="sub">(opcional)</span><input id="qdTel" type="tel" placeholder="+52 55 1234 5678" maxlength="30"></label><label class="f">Correo electrónico <span class="sub">(opcional)</span><input id="qdCorreo" type="email" maxlength="120"></label>' +
+    '<label class="f">Nombre en hebreo <span class="sub">(opcional)</span><input id="qdHeb" dir="rtl" lang="he" maxlength="80"></label><label class="f">Idioma de los mensajes<select id="qdIdioma"><option value="es">Español</option><option value="he">Hebreo</option><option value="en">Inglés</option></select></label></div>' +
+    '<div class="err" id="qdErr" hidden></div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="qdSave">Agregar donador</button></div>');
+  QD_DUP = false; setTimeout(function(){ var n = $('qdNom'); if(n) n.focus(); }, 30);
+}
+var QD_DUP = false;
+function qdSave(){
+  var g = function(k){ return $(k).value.trim(); }, e = $('qdErr'), fail = function(m){ e.textContent = m; e.hidden = false; };
+  var nom = g('qdNom'), ape = g('qdApe'), tel = g('qdTel'), correo = g('qdCorreo');
+  if(!nom || !ape) return fail('Escribe nombre y apellidos.');
+  if(tel && !/^\+\d[\d\s-]{6,}$/.test(tel)) return fail('Escribe el teléfono con lada internacional, empezando con + (por ejemplo +52 55 1234 5678), o déjalo vacío.');
+  if(correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return fail('Revisa el correo; debe tener la forma nombre@correo.com.');
+  var dup = S.donantes.find(function(x){ return sinAcento(x.nombre) === sinAcento(nom + ' ' + ape); });
+  if(dup && !QD_DUP){ QD_DUP = true; return fail('Ya existe un donador llamado ' + dup.nombre + '. Si es otra persona, presiona “Agregar donador” de nuevo.'); }
+  var d = {id: nid('d'), nom: nom, ape: ape, nombre: nom + ' ' + ape, hebreo: g('qdHeb') || hebreoSugerido(nom, ape), tel: tel, correo: correo, idioma: $('qdIdioma').value, dir: '', notas: '', noEnviar: false};
+  S.donantes.push(d); log('Agregó al donador ' + d.nombre + ' (desde Nuevo compromiso)');
+  ui.cc = ui.cc || {}; ui.cc.ccDon = d.id; closeModal(); render(); toast('Donador agregado y elegido');
 }
 function afSave(){
   var g = function(k){ return $(k).value.trim(); }, e = $('afErr'), fail = function(m){ e.textContent = m; e.hidden = false; };
@@ -5841,6 +5863,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'pmSave') pmSave();
   else if(a === 'cfOpen'){ cfAbrir(b); }
   else if(a === 'salIniEd'){ abrirSalIni(); }
+  else if(a === 'ccDonNuevo'){ abrirDonRapido(); }
+  else if(a === 'qdSave'){ qdSave(); }
+  else if(a === 'ccDonEd'){ var cdv = ($('ccDon') && $('ccDon').value) || (ui.cc && ui.cc.ccDon); if(cdv && don(cdv)) abrirDonante(cdv); else toast('Primero elige el donador que quieres editar'); }
   else if(a === 'salIniOk'){ salIniOk(); }
   else if(a === 'cfClear'){ if(ui.cf) delete ui.cf[b.getAttribute('data-k')]; render(); }
   else if(a === 'datosRecargar'){ openModal(head('Volver a cargar datos del Excel', '') + '<div>Se reemplazan donadores, compromisos y pagos por los del Excel que está cargado en el sistema. Se conservan los usuarios y contraseñas. Lo que hayas capturado a mano se pierde.</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="datosRecargarOk">Volver a cargar</button></div>'); }
