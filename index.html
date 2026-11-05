@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v201</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v202</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1417,7 +1417,6 @@ function colFiltros(){
       if(lbl && !/^(Acciones|Actions|פעולות)$/i.test(lbl)){
         var vals = []; rows.forEach(function(r){ var v = cfTxt(r.cells[i]); if(v && vals.indexOf(v) === -1) vals.push(v); });
         vals.sort(function(a, b){ return a.localeCompare(b, 'es', {numeric: true}); });
-        if(vals.length <= 500){ var sl = cfSelArr(st[i]).filter(function(v){ return vals.indexOf(v) !== -1; }); if(sl.length) st[i] = sl; else delete st[i]; }
         var sl2 = cfSelArr(st[i]);
         c.innerHTML = vals.length <= 500 ? '<button type="button" class="cfbtn' + (sl2.length ? ' on' : '') + '" data-a="cfOpen" data-k="' + key + '" data-i="' + i + '" title="Filtrar ' + esc(lbl) + '" aria-label="Filtrar ' + esc(lbl) + '"><span class="cfbl">' + (sl2.length ? (sl2.length === 1 ? esc(sl2[0]) : sl2.length + ' elegidos') : 'Todos') + '</span><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>'
           : '<input type="search" data-cfk="' + key + '" data-cfi="' + i + '" value="' + esc(st[i] || '') + '" placeholder="Filtrar" aria-label="Filtrar ' + esc(lbl) + '">';
@@ -1442,13 +1441,14 @@ function cfAbrir(btn){
   var ya = btn.classList.contains('abierto'); document.querySelectorAll('.cfbtn.abierto').forEach(function(x){ x.classList.remove('abierto'); }); cfCerrar(); if(ya) return;
   var t = btn.closest('table'), key = btn.getAttribute('data-k'), i = btn.getAttribute('data-i'), st = ui.cf[key] = ui.cf[key] || {}, th = t.tHead.rows[0].cells[+i];
   var cnt = {}, vals = []; Array.prototype.forEach.call(t.tBodies[0].rows, function(r){ var v = cfTxt(r.cells[+i]); if(!v) return; if(!cnt[v]){ cnt[v] = 0; vals.push(v); } cnt[v]++; });
-  vals.sort(function(a, b){ return a.localeCompare(b, 'es', {numeric: true}); });
   var sel = cfSelArr(st[i]), todos = !sel.length;
+  sel.forEach(function(v){ if(!cnt[v]){ cnt[v] = 0; vals.push(v); } });
+  vals.sort(function(a, b){ return a.localeCompare(b, 'es', {numeric: true}); });
   var p = document.createElement('div'); p.id = 'cfPop'; p.className = 'cfpop'; p.setAttribute('role', 'dialog');
   p.innerHTML = '<div class="cfph"><b>' + esc(th ? th.textContent.trim() : 'Filtrar') + '</b><span class="sub">' + vals.length + ' opciones</span></div>' +
     '<input type="search" class="cfq" placeholder="Buscar…" aria-label="Buscar opción">' +
     '<div class="cfpa"><button type="button" data-cfp="all">Marcar todos</button><button type="button" data-cfp="none">Quitar todos</button></div>' +
-    '<div class="cfpl">' + vals.map(function(v){ return '<label class="cfpo"><input type="checkbox" value="' + esc(v) + '"' + (todos || sel.indexOf(v) !== -1 ? ' checked' : '') + '><span class="cfpv">' + cfDeco(v) + '</span><span class="cfpn">' + cnt[v] + '</span></label>'; }).join('') + '<div class="sub cfpvac" hidden>Nada coincide</div></div>' +
+    '<div class="cfpl">' + vals.map(function(v){ return '<label class="cfpo"><input type="checkbox" value="' + esc(v) + '"' + (todos || sel.indexOf(v) !== -1 ? ' checked' : '') + '><span class="cfpv">' + cfDeco(v) + '</span><span class="cfpn"' + (cnt[v] ? '' : ' title="No hay renglones con este valor en lo que se ve ahora"') + '>' + cnt[v] + '</span></label>'; }).join('') + '<div class="sub cfpvac" hidden>Nada coincide</div></div>' +
     '<div class="cfpf"><button type="button" class="btn ghost sm" data-cfp="clear">Mostrar todos</button><button type="button" class="btn primary sm" data-cfp="ok">Aplicar</button></div>';
   document.body.appendChild(p); btn.classList.add('abierto');
   var rc = btn.getBoundingClientRect(), w = Math.min(300, innerWidth - 16); p.style.width = w + 'px';
@@ -3323,7 +3323,7 @@ function pwSave(k){
 }
 
 /* ================= Cobranza ================= */
-function cobLimpiar(){ if(ui.cf){ delete ui.cf.cob; delete ui.cf.bk; } if(ui.cob){ ui.cob.q = ''; ui.cob.bkDon = ''; ui.cob.bkEst = 'todos'; } }
+function cobLimpiar(){ /* Los filtros que eligió el usuario se conservan siempre (solo los borra 'Quitar filtros'). */ }
 function cobMesTxt(){ var f = ui.cob, Y = f.anio || anioAct(); return f.mes === 'previas' ? 'Vencidas de meses anteriores' : f.mes === 'vencidas' ? 'Todas las vencidas hasta hoy' : f.mes === 'todo' ? 'Todo el año ' + Y : Mes(+f.mes) + ' ' + Y; }
 function cobEdoGrupo(q){ var e = estadoQ(q); return e === 'pagada' || e === 'adelantada' ? 'liq' : e === 'cancelada' || e === 'pausada' ? 'otra' : 'pend'; }
 var conDia2Skip = false;
@@ -5729,9 +5729,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'tbPdf'){ tbPdf(b.getAttribute('data-k'), b.getAttribute('data-o')); }
   else if(a === 'tbAnch'){ if(S.cfg) delete S.cfg['anch_' + b.getAttribute('data-k')]; save(); render(); }
   else if(a === 'tbFila'){ S.cfg = S.cfg || {}; S.cfg['fila_' + b.getAttribute('data-k')] = b.getAttribute('data-f'); if(b.getAttribute('data-k') === 'cob') delete S.cfg.cobFila; save(); render(); }
-  else if(a === 'cobCjAll'){ ui.cob.cajas = []; if(ui.cf) delete ui.cf.cob; render(); }
-  else if(a === 'cobCj'){ var ck = ui.cob.cajas = ui.cob.cajas || [], kv = b.getAttribute('data-c'), ki = ck.indexOf(kv); if(ki === -1) ck.push(kv); else ck.splice(ki, 1); if(ck.length === CAJAS.length) ui.cob.cajas = []; if(ui.cf) delete ui.cf.cob; render(); }
-  else if(a === 'cobMonAll'){ ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
+  else if(a === 'cobCjAll'){ ui.cob.cajas = []; render(); }
+  else if(a === 'cobCj'){ var ck = ui.cob.cajas = ui.cob.cajas || [], kv = b.getAttribute('data-c'), ki = ck.indexOf(kv); if(ki === -1) ck.push(kv); else ck.splice(ki, 1); if(ck.length === CAJAS.length) ui.cob.cajas = []; render(); }
+  else if(a === 'cobMonAll'){ ui.cob.mons = []; render(); }
   else if(a === 'cobColMov'){ var cc = cobColsCfg(), ck2 = b.getAttribute('data-k'), ci2 = cc.orden.indexOf(ck2), cj2 = ci2 + (+b.getAttribute('data-d')); if(cj2 >= 0 && cj2 < cc.orden.length){ cc.orden.splice(ci2, 1); cc.orden.splice(cj2, 0, ck2); cobColGuardar(cc); } }
   else if(a === 'cobColReset'){ cobColGuardar({orden: COB_DEF.concat(COB_EXTRA), oc: COB_EXTRA.slice()}); }
   else if(a === 'fuente'){ try{ localStorage.setItem('bl-zoom', b.getAttribute('data-z')); }catch(e){} fuenteAplicar(); }
@@ -5753,8 +5753,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'rgIcsTodas'){ icsDescargar(misReglas().filter(function(r){ return r.estado === 'activa'; }), 'Recordatorios Bait Lapletot'); }
   else if(a === 'avF'){ ui.avf = b.getAttribute('data-f'); render(); }
   else if(a === 'avLimpiar'){ ui.avQ = ''; ui.avGab = ''; ui.avCon = ''; render(); }
-  else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); if(ui.cf) delete ui.cf.cob; render(); }
-  else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; if(ui.cf) delete ui.cf.cob; render(); }
+  else if(a === 'cobEdo'){ ui.cob.edo = b.getAttribute('data-e'); render(); }
+  else if(a === 'cobMon'){ var cm = ui.cob.mons = ui.cob.mons || [], cv = b.getAttribute('data-m'), ci = cm.indexOf(cv); if(ci === -1) cm.push(cv); else cm.splice(ci, 1); if(cm.length === 2) ui.cob.mons = []; render(); }
   else if(a === 'gabOrd'){ ev.preventDefault(); abrirGabOrd(); }
   else if(a === 'reset'){ if(user().rol !== 'Dirección' || S.real) return; try{ localStorage.removeItem(KEY); }catch(e){} seed(); ui.comp.sel = null; save(); cerrarMas(); sesionBorrar(); mostrarLogin(); }
   else if(a === 'openComp'){ ui.view = 'compromisos'; ui.comp.sel = id; render(); window.scrollTo(0, 0); }
@@ -6160,7 +6160,7 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'rgDon'){ var nm = $('rgNom'); if(nm && !nm.value && t.value){ var dd = don(t.value); if(dd) nm.value = 'Recordar a ' + dd.nombre; } }
   else if(t.id === 'rgFrec'){ $('rgDowW').hidden = t.value !== 'semanal'; $('rgDomW').hidden = t.value !== 'mensual'; $('rgFecW').hidden = t.value !== 'una'; $('rgFechasW').hidden = t.value !== 'fechas'; }
   else if(t.id === 'avQ' || t.id === 'avGab' || t.id === 'avCon'){ if((ui[t.id] || '') === t.value) return; ui[t.id] = t.value; if(t.id === 'avQ'){ clearTimeout(AVQ_T); setTimeout(render, 0); } else render(); }
-  else if(t.id === 'cobCon'){ ui.cob.con = t.value; if(ui.cf) delete ui.cf.cob; render(); }
+  else if(t.id === 'cobCon'){ ui.cob.con = t.value; render(); }
   else if(t.id === 'recEstilo'){ S.cfg = S.cfg || {}; S.cfg.recEstilo = t.value; save(); toast('Estilo de recibo guardado'); }
   else if(t.id === 'portalSel'){ ui.portal.d = t.value || null; render(); }
   else if(t.name === 'pmModo'){ PM.modo = t.value; $('pmElegir').hidden = PM.modo !== 'elegir'; pmPrev(); }
