@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v189</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v190</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -6506,8 +6506,9 @@ function r2Rango(){
   return ['0000-01-01', '9999-12-31'];
 }
 function r2Pasa(x, sin, rgF){
-  var rg = rgF || r2Rango(); sin = sin || '';
-  if(x.fecha < rg[0] || x.fecha > rg[1]) return false;
+  var rg = rgF || r2Rango(); sin = sin || ''; var r2m = R2.meses || [];
+  if(r2m.length){ var ymx = x.fecha.slice(0, 7); if(rgF){ ymx = String(+ymx.slice(0, 4) + 1) + ymx.slice(4); } if(r2m.indexOf(ymx) === -1) return false; }
+  else if(x.fecha < rg[0] || x.fecha > rg[1]) return false;
   if(R2.tipo === 'cam' ? !x.cambio : R2.tipo === 'sin' ? x.cambio : (R2.tipo !== 'todos' && (x.tipo !== R2.tipo || x.cambio))) return false;
   if(sin !== 'gab' && !gabOk(R2.gab || 'todos', x.gabai)) return false;
   if(R2.con && x.concepto !== R2.con) return false;
@@ -6529,7 +6530,7 @@ function vRep2(){
   var sel = function(id, val, opts, todos){ return '<select data-r2="' + id + '"><option value="">' + todos + '</option>' + opts.map(function(o){ var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (v === val ? ' selected' : '') + ' dir="auto">' + esc(t) + '</option>'; }).join('') + '</select>'; };
   var uniq = function(k){ var m = {}; todas.forEach(function(x){ if(x[k]) m[x[k]] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }); };
   var dons = S.donantes.slice().sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); }).map(function(d){ return [d.id, d.nombre]; });
-  var per = [['anio', 'Este año'], ['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['30', 'Últimos 30 días'], ['anioant', 'Año pasado'], ['todo', 'Todo'], ['rango', 'Elegir fechas…']];
+  var per = [['anio', 'Este año'], ['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['30', 'Últimos 30 días'], ['anioant', 'Año pasado'], ['todo', 'Todo']].concat(R2.per === 'rango' ? [['rango', 'Fechas elegidas']] : []).concat((R2.meses || []).length ? [['meses', 'Meses elegidos ↓']] : []);
   var filt = '<section class="panel"><div class="r2filt">' +
     '<label class="f">Tipo de movimiento<select data-r2="tipo">' + [['todos', 'Todo (con cambios de caja)'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']].map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
     '<div class="f fms">Gabai (asignado)' + gabMs('r2') + '</div>' +
@@ -6537,7 +6538,10 @@ function vRep2(){
     '<label class="f">Donador' + '<select id="r2Don" data-r2="don"><option value="">Todos los donadores</option>' + dons.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === R2.don ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>' +
     '<label class="f">Modalidad' + sel('mod', R2.mod, uniq('mod'), 'Todas') + '</label>' +
     '<label class="f">Periodo<select data-r2="per">' + per.map(function(o){ return '<option value="' + o[0] + '"' + (R2.per === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
-    (R2.per === 'rango' ? '<label class="f">Desde<input type="date" data-r2="desde" value="' + esc(R2.desde) + '"></label><label class="f">Hasta<input type="date" data-r2="hasta" value="' + esc(R2.hasta) + '"></label>' : '') +
+    (function(){ R2.meses = R2.meses || []; var ms = {}; todas.forEach(function(x){ if(x.fecha) ms[x.fecha.slice(0, 7)] = 1; }); ms[hoy().slice(0, 7)] = 1; R2.meses.forEach(function(m){ ms[m] = 1; });
+      var pill = function(ym){ return '<span class="r2g" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '">' + esc(Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4)) + '</span>'; }, sel = R2.meses.slice().sort();
+      var sum = !sel.length ? '<span>Usa el periodo de al lado</span>' : sel.length <= 3 ? '<span class="gsum">' + sel.map(pill).join('') + '</span>' : '<span class="gsum">' + sel.slice(0, 6).map(function(ym){ return '<i class="gdot" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '"></i>'; }).join('') + '<span>' + sel.length + ' meses elegidos</span></span>';
+      var h = msHtml('r2ms', Object.keys(ms).sort().reverse().map(function(ym){ return [ym, pill(ym)]; }), R2.meses, sum); MS.r2ms.set = function(a){ R2.meses = a; R2.per = a.length ? 'meses' : 'anio'; R2.desde = ''; R2.hasta = ''; R2.mesSel = ''; }; return '<div class="f fms">Meses (puedes elegir varios)' + h + '</div>'; })() +
     '<label class="f">Número de recibo<input type="search" data-r2="rec" value="' + esc(R2.rec) + '" placeholder="Ej. R-0910"></label>' +
     '<label class="f">Comentarios<input type="search" data-r2="com" value="' + esc(R2.com) + '" placeholder="Buscar en comentarios"></label>' +
     '<div class="f fms">Caja (puedes elegir varias)' + (function(){ var h = msHtml('r2cj', CAJAS.map(function(k){ return [k.id, cajaPill(k.id)]; }), R2.cajas, R2.cajas.length ? '<span class="gsum">' + R2.cajas.map(cajaPill).join('') + '</span>' : '<span>Todas las cajas</span>'); MS.r2cj.set = function(a){ R2.cajas = a; }; return h; })() + '</div>' +
@@ -6613,7 +6617,7 @@ function vRep2(){
 document.addEventListener('change', function(ev){
   var t0 = ev.target; if(t0 && t0.hasAttribute && t0.hasAttribute('data-r2np')){ var gv = t0.value, ix = R2NP.gabs.indexOf(gv); if(t0.checked && ix === -1) R2NP.gabs.push(gv); if(!t0.checked && ix !== -1) R2NP.gabs.splice(ix, 1); R2NP.open = true; render(); return; }
   var t = ev.target, k = t && t.getAttribute && t.getAttribute('data-r2'); if(!k) return;
-  R2[k] = t.value; if(k === 'per' && t.value !== 'rango'){ R2.desde = ''; R2.hasta = ''; } R2.mesSel = R2.mesSel && k !== 'per' ? R2.mesSel : ''; render();
+  R2[k] = t.value; if(k === 'per' && t.value !== 'rango'){ R2.desde = ''; R2.hasta = ''; } if(k === 'per' && t.value !== 'meses') R2.meses = []; R2.mesSel = R2.mesSel && k !== 'per' ? R2.mesSel : ''; render();
 });
 document.addEventListener('click', function(ev){
   var b = ev.target.closest && ev.target.closest('[data-a]'); if(!b) return; var a = b.getAttribute('data-a'), v = b.getAttribute('data-v') || '';
@@ -6625,7 +6629,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'r2SortClr'){ R2S.keys = []; render(); }
   else if(a === 'r2npTodos'){ R2NP.gabs = (S.gabaim || []).slice(); R2NP.open = true; render(); }
   else if(a === 'r2npNinguno'){ R2NP.gabs = []; R2NP.open = true; render(); }
-  else if(a === 'r2Limpiar'){ R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: ''}; render(); }
+  else if(a === 'r2Limpiar'){ R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; render(); }
 });
 
 document.addEventListener('toggle', function(ev){ if(ev.target && ev.target.id === 'r2npSel') R2NP.open = ev.target.open; }, true);
