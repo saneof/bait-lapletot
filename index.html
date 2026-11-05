@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v208</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v209</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3487,6 +3487,36 @@ function eliminarCuotas(ids){
   if(ui.cob) ui.cob.sel = {};
   return {q: ids.length, p: np};
 }
+/* Pagos sueltos: pagos que no están aplicados a ningún mes. No salen en Cobranza pero sí suman en Inicio; aquí se pueden borrar o asignar. */
+function pagosSueltos(){ var ids = {}; (S.cuotas || []).forEach(function(q){ ids[q.id] = 1; }); return (S.donativos || []).filter(function(p){ return !(p.cubre || []).some(function(k){ return k.ap > 0 && ids[k.qid]; }); }).sort(function(a, b){ return String(a.fecha).localeCompare(String(b.fecha)); }); }
+function sueltosHtml(){
+  var ls = pagosSueltos(); if(!ls.length) return '';
+  return '<div class="note" style="border-left:4px solid var(--bad);margin-bottom:12px"><b>⚠️ ' + ls.length + (ls.length === 1 ? ' pago no está aplicado' : ' pagos no están aplicados') + ' a ningún mes.</b> Por eso no salen en la tabla de abajo, pero sí cuentan en Inicio y en los reportes. Toca <b>Revisar</b> para borrarlo o asignarlo a un mes.' +
+    '<div class="tw" style="margin-top:8px"><table class="cobt"><thead><tr><th>Fecha</th><th>Recibo</th><th>Donador</th><th>Concepto</th><th class="n">Monto</th><th></th></tr></thead><tbody>' +
+    ls.map(function(p){ var c = comp(p.compId), d = c ? don(c.donanteId) : null; return '<tr><td data-l="Fecha" class="nowrap">' + fFecha(p.fecha) + '</td><td data-l="Recibo"><b>' + esc(p.recibo || '') + '</b></td><td data-l="Donador">' + esc(d ? d.nombre : '—') + '</td><td data-l="Concepto">' + esc(c ? (c.concepto || '') : '—') + '</td><td class="n" data-l="Monto"><b>' + money(p.montoC, p.moneda) + '</b></td><td><button type="button" class="btn ghost sm" data-a="sueltoRev" data-id="' + p.id + '">Revisar</button></td></tr>'; }).join('') +
+    '</tbody></table></div></div>';
+}
+function abrirSuelto(id){
+  var p = S.donativos.find(function(x){ return x.id === id; }); if(!p) return;
+  var c = comp(p.compId), d = c ? don(c.donanteId) : null, qs = c ? cuotasDe(c.id).slice().sort(function(a, b){ return a.mes - b.mes; }) : [], m0 = p.mesCorr || +String(p.fecha).slice(5, 7);
+  openModal(head('Pago ' + esc(p.recibo) + ' sin mes', esc(d ? d.nombre : '—') + ' · ' + esc(c ? (c.concepto || '') : '') + ' · ' + money(p.montoC, p.moneda) + ' · ' + fFecha(p.fecha)) +
+    '<div class="note" style="margin-bottom:10px">Este pago no está aplicado a ningún mes del compromiso, pero sí suma en Inicio y en los reportes. Si no va, elimínalo. Si sí va, elige a qué mes pertenece.</div>' +
+    (qs.length ? '<div class="form"><label class="f full">Aplicarlo al mes<select id="suMes">' + qs.map(function(q){ return '<option value="' + q.id + '"' + (q.mes === m0 ? ' selected' : '') + '>' + Mes(q.mes) + ' ' + c.anio + ' — debe ' + money(q.montoC, c.moneda) + ', falta ' + money(falta(q), c.moneda) + '</option>'; }).join('') + '</select></label></div>' : '<div class="sub">El compromiso ya no tiene meses; solo se puede eliminar.</div>') +
+    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn ghost" style="color:var(--bad)" data-a="sueltoDel" data-id="' + p.id + '">Eliminar pago</button>' + (qs.length ? '<button type="button" class="btn primary" data-a="sueltoAp" data-id="' + p.id + '">Aplicar a ese mes</button>' : '') + '</div>');
+}
+function sueltoDel(id){
+  var p = S.donativos.find(function(x){ return x.id === id; }); if(!p) return; var c = comp(p.compId), d = c ? don(c.donanteId) : null;
+  desaplicar(p); S.donativos.splice(S.donativos.indexOf(p), 1);
+  log('Eliminó pago ' + p.recibo + ' de ' + money(p.montoC, p.moneda) + (d ? ' de ' + d.nombre : '') + ' (no estaba aplicado a ningún mes)');
+  closeModal(); render(); toast('Pago ' + p.recibo + ' eliminado de todos lados');
+}
+function sueltoAp(id){
+  var p = S.donativos.find(function(x){ return x.id === id; }), tq = $('suMes') ? S.cuotas.find(function(z){ return z.id === $('suMes').value; }) : null; if(!p || !tq) return;
+  var c = comp(p.compId), d = c ? don(c.donanteId) : null;
+  desaplicar(p); tq.aplicadoC += p.montoCompC; p.cubre = [{qid: tq.id, num: tq.num, mes: tq.mes, ap: p.montoCompC}]; p.mesCorr = tq.mes;
+  log('Aplicó el pago ' + p.recibo + (d ? ' de ' + d.nombre : '') + ' a ' + Mes(tq.mes) + ' (no estaba aplicado a ningún mes)');
+  closeModal(); render(); toast('Pago ' + p.recibo + ' aplicado a ' + Mes(tq.mes));
+}
 function vCobranza(){
   if(soloBloque()) ui.cob.rap = true;
   var f = ui.cob, base = cobFiltradas(false), qs = cobFiltradas(true);
@@ -3497,7 +3527,7 @@ function vCobranza(){
   var opts = '<option value="todo"' + (f.mes === 'todo' ? ' selected' : '') + '>Todo el año ' + YY + '</option><option value="previas"' + (f.mes === 'previas' ? ' selected' : '') + '>Vencidas de meses anteriores</option><option value="vencidas"' + (f.mes === 'vencidas' ? ' selected' : '') + '>Todas las vencidas hasta hoy</option>' +
     MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (f.mes === String(k + 1) ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + YY + (k + 1 === mesAct() && YY === anioAct() ? ' (mes actual)' : '') + '</option>'; }).join('');
   var selAnio = '<label class="f">Año<select id="cobAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (+a === YY ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>';
-  return '<section class="panel">' +
+  return '<section class="panel">' + (soloBloque() ? '' : sueltosHtml()) +
     (soloBloque() ? (requiereAprob() ? '<div class="note">Marca con palomita los cobros que vas a entregar, pon el monto (pesos o dólares) y la caja. Dirección los autoriza antes de registrarse.</div>' : '') : '<div class="row" style="justify-content:space-between"><div class="seg" role="group" aria-label="Modo"><button type="button" class="' + (f.rap ? '' : 'on') + '" data-a="cobModo" data-m="lista">Lista de cuotas</button><button type="button" class="' + (f.rap ? 'on' : '') + '" data-a="cobModo" data-m="bloque">Cobro en bloque</button></div></div>') +
     '<div class="form">' + selAnio + '<label class="f">Mes<select id="cobMes">' + opts + '</select></label>' + (f.rap ? '' : '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cob') + '</div>') +
     '<label class="f">Buscar donante o recibo<input id="cobQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre o recibo (ej. R-0880 o 880)">' + (cobRecQ(f.q) ? '<small class="sub">Buscando el recibo <b>' + esc(cobRecQ(f.q)) + '</b> en todos los meses</small>' : '') + '</label></div>' +
@@ -5869,6 +5899,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'qPagada' || a === 'qParcial'){ var q = S.cuotas.find(function(x){ return x.id === id; }); abrirPago(q.compId, {qid: q.id, monto: a === 'qPagada' ? falta(q) : 0}); }
   else if(a === 'pmSave') pmSave();
   else if(a === 'cfOpen'){ cfAbrir(b); }
+  else if(a === 'sueltoRev'){ abrirSuelto(id); }
+  else if(a === 'sueltoDel'){ sueltoDel(id); }
+  else if(a === 'sueltoAp'){ sueltoAp(id); }
   else if(a === 'salIniEd'){ abrirSalIni(); }
   else if(a === 'ccDonNuevo'){ abrirDonRapido(); }
   else if(a === 'qdSave'){ qdSave(); }
