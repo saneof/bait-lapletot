@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v195</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v196</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1358,8 +1358,16 @@ function render0(){
   try{ xsMarcar(); }catch(e){}
   pruebaBarra(); sugBadge(); navAplicar();
   if(ui.view === 'cobranza' && ui.cob.rap) bkResumen();
-  save();
+  save(); filtrosGuardar();
 }
+var FILT_KEY = 'bl-filtros-v1', FILT_LAST = '';
+function filtrosGuardar(){ try{ var o = {cont: ui.cont, contTab: ui.contTab, fl: ui.fl, iniF: ui.iniF, iniPer: ui.iniPer, iniCaja: ui.iniCaja, egL: ui.egL, cjL: ui.cjL, ccl: ui.ccl, cf: ui.cf, R2: R2, R2S: R2S}; var t = JSON.stringify(o); if(t === FILT_LAST) return; FILT_LAST = t; localStorage.setItem(FILT_KEY, t); }catch(e){} }
+function filtrosCargar(){ try{ var o = JSON.parse(localStorage.getItem(FILT_KEY) || 'null'); if(!o) return;
+  ['cont', 'contTab', 'fl', 'iniF', 'iniPer', 'iniCaja', 'egL', 'cjL', 'ccl', 'cf'].forEach(function(k){ if(o[k] != null) ui[k] = o[k]; });
+  if(o.R2) Object.keys(o.R2).forEach(function(k){ R2[k] = o.R2[k]; }); if(o.R2S && o.R2S.keys) R2S.keys = o.R2S.keys;
+  if(ui.fl && ui.fl.per && /^(mes|mesant|anio|todo)$/.test(ui.fl.per)){ var rr = flRango(ui.fl.per); ui.fl.desde = rr[0]; ui.fl.hasta = rr[1]; }
+}catch(e){} }
+function filtrosLimpiar(){ ui.cont = null; ui.fl = null; ui.iniF = null; ui.egL = null; ui.cjL = null; ui.cf = {}; if(ui.ccl){ ui.ccl.gab = 'todos'; ui.ccl.cons = []; ui.ccl.mes = ''; ui.ccl.don = ''; } R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; try{ localStorage.removeItem(FILT_KEY); }catch(e){} FILT_LAST = ''; }
 function xsMarcar(){
   document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
     var x = w.scrollWidth > w.clientWidth + 4, h = w.previousElementSibling, tiene = h && h.classList && h.classList.contains('xhint');
@@ -2740,7 +2748,7 @@ function iniDet(per, mesK, Y){
       (function(){ var ms = {}; todosCj.forEach(function(x){ ms[x.fecha.slice(0, 7)] = 1; }); ms[hoy().slice(0, 7)] = 1; f.meses.forEach(function(m){ ms[m] = 1; }); var lista = Object.keys(ms).sort();
         var sel = f.meses.slice().sort(), sum = !sel.length ? '<span>' + (per === 'mes' ? 'Este mes' : per === 'anio' ? 'Este año' : 'Todos los meses') + '</span>' : sel.length <= 3 ? '<span class="gsum">' + sel.map(mesPill).join('') + '</span>' : '<span class="gsum">' + sel.slice(0, 6).map(function(ym){ return '<i class="gdot" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '"></i>'; }).join('') + '<span>' + sel.length + ' meses elegidos</span></span>';
         var h = msHtml('inims', lista.map(function(ym){ return [ym, mesPill(ym)]; }), f.meses, sum); MS.inims.set = function(a){ f.meses = a; f.desde = ''; f.hasta = ''; }; return '<div class="f fms">Meses (puedes elegir varios)' + h + '</div>'; })() +
-      '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos (con cambios que entran)'], ['egr', 'Solo egresos (con cambios que salen)'], ['ingx', 'Solo ingresos, sin cambios'], ['egrx', 'Solo egresos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
+      '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, TIPO_OPTS) + '</label>' +
       '<div class="f fms">Caja (puedes elegir varias)' + (function(){ var h = msHtml('inicj', CAJAS.map(function(kk){ return [kk.id, cajaPill(kk.id)]; }), cjs, '<span class="gsum">' + cjs.map(cajaPill).join('') + '</span>'); MS.inicj.set = function(a){ f.cajas = a.length ? a : [cid]; }; return h; })() + '</div>' +
       '<div class="f fms">Gabai (ingresos)' + gabMs('ini') + '</div>' +
       (function(){ var lista = function(cat, tipo, selA){ var l = (cat || []).slice(); todosCj.forEach(function(x){ if(x.tipo === tipo && !x.cambio){ var c = conDe(x); if(l.indexOf(c) === -1) l.push(c); } }); selA.forEach(function(c){ if(l.indexOf(c) === -1) l.push(c); }); return l.map(function(c){ return [c, esc(c)]; }); };
@@ -2854,7 +2862,7 @@ function vFlujo(){
         return '<label class="f">Mes<select id="flMes"><option value="">' + (esMes ? 'Elegir mes…' : 'Varios meses / rango') + '</option>' + Object.keys(ms).sort().reverse().map(function(m){ return '<option value="' + m + '"' + (m === esMes ? ' selected' : '') + '>' + esc(Mes(+m.slice(5, 7))) + ' ' + m.slice(0, 4) + '</option>'; }).join('') + '</select></label>'; })() +
       '<label class="f">Desde<input id="flDesde" type="date" value="' + esc(f.desde) + '"></label>' +
       '<label class="f">Hasta<input id="flHasta" type="date" value="' + esc(f.hasta) + '"></label>' +
-      '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (con cambios que entran)'], ['egr', 'Solo cargos (con cambios que salen)'], ['ingx', 'Solo abonos, sin cambios'], ['egrx', 'Solo cargos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
+      '<label class="f">Mostrar' + sel('flTipo', TIPO_OPTS, f.tipo) + '</label>' +
       (function(){ f.gabs = f.gabs || []; var gl = (S.gabaim || []).slice(); all.forEach(function(x){ if(x.tipo === 'ing' && !x.cambio && x.gabai && gl.indexOf(x.gabai) === -1) gl.push(x.gabai); }); var ns = f.gabs.length;
         return '<div class="f fms">Gabai (puedes elegir varios)<details class="msel" id="flGabSel"' + (ui.flGabOpen ? ' open' : '') + '><summary>' + (!ns ? 'Todos los gabaim' : ns === 1 ? esc(f.gabs[0]) : ns + ' gabaim elegidos') + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="flgTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="flgNinguno">Quitar selección</button><button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button></div>' +
           gl.map(function(g){ return '<label><input type="checkbox" data-flg value="' + esc(g) + '"' + (f.gabs.indexOf(g) !== -1 ? ' checked' : '') + '> ' + r2Gab(g) + '</label>'; }).join('') + '</div></details></div>'; })() +
@@ -2876,9 +2884,10 @@ function vFlujo(){
       '<div><h3>Cargos por concepto</h3>' + lista(gC, 'var(--bad)', 'Sin cargos') + '</div>' +
       '<div><h3>Cambios de caja</h3>' + lista(gX, 'signo', 'Sin cambios de caja') + '</div></div></section>';
 }
+var TIPO_OPTS = [['todos', 'Todo'], ['ing', 'Ingresos (con cambios que entran)'], ['egr', 'Egresos (con cambios que salen)'], ['ingx', 'Solo ingresos, sin cambios'], ['egrx', 'Solo egresos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']];
+function tipoOk(t, x){ if(!t || t === 'todos') return true; if(t === 'ing') return x.tipo === 'ing'; if(t === 'egr') return x.tipo === 'egr'; if(t === 'ingx') return x.tipo === 'ing' && !x.cambio; if(t === 'egrx') return x.tipo === 'egr' && !x.cambio; if(t === 'cam') return !!x.cambio; if(t === 'sin') return !x.cambio; return true; }
 function contPasa(x, f, q){
-  if(f.tipo === 'cam'){ if(!x.cambio) return false; }
-  else if(f.tipo !== 'todos' && (x.tipo !== f.tipo || x.cambio)) return false;
+  if(!tipoOk(f.tipo, x)) return false;
   if(f.mes !== 'todos' && +x.fecha.slice(5, 7) !== +f.mes) return false;
   if(f.caja !== 'todos' && x.caja !== f.caja) return false;
   if(f.con && x.concepto !== f.con) return false;
@@ -3035,7 +3044,7 @@ function vConta(){
   var tot = {ing: {MXN: 0, USD: 0}, egr: {MXN: 0, USD: 0}}; rows.forEach(function(x){ tot[x.tipo][x.moneda] += x.montoC; });
   var sel = function(id, opts, v){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
   return tabs + contResumenGab() + '<section class="panel">' +
-    '<div class="seg" role="group" aria-label="Tipo">' + [['todos', 'Todos'], ['ing', 'Ingresos'], ['egr', 'Egresos'], ['cam', 'Cambios caja']].map(function(x){ return '<button type="button" class="' + (f.tipo === x[0] ? 'on' : '') + '" data-a="contTipo" data-t="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    '<label class="f" style="max-width:340px">Mostrar<select id="contTipoSel">' + TIPO_OPTS.map(function(o){ return '<option value="' + o[0] + '"' + (f.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
     '<div class="form">' +
       '<label class="f">Año' + sel('contAnio', Object.keys(anios).sort().reverse().map(function(a){ return [a, a]; }), f.anio) + '</label>' +
       '<label class="f">Mes' + sel('contMes', [['todos', 'Todo el año']].concat(MESES.es.map(function(n, k){ return [String(k + 1), Mes(k + 1)]; })), f.mes) + '</label>' +
@@ -5875,6 +5884,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'egEdOk'){ egEdSave(id); }
   else if(a === 'egDelOk'){ var ei = S.egresos.findIndex(function(x){ return x.id === id; }); if(ei !== -1){ var ex = S.egresos.splice(ei, 1)[0]; log('Eliminó el egreso ' + ex.folio + ' de ' + money(ex.montoC, ex.moneda)); } closeModal(); render(); toast('Egreso eliminado'); }
   else if(a === 'contTipo'){ ui.cont.tipo = b.getAttribute('data-t'); render(); }
+  else if(a === 'filtTodos'){ filtrosLimpiar(); render(); toast('Filtros quitados en todas las pantallas'); }
   else if(a === 'contXls' || a === 'contPdf'){
     var cf = contFilas(), cvis = contColsVis(), hdr = cvis.map(function(k){ return k[1]; });
     var filas = cf.map(function(x){ return cvis.map(function(k){ return k[4](x); }); });
@@ -6078,6 +6088,7 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'pmMon' || t.id === 'pmFecha'){ if(t.id === 'pmMon' && caja($('pmCaja').value).mon !== t.value){ $('pmCaja').value = cajaDef(t.value); $('pmNY').hidden = true; } pmPrev(); }
   else if(/^(cc|ce|nd|nc)MonPago$/.test(t.id || '')){ var pf2 = t.id.slice(0, 2), kj = $(pf2 + 'Caja'); if(kj && caja(kj.value).mon !== t.value) kj.value = cajaDef(t.value); fcMx(pf2); }
   else if(/^(cc|ce|nd|nc)Caja$/.test(t.id || '')){ var pf3 = t.id.slice(0, 2), mp = $(pf3 + 'MonPago'); if(mp) mp.value = caja(t.value).mon; fcMx(pf3); }
+  else if(t.id === 'contTipoSel'){ ui.cont.tipo = t.value; render(); }
   else if(t.id === 'eeMon'){ var etc = $('eeTc'), ecj = $('eeCaja'); if(etc) etc.disabled = t.value !== 'MXN'; if(ecj && caja(ecj.value).mon !== t.value) ecj.value = cajaDef(t.value); }
   else if(t.id === 'eeCaja'){ var emo = $('eeMon'); if(emo && caja(t.value).mon !== emo.value){ emo.value = caja(t.value).mon; var etc2 = $('eeTc'); if(etc2) etc2.disabled = emo.value !== 'MXN'; } }
   else if(t.id === 'ndMon' || t.id === 'ncMon') { syncCaja(t.id.slice(0, 2)); fcCalc(t.id.slice(0, 2)); }
@@ -6523,7 +6534,7 @@ function r2Pasa(x, sin, rgF){
   var rg = rgF || r2Rango(); sin = sin || ''; var r2m = R2.meses || [];
   if(r2m.length){ var ymx = x.fecha.slice(0, 7); if(rgF){ ymx = String(+ymx.slice(0, 4) + 1) + ymx.slice(4); } if(r2m.indexOf(ymx) === -1) return false; }
   else if(x.fecha < rg[0] || x.fecha > rg[1]) return false;
-  if(R2.tipo === 'cam' ? !x.cambio : R2.tipo === 'sin' ? x.cambio : (R2.tipo !== 'todos' && (x.tipo !== R2.tipo || x.cambio))) return false;
+  if(!tipoOk(R2.tipo, x)) return false;
   if(sin !== 'gab' && !gabOk(R2.gab || 'todos', x.gabai)) return false;
   if(R2.con && x.concepto !== R2.con) return false;
   if(R2.don && x.donId !== R2.don) return false;
@@ -6546,7 +6557,7 @@ function vRep2(){
   var dons = S.donantes.slice().sort(function(a, b){ return a.nombre.localeCompare(b.nombre, 'es'); }).map(function(d){ return [d.id, d.nombre]; });
   var per = [['anio', 'Este año'], ['mes', 'Este mes'], ['mesant', 'Mes pasado'], ['30', 'Últimos 30 días'], ['anioant', 'Año pasado'], ['todo', 'Todo']].concat(R2.per === 'rango' ? [['rango', 'Fechas elegidas']] : []).concat((R2.meses || []).length ? [['meses', 'Meses elegidos ↓']] : []);
   var filt = '<section class="panel"><div class="r2filt">' +
-    '<label class="f">Tipo de movimiento<select data-r2="tipo">' + [['todos', 'Todo (con cambios de caja)'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']].map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Tipo de movimiento<select data-r2="tipo">' + TIPO_OPTS.map(function(o){ return '<option value="' + o[0] + '"' + (R2.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
     '<div class="f fms">Gabai (asignado)' + gabMs('r2') + '</div>' +
     '<label class="f">Concepto' + sel('con', R2.con, uniq('concepto'), 'Todos') + '</label>' +
     '<label class="f">Donador' + '<select id="r2Don" data-r2="don"><option value="">Todos los donadores</option>' + dons.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === R2.don ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>' +
@@ -6712,6 +6723,7 @@ function buscaMejorar(){
 
 /* ================= inicio ================= */
 S = load() || seed();
+filtrosCargar();
 /* Mantener sincronizadas varias pestañas del mismo navegador: si otra pestaña guarda, esta toma los datos nuevos */
 window.addEventListener('storage', function(e){
   if(e.key !== KEY || !e.newValue) return;
