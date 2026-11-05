@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v206</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v207</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1604,6 +1604,7 @@ function cajaPill(id){ var k = caja(id); return '<span class="pill cj cj-' + k.i
 function bkConfirmar(){
   var plan = bkPlan(), bk = bkState();
   if(!plan.length){ toast('No hay pagos seleccionados.'); return; }
+  if(!bk.fecha){ toast('Primero escribe la fecha en que se recibieron los pagos.'); if($('bkFecha')) $('bkFecha').focus(); return; }
   var malos = plan.filter(function(p){ return p.sobra > 0; });
   if(malos.length){ toast('Revisa los montos marcados: superan lo que deben.'); return; }
   var tt = bkTotales(plan);
@@ -1923,7 +1924,7 @@ function abrirQEdit(qid){
   var secAcc = '<h3 class="qeh"><span class="qen">3</span> Hacer algo nuevo con este mes</h3>' + (accOpts ? '<p class="sub qehelp">Opcional. Elige una acción y solo entonces aparecen sus campos.</p>' : '<p class="sub qehelp">Este mes ya está pagado; no hay acciones pendientes.</p>') +
     '<div' + (accOpts ? '' : ' hidden') + '><div class="qacc"><label class="f">¿Qué quieres hacer?<select id="qaAcc"><option value="">— Nada, solo corregir lo de arriba —</option>' + accOpts + '</select></label></div>' +
     '<div class="form qaf">' +
-      '<label class="f">Fecha en que se recibe<input id="qaFecha" type="date" value="' + hoy() + '"></label>' +
+      '<label class="f">Fecha en que se recibió el pago *<input id="qaFecha" type="date" value=""></label>' +
       '<label class="f">Monto recibido<input id="qaMonto" inputmode="decimal" value="' + (pl.mon === 'USD' && fa > 0 ? (fa / 100).toFixed(2) : pl.mon === 'MXN' && fa > 0 && c.montoPagoC ? (c.montoPagoC / 100).toFixed(2) : '') + '" placeholder="' + (pl.mon === 'MXN' ? 'Pesos' : '0.00') + '"></label>' +
       '<label class="f">Divisa en que paga<select id="qaMon">' + opt([['MXN', 'Pesos (MXN)'], ['USD', 'Dólares (USD)']], pl.mon) + '</select></label>' +
       '<label class="f">Equivale en USD <small class="sub">(solo si paga en pesos)</small><input id="qaRef" inputmode="decimal" value="' + (fa > 0 ? (fa / 100).toFixed(2) : '') + '"' + (pl.mon === 'USD' ? ' disabled' : '') + '></label>' +
@@ -1979,6 +1980,7 @@ function qeSave(qid){
   if(acc === 'posponer'){ var np2 = $('qaPos').value; if(!np2) return fallo('Elige la nueva fecha.'); cambios.push('pospuso de ' + fFecha(q.venc) + ' a ' + fFecha(np2)); q.venc = np2; q.nota = 'Pospuesta al ' + fFecha(np2) + (qcom ? ' · ' + qcom : ''); }
   if(acc === 'cancelar'){ q.pausada = true; q.cancelada = true; q.nota = 'Cancelada' + (qcom ? ' · ' + qcom : ''); cambios.push('cancelada'); }
   if(acc === 'pago' || acc === 'desc'){
+    if(!$('qaFecha').value) return fallo('Escribe la fecha en que se recibió el pago (no se pone sola).');
     var am = cents($('qaMonto').value), amon = $('qaMon').value, aref = amon === 'USD' ? am : cents($('qaRef').value);
     if(!(am > 0)) return fallo('Escribe el monto recibido.');
     if(!(aref > 0)) return fallo('Escribe la referencia en dólares.');
@@ -1986,7 +1988,7 @@ function qeSave(qid){
     var rest = aref, plan = []; lista.forEach(function(z){ if(rest <= 0) return; var ap = Math.min(rest, falta(z)); if(ap > 0){ plan.push({q: z, ap: ap}); rest -= ap; } });
     if(acc === 'desc'){ plan = [{q: q, ap: aref}]; rest = 0; }
     if(rest > 0){ if(plan.length) plan[0].ap += rest; else plan.push({q: q, ap: rest}); }
-    var dv = registrarDonativo(c, {fecha: $('qaFecha').value || hoy(), montoC: am, moneda: amon, montoCompC: aref, forma: $('qaForma').value, caja: $('qaCaja').value, tc: amon === 'MXN' ? Math.round(am / aref * 10000) / 10000 : null, plan: plan, obs: $('qaCom').value.trim()});
+    var dv = registrarDonativo(c, {fecha: $('qaFecha').value, montoC: am, moneda: amon, montoCompC: aref, forma: $('qaForma').value, caja: $('qaCaja').value, tc: amon === 'MXN' ? Math.round(am / aref * 10000) / 10000 : null, plan: plan, obs: $('qaCom').value.trim()});
     cambios.push('registró pago ' + dv.recibo + ' de ' + money(am, amon));
     if(acc === 'desc' && falta(q) > 0){ var dsc = falta(q); q.montoC = q.aplicadoC; q.nota = 'Liquidación con descuento de ' + money(dsc, c.moneda) + (qcom ? ' · ' + qcom : ''); cambios.push('descuento ' + money(dsc, c.moneda)); }
   }
@@ -2414,7 +2416,7 @@ function vEgresos(){
     '<label class="f">Monto *<input id="egMonto" inputmode="decimal" placeholder="0.00"></label>' +
     '<label class="f">Divisa<select id="egMon"><option>MXN</option><option>USD</option></select></label>' +
     '<label class="f" id="egTcL">Referencia Dólares<input id="egTc" inputmode="decimal" value=""></label>' +
-    '<label class="f">Fecha *<input id="egFecha" type="date" value="' + hoy() + '"></label>';
+    '<label class="f">Fecha *<input id="egFecha" type="date" value=""></label>';
   var der = '<label class="f">' + hd('Método de pago', 'formas', 'egForma') + '<select id="egForma">' + formas().map(function(x){ return '<option>' + esc(x) + '</option>'; }).join('') + '</select></label>' + filaEdit('formas', 'egForma') + filaNuevo('formas', 'egForma', 'Nuevo método de pago') +
     '<label class="f">Descripción<input id="egDesc" maxlength="200"></label>' +
     '<label class="f">Estatus<select id="egEstatus">' + opts(EST_EG) + '</select></label>' +
@@ -2689,7 +2691,7 @@ function vCambios(){
   var opts = function(l){ return l.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join(''); };
   var cjOpts = function(sel){ return CAJAS.filter(function(k){ return !k.externa; }).map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join(''); };
   var monOpts = function(sel){ return ['MXN', 'USD'].map(function(m){ return '<option' + (m === sel ? ' selected' : '') + '>' + m + '</option>'; }).join(''); };
-  var izq = '<label class="f">Fecha *<input id="cjFecha" type="date" value="' + hoy() + '"></label>' +
+  var izq = '<label class="f">Fecha *<input id="cjFecha" type="date" value=""></label>' +
     '<label class="f">Caja Emisora *<select id="cjOri">' + cjOpts('MXN') + '</select></label>' +
     '<label class="f">Emisor<input id="cjEmisor" maxlength="80" placeholder="Quién entrega"></label>' +
     '<label class="f">Monto Egreso *<input id="cjMontoE" inputmode="decimal" placeholder="0.00"></label>' +
@@ -3385,7 +3387,7 @@ function selMon(attr, id, v){ return '<select ' + attr + '="' + id + '" aria-lab
 function selForma(attr, id, v){ return '<select ' + attr + '="' + id + '" aria-label="Forma">' + formas().map(function(x){ return '<option' + (x === v ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select>'; }
 function selCajaQ(attr, id, mon, v){ return mon === 'USD' ? '<select class="cjsel cj-' + caja(v).id + '" ' + attr + '="' + id + '" aria-label="Caja">' + optsCaja(v, 'USD') + '</select>' : cajaPill('MXN'); }
 
-function bkState(){ if(!ui.cob.bk) ui.cob.bk = {off: {}, monto: {}, caja: {}, mon: {}, forma: {}, ref: {}, fecha: hoy()}; ['mon', 'forma', 'caja', 'monto', 'off', 'ref'].forEach(function(k){ if(!ui.cob.bk[k] || typeof ui.cob.bk[k] !== 'object') ui.cob.bk[k] = {}; }); return ui.cob.bk; }
+function bkState(){ if(!ui.cob.bk) ui.cob.bk = {off: {}, monto: {}, caja: {}, mon: {}, forma: {}, ref: {}, fecha: ''}; ['mon', 'forma', 'caja', 'monto', 'off', 'ref'].forEach(function(k){ if(!ui.cob.bk[k] || typeof ui.cob.bk[k] !== 'object') ui.cob.bk[k] = {}; }); return ui.cob.bk; }
 function bkEdo(q){ var c = comp(q.compId), d = c && don(c.donanteId); if(!d) return {}; return {e: estadoDonante(c)[0], ne: !!d.noEnviar, sl: !telDigits(d.tel), n: d.nombre}; }
 function bkVisible(qid){ var i = document.querySelector('[data-bkq="' + qid + '"]'), tr = i && i.closest('tr'); return !tr || !tr.hidden; }
 function bkBase(){ return cobFiltradas(true).filter(function(q){ return falta(q) > 0 && !q.pausada; }); }
@@ -3433,7 +3435,7 @@ function vBloque(){
     '<label class="f">Buscar por nombre<input id="bkQ" type="search" value="' + esc(f.q || '') + '" placeholder="Buscar"></label></div>' +
     '<div class="chips" style="margin:2px 0 10px">' + [['todos', 'Todos'], ['Al corriente', 'Al corriente'], ['Con atraso', 'Con atraso'], ['noenviar', 'No enviar avisos'], ['sinlada', 'Teléfono sin lada']].map(function(o){ return '<button type="button" class="chip' + (est === o[0] ? ' on' : '') + '" data-a="bkEst" data-e="' + o[0] + '">' + o[1] + ' <b>' + cnt(o[0]) + '</b></button>'; }).join('') + '</div>' +
     '<div class="form">' +
-    '<label class="f">Fecha del pago<input id="bkFecha" type="date" value="' + esc(bk.fecha) + '"></label>' +
+    '<label class="f">Fecha en que se recibieron *<input id="bkFecha" type="date" value="' + esc(bk.fecha) + '"></label>' +
     (soloBloque() ? '' : '<label class="f">Forma para todos<select id="bkFormaAll"><option value="">La de cada renglón</option>' + formas().map(function(x){ return '<option>' + x + '</option>'; }).join('') + '</select></label>') + '</div>' +
     '' +
     (filas.length ? tbBar('bk') + '<div class="tw cards"><table class="bkt" data-cf="bk" data-tt="Cobro en bloque"><thead><tr><th><label class="ck"><input type="checkbox" id="bkAll"' + (todos ? ' checked' : '') + ' aria-label="Marcar todos"></label></th><th>Donante</th><th>Gabai</th><th>Mes</th><th>Alerta</th><th class="n">Acuerdo del mes (USD)</th><th>Paga en</th><th class="n">Monto recibido</th><th class="n">Referencia USD</th><th>Forma</th><th>Caja</th></tr></thead><tbody>' +
@@ -4737,7 +4739,7 @@ function abrirPago(cid, preset){
   var q0 = preset.qid ? S.cuotas.find(function(x){ return x.id === preset.qid; }) : pend[0], pl0 = q0 ? planQ(q0) : {mon: c.monPago || 'USD', forma: c.forma, caja: c.monPago === 'MXN' ? 'MXN' : c.caja};
   if(preset.monto && pl0.mon !== c.moneda) preset.monto = 0;
   openModal(head('Registrar pago', esc(don(c.donanteId).nombre) + ' · compromiso ' + c.anio + ' en ' + c.moneda) +
-    '<div class="form"><label class="f">Fecha del pago<input id="pmFecha" type="date" value="' + hoy() + '"></label>' +
+    '<div class="form"><label class="f">Fecha en que se recibió el pago *<input id="pmFecha" type="date" value=""></label>' +
     '<label class="f">Monto<input id="pmMonto" inputmode="decimal" value="' + (preset.monto ? (preset.monto / 100).toFixed(2) : '') + '" placeholder="0.00"></label>' +
     '<label class="f">Caja<select id="pmCaja">' + optsCaja(pl0.caja) + '</select></label>' +
     '<label class="f">Moneda del pago<select id="pmMon"><option' + (pl0.mon === 'MXN' ? ' selected' : '') + '>MXN</option><option' + (pl0.mon === 'USD' ? ' selected' : '') + '>USD</option></select></label>' +
@@ -4774,11 +4776,12 @@ function pmPrev(){
 }
 function pmSave(){
   var r = pmCalc(), e = $('pmErr');
+  if(!$('pmFecha').value){ e.textContent = 'Escribe la fecha en que se recibió el pago (no se pone sola).'; e.hidden = false; $('pmFecha').focus(); return; }
   if(r.monto <= 0){ e.textContent = 'Escribe el monto del pago.'; e.hidden = false; return; }
   if(r.mon !== r.c.moneda && !(r.mc > 0)){ e.textContent = 'Escribe la referencia en USD.'; e.hidden = false; $('pmTc').focus(); return; }
   if(!r.plan.length){ e.textContent = 'Elige al menos una cuota pendiente.'; e.hidden = false; return; }
   if(r.sobra > 0){ e.textContent = 'El pago supera lo pendiente de las cuotas seleccionadas por ' + money(r.sobra, r.c.moneda) + '. Ajusta el monto o elige más cuotas.'; e.hidden = false; return; }
-  var dv = registrarDonativo(r.c, {fecha: $('pmFecha').value || hoy(), montoC: r.monto, moneda: r.mon, montoCompC: r.mc, forma: $('pmForma').value, caja: $('pmCaja').value, tc: r.mon !== r.c.moneda ? r.tc : null, plan: r.plan, obs: $('pmObs').value.trim()});
+  var dv = registrarDonativo(r.c, {fecha: $('pmFecha').value, montoC: r.monto, moneda: r.mon, montoCompC: r.mc, forma: $('pmForma').value, caja: $('pmCaja').value, tc: r.mon !== r.c.moneda ? r.tc : null, plan: r.plan, obs: $('pmObs').value.trim()});
   log('Registró pago ' + dv.recibo + ' de ' + money(r.monto, r.mon) + ' en ' + caja(dv.caja).nombre + ' de ' + don(r.c.donanteId).nombre + ' (' + dv.cubre.map(function(x){ return Mes(x.mes); }).join(', ') + ')');
   var qs = dv.cubre.map(function(x){ return S.cuotas.find(function(q){ return q.id === x.qid; }); });
   cobLimpiar(); closeModal(); render(); toast('Pago aplicado');
@@ -6190,7 +6193,7 @@ document.addEventListener('change', function(ev){
   else if(t.hasAttribute && t.hasAttribute('data-bkmon')){ var bm = t.getAttribute('data-bkmon'), bks = bkState(); bks.mon[bm] = t.value; delete bks.monto[bm]; delete bks.caja[bm]; render(); }
   else if(t.hasAttribute && t.hasAttribute('data-bkc')){ t.className = 'cjsel cj-' + t.value; bkState().caja[t.getAttribute('data-bkc')] = t.value; bkResumen(); }
   else if(t.id === 'bkTc'){ render(); }
-  else if(t.id === 'bkFecha'){ bkState().fecha = t.value || hoy(); }
+  else if(t.id === 'bkFecha'){ bkState().fecha = t.value; }
   else if(t.id === 'edGab') edPrev();
   else if(t.id === 'bkFormaAll'){ if(t.value){ var bf = bkState(); bkFilas().forEach(function(r){ bf.forma[r.q.id] = t.value; }); render(); } }
   else if(t.hasAttribute && t.hasAttribute('data-bkf')){ bkState().forma[t.getAttribute('data-bkf')] = t.value; }
