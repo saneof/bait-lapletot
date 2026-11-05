@@ -232,7 +232,7 @@ html.nologin .app{display:none}
 .ini-caja .cjh{display:flex;justify-content:space-between;align-items:center;gap:8px}.ini-caja .cjh b{font-size:16px}
 .ini-caja .cjn{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .ini-caja .cjn div{display:flex;flex-direction:column;gap:2px;min-width:0}.ini-caja .cjn span{font-size:12.5px;color:var(--muted)}
-.ini-caja .cjn strong{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ini-caja .cjn strong{font-size:clamp(13px,1.35vw,18px);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ini-cjbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 0}.ini-cjbar .ini-sec{margin:0}
 .ctabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.ctabs .btn{min-height:42px}
 .ctabs .btn.on{background:var(--brand);border-color:var(--brand);color:#fff}
@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v184</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v185</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2629,13 +2629,16 @@ function cjSave(){
 }
 
 /* ================= Inicio: detalle por caja ================= */
+var MES_COL = ['#2563eb', '#db2777', '#16a34a', '#ea580c', '#7c3aed', '#0891b2', '#dc2626', '#ca8a04', '#0d9488', '#9333ea', '#65a30d', '#475569'];
 function iniDet(per, mesK, Y){
   var cid = ui.iniCaja; if(!cid) return '';
   var f = ui.iniF = ui.iniF || {tipo: 'todos', gab: '', con: '', q: '', desde: '', hasta: ''};
   if(!f.cajas || !f.cajas.length) f.cajas = [cid];
   var cjs = f.cajas, mixed = cjs.some(function(id){ return caja(id).mon !== caja(cjs[0]).mon; }), mon = mixed ? 'USD (equivalente)' : caja(cjs[0]).mon, k = {nombre: cjs.map(function(id){ return caja(id).nombre; }).join(' + ')}, V = function(x){ return mixed ? (x.eqC || 0) : x.montoC; };
   var d0 = f.desde || (per === 'mes' ? mesK + '-01' : per === 'anio' ? Y + '-01-01' : ''), h0 = f.hasta || (per === 'mes' ? mesK + '-31' : per === 'anio' ? Y + '-12-31' : '');
-  var base = movCaja().filter(function(x){ return cjs.indexOf(x.caja) !== -1 && x.fecha && (!d0 || x.fecha >= d0) && (!h0 || x.fecha <= h0); });
+  f.meses = f.meses || [];
+  var todosCj = movCaja().filter(function(x){ return cjs.indexOf(x.caja) !== -1 && x.fecha; });
+  var base = todosCj.filter(function(x){ return f.meses.length ? f.meses.indexOf(x.fecha.slice(0, 7)) !== -1 : (!d0 || x.fecha >= d0) && (!h0 || x.fecha <= h0); });
   var q = sinAcento((f.q || '').trim());
   var gabDe = function(x){ return x.gabai || 'Sin gabai'; }, conDe = function(x){ return x.concepto || 'Sin concepto'; };
   var pasa = function(x, sinGC){
@@ -2664,13 +2667,15 @@ function iniDet(per, mesK, Y){
   var sel = function(id, v, opts){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
   var uniq = function(fn, fl){ var m = {}; base.forEach(function(x){ if(fl(x)) m[fn(x)] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }).map(function(g){ return [g, g]; }); };
   var ab = 0, ca = 0; rows.forEach(function(x){ if(x.tipo === 'ing') ab += V(x); else ca += V(x); });
-  var filt = f.tipo !== 'todos' || f.gab || f.con || f.coni || (f.q || '').trim() || f.desde || f.hasta;
-  var perTxt = (d0 ? fFecha(d0) : 'el inicio') + ' a ' + (h0 ? fFecha(h0) : 'hoy');
+  var filt = f.tipo !== 'todos' || f.gab || f.con || f.coni || (f.q || '').trim() || f.desde || f.hasta || f.meses.length;
+  var mesPill = function(ym){ return '<span class="r2g" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '">' + esc(Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4)) + '</span>'; };
+  var perTxt = f.meses.length ? f.meses.slice().sort().map(function(ym){ return Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4); }).join(', ') : (d0 ? fFecha(d0) : 'el inicio') + ' a ' + (h0 ? fFecha(h0) : 'hoy');
   return '<section class="panel ini-det"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h2 style="margin:0">' + esc(k.nombre) + ' · movimientos <span class="sub">(' + esc(perTxt) + ')</span></h2>' +
       '<div class="row" style="gap:8px">' + (filt ? '<button type="button" class="btn ghost sm" data-a="iniFLimpiar">✕ Quitar filtros</button>' : '') + '<button type="button" class="btn ghost sm" data-a="iniCaja" data-c="' + cid + '">Cerrar ✕</button></div></div>' +
     '<div class="form" style="margin-top:10px">' +
-      '<label class="f">Desde<input id="iniFDesde" type="date" value="' + esc(d0) + '"></label>' +
-      '<label class="f">Hasta<input id="iniFHasta" type="date" value="' + esc(h0) + '"></label>' +
+      (function(){ var ms = {}; todosCj.forEach(function(x){ ms[x.fecha.slice(0, 7)] = 1; }); ms[hoy().slice(0, 7)] = 1; f.meses.forEach(function(m){ ms[m] = 1; }); var lista = Object.keys(ms).sort().reverse();
+        var sel = f.meses.slice().sort(), sum = !sel.length ? '<span>' + (per === 'mes' ? 'Este mes' : per === 'anio' ? 'Este año' : 'Todos los meses') + '</span>' : sel.length <= 3 ? '<span class="gsum">' + sel.map(mesPill).join('') + '</span>' : '<span class="gsum">' + sel.slice(0, 6).map(function(ym){ return '<i class="gdot" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '"></i>'; }).join('') + '<span>' + sel.length + ' meses elegidos</span></span>';
+        var h = msHtml('inims', lista.map(function(ym){ return [ym, mesPill(ym)]; }), f.meses, sum); MS.inims.set = function(a){ f.meses = a; f.desde = ''; f.hasta = ''; }; return '<div class="f fms">Meses (puedes elegir varios)' + h + '</div>'; })() +
       '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos (con cambios que entran)'], ['egr', 'Solo egresos (con cambios que salen)'], ['ingx', 'Solo ingresos, sin cambios'], ['egrx', 'Solo egresos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
       '<div class="f fms">Caja (puedes elegir varias)' + (function(){ var h = msHtml('inicj', CAJAS.map(function(kk){ return [kk.id, cajaPill(kk.id)]; }), cjs, '<span class="gsum">' + cjs.map(cajaPill).join('') + '</span>'); MS.inicj.set = function(a){ f.cajas = a.length ? a : [cid]; }; return h; })() + '</div>' +
       '<div class="f fms">Gabai (ingresos)' + gabMs('ini') + '</div>' +
@@ -5621,7 +5626,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'gbCob'){ ui.cob.gab = S.gabaim[+b.getAttribute('data-k')]; ui.cob.rap = true; ui.cob.mes = String(mesAct()); ui.view = 'cobranza'; render(); window.scrollTo(0, 0); }
   else if(a === 'impPlantilla') plantillaXls();
   else if(a === 'egiPlantilla') egiPlantilla();
-  else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); if(ui.iniF){ ui.iniF.desde = ''; ui.iniF.hasta = ''; } render(); }
+  else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); if(ui.iniF){ ui.iniF.desde = ''; ui.iniF.hasta = ''; ui.iniF.meses = []; } render(); }
   else if(a === 'iniCaja'){ var ic = b.getAttribute('data-c'); ui.iniCaja = ui.iniCaja === ic ? '' : ic; if(ui.iniF) ui.iniF.cajas = ui.iniCaja ? [ui.iniCaja] : []; render(); }
   else if(a === 'iniGab'){ var igv = b.getAttribute('data-v'), iga = gabToggle(ui.iniF.gab || 'todos', igv === 'Sin gabai' ? '' : igv); ui.iniF.gab = iga.length ? iga : ''; ui.iniF.con = ''; render(); }
   else if(a === 'iniCon'){ ui.iniF.con = ui.iniF.con === b.getAttribute('data-v') ? '' : b.getAttribute('data-v'); ui.iniF.gab = ''; ui.iniF.coni = ''; render(); }
