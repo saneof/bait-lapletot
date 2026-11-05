@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v200</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v201</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2145,6 +2145,7 @@ function ceSave(cid){
   }
   if(cambios.length) log('Corrigió compromiso ' + c.anio + ' de ' + d.nombre + ': ' + cambios.join('; '));
   var nsy = pagosSync(c); if(nsy && cambios.indexOf(nsy + ' pagos actualizados') === -1) cambios.push(nsy + ' pagos con gabai/% al día');
+  var npd = pdRegistrar(c); if(npd) cambios.push(npd + ' pago(s) directo(s) registrados');
   if(ui.mg) delete ui.mg.ce;
   cobLimpiar();
   closeModal(); render(); toast(cambios.length ? 'Compromiso corregido' : 'Sin cambios');
@@ -2211,12 +2212,10 @@ function ccSave(modo){
       '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn ghost" data-a="ccAdicional">Agregar como otro compromiso</button><button type="button" class="btn primary" data-a="ccReemplazar">Reemplazar el anterior</button></div>');
     return;
   }
-  var yaPago = $('ccModalidad').value === 'Pago directo' && $('ccYa') && $('ccYa').checked, mxYa = $('ccMonPago') && $('ccMonPago').value === 'MXN' ? cents($('ccMontoMx').value) : 0;
+  var yaPago = $('ccModalidad').value === 'Pago directo', mxYa = $('ccMonPago') && $('ccMonPago').value === 'MXN' ? cents($('ccMontoMx').value) : 0;
   if(yaPago && $('ccMonPago').value === 'MXN' && !(mxYa > 0)) return fail('Escribe el monto en pesos que entregó el donador.');
   var c = crearCompromiso({donanteId: did, anio: anioN, cuotaC: cu, mesIni: fcMes('cc'), moneda: 'USD', forma: $('ccForma').value, x: compExtra('cc')});
-  if(yaPago){ var q1 = cuotasDe(c.id)[0], refU = q1 ? q1.montoC : cu, monY = mxYa > 0 ? 'MXN' : 'USD', cjY = caja(c.caja || '').mon === monY ? c.caja : cajaDef(monY);
-    var dvY = registrarDonativo(c, {fecha: fcFecha('cc'), montoC: monY === 'MXN' ? mxYa : refU, moneda: monY, montoCompC: refU, tc: monY === 'MXN' ? Math.round(mxYa / refU * 10000) / 10000 : null, forma: c.forma, caja: cjY, plan: q1 ? [{q: q1, ap: refU}] : [], obs: ''});
-    if(dvY) log('Registró pago ' + dvY.recibo + ' de ' + money(dvY.montoC, dvY.moneda) + ' en ' + caja(cjY).nombre + ' de ' + don(did).nombre + ' (pago directo)'); }
+  if(yaPago) pdRegistrar(c);
   if(modo === 'reemplazar' && prev.length){ var mov = moverPagos(prev, c); log('Reemplazó ' + prev.length + ' compromiso(s) anteriores de ' + don(did).nombre + ' (' + mov + ' pagos movidos al nuevo)'); }
   log('Creó compromiso ' + c.anio + ' de ' + money(c.anualC, c.moneda) + ' para ' + don(did).nombre + ' (' + (c.concepto || '') + ')');
   ui.cc = {}; if(ui.mg) delete ui.mg.cc; render(); toast('Compromiso creado para ' + don(did).nombre);
@@ -3860,7 +3859,7 @@ function formComp(pref){
     '<label class="f">Divisa en que paga el donador<select id="' + P('MonPago') + '"><option value="USD">USD · dólares</option><option value="MXN">MXN · pesos</option></select><small class="sub">El monto de arriba es la referencia en USD; aquí eliges si lo paga en dólares o en pesos.</small></label>' +
     '<label class="f" id="' + P('MxW') + '" style="display:none"><span id="' + P('MxTx') + '">Monto en pesos (MXN)</span><input id="' + P('MontoMx') + '" inputmode="decimal" placeholder="0.00"></label>' +
     '<label class="f">Caja<select id="' + P('Caja') + '">' + CAJAS.map(function(k){ return '<option value="' + k.id + '"' + (k.id === 'USD' ? ' selected' : '') + '>' + esc(k.nombre) + ' (' + k.mon + ')</option>'; }).join('') + '</select></label>' +
-    (pref === 'cc' ? '<label class="ck ccya" id="ccYaW" style="display:none"><input type="checkbox" id="ccYa" checked><span><b>Ya se recibió el dinero</b> · registrar el pago ahora<small class="sub" style="display:block">Así sale de inmediato en Inicio, Flujo y reportes. Quita la palomita si todavía no lo entrega.</small></span></label>' : '') +
+    '<div class="note ccya" id="' + P('YaW') + '" style="display:none"><b>Pago directo:</b> el pago se registra solo al guardar (con la fecha, caja y método de arriba) y sale de inmediato en Inicio, Flujo y reportes. Nunca queda pendiente en Cobranza.</div>' +
     '<label class="f">Monto total<input id="' + P('Total') + '" readonly tabindex="-1" class="ro" value="—"></label>' +
     '<label class="f">Parcialidad<select id="' + P('Per') + '"><option value="Mensual">1 · cada mes</option><option value="Bimestral">2 · cada 2 meses</option><option value="Trimestral">3 · cada 3 meses</option><option value="Personalizado">Personalizado (elegir meses)</option></select></label>' +
     '<label class="f">Cantidad de parcialidades<select id="' + P('Cant') + '">' + [1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){ return '<option value="' + n + '">' + n + '</option>'; }).join('') + '</select></label>' +
@@ -3919,6 +3918,15 @@ function fcCalc(pref){
 
   $(pref + 'Total').value = tot ? money(tot, mon) : '—';
   $(pref + 'ComM').value = tot && pct ? money(Math.round(tot * pct / 100), mon) : '—';
+}
+/* Pago directo: nunca queda pendiente; cada cuota sin pagar se registra como pagada (fecha de inicio, caja y método del compromiso). */
+function pdRegistrar(c){
+  if(!c || c.modalidad !== 'Pago directo') return 0; var n = 0, d = don(c.donanteId) || {nombre: ''};
+  cuotasDe(c.id).forEach(function(q){ if(q.pausada) return; var fa = falta(q); if(!(fa > 0)) return;
+    var mx = c.monPago === 'MXN' ? (c.montoPagoC > 0 ? Math.round(c.montoPagoC * fa / (q.montoC || fa)) : Math.round(fa * (S.cfg.tc || 1))) : 0, mon = mx > 0 ? 'MXN' : 'USD', cj = caja(c.caja || '').mon === mon ? c.caja : cajaDef(mon);
+    var dv = registrarDonativo(c, {fecha: c.fechaInicio || q.venc, montoC: mon === 'MXN' ? mx : fa, moneda: mon, montoCompC: fa, tc: mon === 'MXN' ? Math.round(mx / fa * 10000) / 10000 : null, forma: c.forma || 'Efectivo', caja: cj, plan: [{q: q, ap: fa}], obs: ''});
+    if(dv){ n++; log('Registró pago ' + dv.recibo + ' de ' + money(dv.montoC, dv.moneda) + ' en ' + caja(cj).nombre + ' de ' + d.nombre + ' (pago directo, automático)'); } });
+  return n;
 }
 function compExtra(pref){
   var cj = $(pref + 'Caja') ? $(pref + 'Caja').value : 'USD';
