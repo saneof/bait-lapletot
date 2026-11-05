@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v188</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v189</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -653,7 +653,8 @@ function estadoGuardable(){
   if(!GSW || S !== GSW.S) return S;
   var t = Object.assign({}, S); GAB_KS.concat(['gabaim']).forEach(function(k){ if(GSW.orig[k]) t[k] = gabUnir(k); }); return t;
 }
-function save(){ try{ var nv = estadoGuardable(); if(nv.user !== 0){ nv = Object.assign({}, nv, {user: 0}); } var txt = JSON.stringify(nv); if(localStorage.getItem(KEY) === txt) return; resgGuardar(nv); localStorage.setItem(KEY, txt); if(typeof nbProgramar === 'function') nbProgramar(); }catch(e){} }
+var LAST_SAVED = null, PEND_STATE = null;
+function save(){ try{ if(PEND_STATE) return; var nv = estadoGuardable(); if(nv.user !== 0){ nv = Object.assign({}, nv, {user: 0}); } var txt = JSON.stringify(nv); if(txt === LAST_SAVED) return; if(LAST_SAVED === null && localStorage.getItem(KEY) === txt){ LAST_SAVED = txt; return; } resgGuardar(nv); localStorage.setItem(KEY, txt); LAST_SAVED = txt; if(typeof nbProgramar === 'function') nbProgramar(); }catch(e){} }
 /* Resguardo automático: si un guardado deja menos donadores que antes, se guarda una copia de lo anterior para poder recuperarlo */
 var RESG_KEY = KEY + '-resguardo';
 function resgGuardar(nv){
@@ -6274,11 +6275,11 @@ function nbUsuario(forzar){
 function nbEscuchar(){
   try{ if(NB.canal) NB.sb.removeChannel(NB.canal); }catch(e){}
   NB.canal = NB.sb.channel('estado-' + NB_ID).on('postgres_changes', {event: '*', schema: 'public', table: 'estado', filter: 'id=eq.' + NB_ID}, function(p){
-    var at = p && p.new && p.new.updated_at; if(at && at === NB.at) return; nbRevisar();
+    var at = p && p.new && p.new.updated_at; if(at && at === NB.at) return; if(document.hidden){ NB.revPend = true; return; } nbRevisar();
   }).subscribe();
   if(NB.poll) clearInterval(NB.poll);
   NB.poll = setInterval(function(){ if(!document.hidden) nbRevisar(); }, 60000);
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden && NB.listo) nbRevisar(); });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden && NB.listo){ NB.revPend = false; nbRevisar(); } });
 }
 /* Une tres versiones: lo último sincronizado (base), lo de este dispositivo (loc) y lo de la nube (rem). Gana lo que cambió. */
 function nbUnir(base, loc, rem){
@@ -6680,8 +6681,12 @@ S = load() || seed();
 /* Mantener sincronizadas varias pestañas del mismo navegador: si otra pestaña guarda, esta toma los datos nuevos */
 window.addEventListener('storage', function(e){
   if(e.key !== KEY || !e.newValue) return;
-  var n = null; try{ n = JSON.parse(e.newValue); }catch(er){ return; } tomarEstado(n);
+  if(document.hidden){ PEND_STATE = e.newValue; return; } /* pestaña en segundo plano: se pone al día al volver */
+  aplicarPend(e.newValue);
 });
+function aplicarPend(txt){ PEND_STATE = null; if(!txt || txt === LAST_SAVED) return; var n = null; try{ n = JSON.parse(txt); }catch(er){ return; } LAST_SAVED = txt; tomarEstado(n); }
+document.addEventListener('visibilitychange', function(){ if(!document.hidden && PEND_STATE) aplicarPend(PEND_STATE); });
+window.addEventListener('focus', function(){ if(PEND_STATE) aplicarPend(PEND_STATE); });
 function tomarEstado(n){
   if(!n || n.v !== 5 || !Array.isArray(n.usuarios)) return;
   var yo = user(), modal = !$('modal').hidden;
