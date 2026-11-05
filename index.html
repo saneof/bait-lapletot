@@ -566,7 +566,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v183</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v184</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2639,8 +2639,10 @@ function iniDet(per, mesK, Y){
   var q = sinAcento((f.q || '').trim());
   var gabDe = function(x){ return x.gabai || 'Sin gabai'; }, conDe = function(x){ return x.concepto || 'Sin concepto'; };
   var pasa = function(x, sinGC){
-    if(f.tipo === 'ing' && (x.tipo !== 'ing' || x.cambio)) return false;
-    if(f.tipo === 'egr' && (x.tipo !== 'egr' || x.cambio)) return false;
+    if(f.tipo === 'ing' && x.tipo !== 'ing') return false;
+    if(f.tipo === 'egr' && x.tipo !== 'egr') return false;
+    if(f.tipo === 'ingx' && (x.tipo !== 'ing' || x.cambio)) return false;
+    if(f.tipo === 'egrx' && (x.tipo !== 'egr' || x.cambio)) return false;
     if(f.tipo === 'cam' && !x.cambio) return false;
     if(f.tipo === 'sin' && x.cambio) return false;
     if(!sinGC && gabArr(f.gab || 'todos').length && (x.tipo !== 'ing' || x.cambio || !gabOk(f.gab, x.gabai))) return false;
@@ -2669,7 +2671,7 @@ function iniDet(per, mesK, Y){
     '<div class="form" style="margin-top:10px">' +
       '<label class="f">Desde<input id="iniFDesde" type="date" value="' + esc(d0) + '"></label>' +
       '<label class="f">Hasta<input id="iniFHasta" type="date" value="' + esc(h0) + '"></label>' +
-      '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos'], ['egr', 'Solo egresos'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
+      '<label class="f">Mostrar' + sel('iniFTipo', f.tipo, [['todos', 'Todo'], ['ing', 'Solo ingresos (con cambios que entran)'], ['egr', 'Solo egresos (con cambios que salen)'], ['ingx', 'Solo ingresos, sin cambios'], ['egrx', 'Solo egresos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo sin cambios de caja']]) + '</label>' +
       '<div class="f fms">Caja (puedes elegir varias)' + (function(){ var h = msHtml('inicj', CAJAS.map(function(kk){ return [kk.id, cajaPill(kk.id)]; }), cjs, '<span class="gsum">' + cjs.map(cajaPill).join('') + '</span>'); MS.inicj.set = function(a){ f.cajas = a.length ? a : [cid]; }; return h; })() + '</div>' +
       '<div class="f fms">Gabai (ingresos)' + gabMs('ini') + '</div>' +
       '<label class="f">Concepto (ingresos)' + sel('iniFConi', f.coni || '', [['', 'Todos']].concat(uniq(conDe, function(x){ return x.tipo === 'ing' && !x.cambio; }))) + '</label>' +
@@ -2699,8 +2701,10 @@ function flRango(p){
   return [y + '-' + pad(m) + '-01', hoy()];
 }
 function flPasa(x, f, q){
-  if(f.tipo === 'ing' && (x.tipo !== 'ing' || x.cambio)) return false;
-  if(f.tipo === 'egr' && (x.tipo !== 'egr' || x.cambio)) return false;
+  if(f.tipo === 'ing' && x.tipo !== 'ing') return false;
+  if(f.tipo === 'egr' && x.tipo !== 'egr') return false;
+  if(f.tipo === 'ingx' && (x.tipo !== 'ing' || x.cambio)) return false;
+  if(f.tipo === 'egrx' && (x.tipo !== 'egr' || x.cambio)) return false;
   if(f.tipo === 'cam' && !x.cambio) return false;
   if(f.tipo === 'sin' && x.cambio) return false;
   if(f.con && x.concepto !== f.con) return false;
@@ -2769,7 +2773,7 @@ function vFlujo(){
         return '<label class="f">Mes<select id="flMes"><option value="">' + (esMes ? 'Elegir mes…' : 'Varios meses / rango') + '</option>' + Object.keys(ms).sort().reverse().map(function(m){ return '<option value="' + m + '"' + (m === esMes ? ' selected' : '') + '>' + esc(Mes(+m.slice(5, 7))) + ' ' + m.slice(0, 4) + '</option>'; }).join('') + '</select></label>'; })() +
       '<label class="f">Desde<input id="flDesde" type="date" value="' + esc(f.desde) + '"></label>' +
       '<label class="f">Hasta<input id="flHasta" type="date" value="' + esc(f.hasta) + '"></label>' +
-      '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (ingresos)'], ['egr', 'Solo cargos (egresos)'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
+      '<label class="f">Mostrar' + sel('flTipo', [['todos', 'Todo'], ['ing', 'Solo abonos (con cambios que entran)'], ['egr', 'Solo cargos (con cambios que salen)'], ['ingx', 'Solo abonos, sin cambios'], ['egrx', 'Solo cargos, sin cambios'], ['cam', 'Solo cambios de caja'], ['sin', 'Todo menos cambios de caja']], f.tipo) + '</label>' +
       (function(){ f.gabs = f.gabs || []; var gl = (S.gabaim || []).slice(); all.forEach(function(x){ if(x.tipo === 'ing' && !x.cambio && x.gabai && gl.indexOf(x.gabai) === -1) gl.push(x.gabai); }); var ns = f.gabs.length;
         return '<div class="f fms">Gabai (puedes elegir varios)<details class="msel" id="flGabSel"' + (ui.flGabOpen ? ' open' : '') + '><summary>' + (!ns ? 'Todos los gabaim' : ns === 1 ? esc(f.gabs[0]) : ns + ' gabaim elegidos') + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="flgTodos">Marcar todos</button><button type="button" class="btn ghost sm" data-a="flgNinguno">Quitar selección</button><button type="button" class="btn ghost sm" data-a="gabOrd" title="Cambiar el orden de los gabaim">⋮⋮ Ordenar</button></div>' +
           gl.map(function(g){ return '<label><input type="checkbox" data-flg value="' + esc(g) + '"' + (f.gabs.indexOf(g) !== -1 ? ' checked' : '') + '> ' + r2Gab(g) + '</label>'; }).join('') + '</div></details></div>'; })() +
@@ -5932,7 +5936,7 @@ document.addEventListener('change', function(ev){
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; if(t.id === 'egMon') egSync(); if(t.id === 'egCaja'){ var ck3 = caja(t.value); $('egMon').value = ck3.mon; ui.eg.egMon = ck3.mon; } }
   else if(/^ccl(Anio|Mes|Don|Gab)$/.test(t.id || '')){ ui.ccl[{cclAnio: 'anio', cclMes: 'mes', cclDon: 'don', cclGab: 'gab'}[t.id]] = t.value; render(); }
   else if(t.id === 'contSortSel'){ var sv = t.value.split('|'); ui.cont.sort = sv[0] ? {id: sv[0], dir: sv[1]} : {}; render(); }
-  else if(/^iniF(Desde|Hasta|Tipo|Gab|Con|Coni)$/.test(t.id || '')){ var ik = t.id.slice(4).toLowerCase(); ui.iniF[ik] = t.value; if(ik === 'tipo' && t.value !== 'ing'){ ui.iniF.gab = ''; ui.iniF.coni = ''; } if((ik === 'gab' || ik === 'coni') && t.value) ui.iniF.con = ''; if(ik === 'con' && t.value){ ui.iniF.gab = ''; ui.iniF.coni = ''; } if(ik === 'tipo' && t.value !== 'egr') ui.iniF.con = ''; render(); }
+  else if(/^iniF(Desde|Hasta|Tipo|Gab|Con|Coni)$/.test(t.id || '')){ var ik = t.id.slice(4).toLowerCase(); ui.iniF[ik] = t.value; if(ik === 'tipo' && !/^ing/.test(t.value)){ ui.iniF.gab = ''; ui.iniF.coni = ''; } if((ik === 'gab' || ik === 'coni') && t.value) ui.iniF.con = ''; if(ik === 'con' && t.value){ ui.iniF.gab = ''; ui.iniF.coni = ''; } if(ik === 'tipo' && t.value !== 'egr') ui.iniF.con = ''; render(); }
   else if(t.id === 'flMes'){ if(!t.value) return; var fy = +t.value.slice(0, 4), fmm = +t.value.slice(5, 7); ui.fl.desde = t.value + '-01'; ui.fl.hasta = t.value + '-' + pad(new Date(fy, fmm, 0).getDate()); ui.fl.per = ''; render(); }
   else if(/^fl(Desde|Hasta|Tipo|Gab|Con|Forma)$/.test(t.id || '')){ var fk = {flDesde: 'desde', flHasta: 'hasta', flTipo: 'tipo', flGab: 'gab', flCon: 'con', flForma: 'forma'}[t.id]; if((fk === 'desde' || fk === 'hasta') && !t.value) return; ui.fl[fk] = t.value; if(fk === 'desde' || fk === 'hasta'){ ui.fl.per = ''; if(ui.fl.desde > ui.fl.hasta){ if(fk === 'desde') ui.fl.hasta = ui.fl.desde; else ui.fl.desde = ui.fl.hasta; } } render(); }
   else if(/^cont(Anio|Mes|Caja|Con|Gab|Don)$/.test(t.id || '')){ ui.cont[{contAnio: 'anio', contMes: 'mes', contCaja: 'caja', contCon: 'con', contGab: 'gab', contDon: 'don'}[t.id]] = t.value; render(); }
