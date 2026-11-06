@@ -6527,6 +6527,8 @@ document.addEventListener('input', function(ev){
   if(t.id === 'bkQ'){ ui.cob.q = t.value; var bpos = t.selectionStart; render(); var bn = $('bkQ'); if(bn){ bn.focus(); try{ bn.setSelectionRange(bpos, bpos); }catch(e){} } }
   if(t.id === 'repQ'){ aprRepState().q = t.value; var rpos = t.selectionStart; render(); var rn = $('repQ'); if(rn){ rn.focus(); try{ rn.setSelectionRange(rpos, rpos); }catch(e){} } }
   if(t.id === 'aprQ'){ ui.apr.f.q = t.value; var apos = t.selectionStart; render(); var an = $('aprQ'); if(an){ an.focus(); try{ an.setSelectionRange(apos, apos); }catch(e){} } }
+  if(t.id === 'qdHeb') t.dataset.man = t.value.trim() ? '1' : '';
+  if((t.id === 'qdNom' || t.id === 'qdApe') && $('qdHeb') && $('qdHeb').dataset.man !== '1') $('qdHeb').value = hebreoSugerido($('qdNom').value, $('qdApe').value);
   if(t.id === 'cobQ'){ ui.cob.q = t.value; var pos = t.selectionStart; render(); var n = $('cobQ'); n.focus(); try{ n.setSelectionRange(pos, pos); }catch(e){} }
   else if(t.id && ND_IDS.indexOf(t.id) !== -1){
     ui.nd[t.id] = t.type === 'checkbox' ? t.checked : t.value;
