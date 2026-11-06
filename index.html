@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v230</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v231</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1390,7 +1390,7 @@ function filtrosCargar(){ try{ var o = JSON.parse(localStorage.getItem(FILT_KEY)
   if(ui.fl && ui.fl.per && /^(mes|mesant|anio|todo)$/.test(ui.fl.per)){ var rr = flRango(ui.fl.per); ui.fl.desde = rr[0]; ui.fl.hasta = rr[1]; }
 }catch(e){} }
 /* Al cambiar de pestaña todo regresa a lo normal (filtros de arriba y de columnas) */
-function filtrosNormal(){ filtrosLimpiar(); ui.egOpen = false; if(ui.view !== 'nuevocomp') ui.ccOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
+function filtrosNormal(){ filtrosLimpiar(); if(ui.ccl) ui.ccl.sel = null; ui.egOpen = false; if(ui.view !== 'nuevocomp') ui.ccOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
 function filtrosLimpiar(){ ui.cont = null; ui.fl = null; ui.iniF = null; ui.egL = null; ui.cjL = null; ui.cf = {}; if(ui.ccl){ ui.ccl.gab = 'todos'; ui.ccl.cons = []; ui.ccl.mes = ''; ui.ccl.don = ''; } R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; try{ localStorage.removeItem(FILT_KEY); }catch(e){} FILT_LAST = ''; }
 function xsMarcar(){
   document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
@@ -2136,7 +2136,7 @@ function vNuevoComp(){
   var dons = S.donantes.slice().sort(function(a, b){ return LANG === 'he' && a.hebreo && b.hebreo ? a.hebreo.localeCompare(b.hebreo, 'he') : (a.ape || '').localeCompare(b.ape || '', 'es') || (a.nom || '').localeCompare(b.nom || '', 'es'); });
   var Y = anioAct();
   var recAll = S.compromisos.slice().sort(function(a, b){ return (b.creado || '').localeCompare(a.creado || '') || ((parseInt(String(b.id).slice(1), 10) || 0) - (parseInt(String(a.id).slice(1), 10) || 0)); });
-  if(!ui.ccOpen) return cdPanel() + '<div class="row" style="margin:6px 0 14px"><button type="button" class="btn primary" data-a="ccAbrir">+ Nuevo compromiso</button></div>' + listaComps();
+  if(!ui.ccOpen) return listaComps() + '<div style="height:10px"></div>' + cdPanel() + '<div class="row" style="margin:6px 0 14px"><button type="button" class="btn primary" data-a="ccAbrir">+ Nuevo compromiso</button></div>';
   return cdPanel() + '<section class="panel" id="ccForm"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Nuevo compromiso</h2><button type="button" class="btn ghost sm" data-a="ccCerrar">✕ Cerrar</button></div>' +
     '<div class="form"><label class="f full"><span class="row lblrow"><span>Donador *</span><span class="row" style="gap:10px"><button type="button" class="back addn" data-a="ccDonEd" title="Editar los datos del donador elegido">Editar</button><button type="button" class="back addn" data-a="ccDonNuevo" title="Dar de alta un donador sin salir de aquí">+ Nuevo</button></span></span><select id="ccDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? '— בחרו —' : LANG === 'en' ? '— Select —' : '— Selecciona —') + '</option>' + dons.map(function(d){ return '<option value="' + d.id + '">' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
       formComp('cc') + '</div>' +
@@ -2257,7 +2257,9 @@ function listaComps(){
   var f = ui.ccl, anios = {}; S.compromisos.forEach(function(c){ anios[c.anio] = 1; }); anios[anioAct()] = 1;
   f.meses = f.meses || []; f.mons = f.mons || []; f.cajas = f.cajas || []; f.cons = f.cons || [];
   var porComp = {}; S.cuotas.forEach(function(q){ (porComp[q.compId] = porComp[q.compId] || []).push(q); });
+  var selC = f.sel ? comp(f.sel) : null; if(f.sel && !selC) f.sel = null;
   var rows = S.compromisos.filter(function(c){
+    if(selC) return c.donanteId === selC.donanteId && String(c.anio) === String(selC.anio);
     if(f.anio && String(c.anio) !== f.anio) return false;
     if(f.don && c.donanteId !== f.don) return false;
     if(!gabOk(f.gab, c.gabai)) return false;
@@ -2284,7 +2286,7 @@ function listaComps(){
   if(f.sel){ var cs = comp(f.sel); if(cs){ var tmp = document.createElement('div'); tmp.innerHTML = vCompDetalle(cs); var sec = tmp.querySelector('section.panel'); if(sec){ sec.classList.add('ccldet'); var acts = sec.querySelector('.acts'); if(acts) acts.insertAdjacentHTML('beforeend', '<button type="button" class="btn ghost" data-a="cclDetCerrar" title="Cerrar el detalle" aria-label="Cerrar el detalle">✕</button>'); det = sec.outerHTML; } } else f.sel = null; }
   var leyenda = porGab ? '<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">' + (S.gabaim || []).map(function(g){ return r2Gab(g); }).join('') + '<span class="sub">· tono fuerte = pagado, tono claro = falta, raya roja = vencido</span></div>'
     : '<div class="row" style="gap:14px;flex-wrap:wrap"><span class="sub"><b style="color:var(--ok)">■</b> Pagado</span><span class="sub"><b style="color:var(--bad)">■</b> Vencido</span><span class="sub"><b style="color:var(--warn)">■</b> Parcial</span><span class="sub"><b style="color:var(--muted)">■</b> Por venir</span></div>';
-  return det + '<section class="panel tint-list"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h2 style="margin:0">Compromisos <span class="sub" style="font-weight:400">· da clic en un donador para ver su detalle arriba</span></h2>' +
+  return det + '<section class="panel tint-list"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h2 style="margin:0">Compromisos ' + (selC ? '<span class="sub" style="font-weight:400">· solo ' + esc((don(selC.donanteId) || {nombre: ''}).nombre) + '</span> <button type="button" class="btn ghost sm" data-a="cclDetCerrar">✕ Ver la lista completa</button>' : '<span class="sub" style="font-weight:400">· da clic en un donador para ver su detalle arriba</span>') + '</h2>' +
       '<div class="seg" role="group" aria-label="Colores"><button type="button" class="' + (porGab ? '' : 'on') + '" data-a="cclCol" data-c="estado" aria-pressed="' + !porGab + '">Colores por estado</button><button type="button" class="' + (porGab ? 'on' : '') + '" data-a="cclCol" data-c="gabai" aria-pressed="' + porGab + '">Colores por gabai</button></div></div>' +
     '<div class="form" style="margin-top:8px"><label class="f">Año<select id="cclAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (a === f.anio ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
       '<label class="f">Donador<select id="cclDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">Todos los donadores</option>' + dl.map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
@@ -6171,7 +6173,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'qPagada' || a === 'qParcial'){ var q = S.cuotas.find(function(x){ return x.id === id; }); abrirPago(q.compId, {qid: q.id, monto: a === 'qPagada' ? falta(q) : 0}); }
   else if(a === 'pmSave') pmSave();
   else if(a === 'cfOpen'){ cfAbrir(b); }
-  else if(a === 'cclSel'){ ui.ccl = ui.ccl || {}; ui.ccl.sel = ui.ccl.sel === id ? null : id; render(); if(ui.ccl.sel){ var dt = document.querySelector('.ccldet'); if(dt) dt.scrollIntoView({block: 'start', behavior: 'smooth'}); } }
+  else if(a === 'cclSel'){ ui.ccl = ui.ccl || {}; ui.ccl.sel = ui.ccl.sel === id ? null : id; render(); window.scrollTo({top: 0, behavior: 'smooth'}); }
   else if(a === 'cclDetCerrar'){ if(ui.ccl) ui.ccl.sel = null; render(); }
   else if(a === 'cdForm'){ ui.cdOpen = true; QD_DUP = false; render(); var qn = $('qdNom'); if(qn) qn.focus(); }
   else if(a === 'cdCerrar'){ ui.cdOpen = false; render(); }
