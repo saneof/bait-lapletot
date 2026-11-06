@@ -1737,7 +1737,7 @@ function bkSave(){
   });
   var tt = bkTotales(plan);
   log('Aplicó ' + plan.length + ' pagos en bloque (' + recs[0] + (recs.length > 1 ? ' a ' + recs[recs.length - 1] : '') + ') · ' + Object.keys(tt.porCaja).map(function(k){ return caja(k).nombre + ' ' + money(tt.porCaja[k], caja(k).mon); }).join(' · '));
-  ui.cob.bk = null; cobLimpiar(); closeModal(); render(); toast(plan.length === 1 ? 'Pago aplicado' : plan.length + ' pagos aplicados');
+  ui.cob.bk = null; ui.cob.bkUp = null; ui.cob.bkErr = null; cobLimpiar(); closeModal(); render(); toast(plan.length === 1 ? 'Pago aplicado' : plan.length + ' pagos aplicados');
 }
 
 /* --- Dirección: por caja --- */
@@ -3592,9 +3592,76 @@ function bkState(){ if(!ui.cob.bk) ui.cob.bk = {off: {}, monto: {}, caja: {}, mo
 function bkEdo(q){ var c = comp(q.compId), d = c && don(c.donanteId); if(!d) return {}; return {e: estadoDonante(c)[0], ne: !!d.noEnviar, sl: !telDigits(d.tel), n: d.nombre}; }
 function bkVisible(qid){ var i = document.querySelector('[data-bkq="' + qid + '"]'), tr = i && i.closest('tr'); return !tr || !tr.hidden; }
 function bkBase(){ return cobFiltradas(true).filter(function(q){ return falta(q) > 0 && !q.pausada; }); }
+/* --- Layout de cobro en bloque: tarjetas de Oficina New York --- */
+var BKL_COLS = ['ID (no cambiar)', 'Donante', 'Gabai', 'Concepto', 'Mes a cargar', 'Año', 'Alerta', 'Acuerdo del mes (USD)', 'Paga en (USD/MXN)', 'Monto recibido', 'Referencia USD', 'Forma', 'Caja', 'Fecha de cobro (dd/mm/aaaa)', 'Aplicar (Sí/No)'];
+function bkLayEsNY(q){ var c = comp(q.compId); return !!c && (c.caja === 'NY' || planQ(q).caja === 'NY'); }
+function bkLayAbrir(){
+  var m0 = mesAct() > 1 ? mesAct() - 1 : 1;
+  openModal(head('Descargar layout · tarjetas Oficina New York', 'Cuotas pendientes de los compromisos de Oficina New York (tarjeta de crédito), ya llenas con el acuerdo de cada mes') +
+    '<div class="sub" style="margin-bottom:6px">¿Qué mes(es) vas a cargar?</div><div class="chips" id="bklMeses">' + MESES.es.map(function(n, k){ return '<label class="chip" style="--c:' + MES_COL[k] + '"><input type="checkbox" value="' + (k + 1) + '"' + (k + 1 === m0 ? ' checked' : '') + '> ' + Mes(k + 1) + '</label>'; }).join('') + '</div>' +
+    '<p class="sub" style="margin:10px 0 0">Sale un renglón por donador y mes con: donante, gabai, concepto, <b>mes a cargar</b>, alerta, acuerdo, paga en, monto, referencia, forma, caja, fecha y si se aplica. Cambia solo lo que necesites y súbelo con <b>Subir layout</b>.</p>' +
+    '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="bkLayDl">⬇ Descargar Excel</button></div>');
+}
+function bkLayDescargar(){
+  if(!window.XLSX){ toast('No se pudo preparar el Excel.'); return; }
+  var ms = Array.prototype.map.call(document.querySelectorAll('#bklMeses input:checked'), function(x){ return +x.value; }); if(!ms.length){ toast('Elige al menos un mes.'); return; }
+  var Y = anioAct(), fT = formas().find(function(x){ return /cr[eé]dito/i.test(x); }) || formas().find(function(x){ return /tarjeta/i.test(x); }) || 'Tarjeta de crédito', hoyTxt = fFecha(hoy());
+  var qs = S.cuotas.filter(function(q){ var c = comp(q.compId); return c && c.anio === Y && c.estatus !== 'por confirmar' && !q.pausada && !q.cancelada && falta(q) > 0 && ms.indexOf(q.mes) !== -1 && bkLayEsNY(q); });
+  qs.sort(function(a, b){ var da = don(comp(a.compId).donanteId) || {}, db = don(comp(b.compId).donanteId) || {}; return (da.ape || da.nombre || '').localeCompare(db.ape || db.nombre || '', 'es') || a.mes - b.mes; });
+  if(!qs.length){ toast('No hay cuotas pendientes de Oficina New York en ' + ms.map(function(m){ return Mes(m); }).join(', ') + '.'); return; }
+  var L = [BKL_COLS].concat(qs.map(function(q){ var c = comp(q.compId), d = don(c.donanteId) || {nombre: ''}, fa = falta(q) / 100;
+    return [q.id, d.nombre, gabQ(q, c) || '', c.concepto || '', Mes(q.mes), c.anio, EST[estadoQ(q)][0], fa, 'USD', fa, fa, fT, caja('NY').nombre, hoyTxt, 'Sí']; }));
+  var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(L);
+  ws['!cols'] = [12, 28, 20, 20, 13, 7, 12, 14, 12, 14, 14, 18, 18, 16, 10].map(function(w){ return {wch: w}; });
+  XLSX.utils.book_append_sheet(wb, ws, 'Cobro en bloque');
+  var ins = [['Cómo usar este layout'], ['1. No cambies la columna ID: así el sistema sabe a qué cuota va cada renglón.'], ['2. Mes a cargar: el mes de la cuota a la que se aplica el cargo. Si lo cambias, se busca esa cuota del mismo compromiso.'], ['3. Monto recibido: lo que se cobró. Paga en: USD o MXN.'], ['4. Forma y Caja: vienen como Tarjeta de crédito y Oficina New York; cámbialas solo si hace falta.'], ['5. Fecha de cobro: la fecha del cargo (dd/mm/aaaa).'], ['6. Aplicar: Sí para cargarlo, No para dejarlo fuera.'], ['7. Guarda y súbelo en Cobranza → Cobro en bloque → Subir layout. Antes de guardar verás todo para revisarlo.']];
+  var wi = XLSX.utils.aoa_to_sheet(ins); wi['!cols'] = [{wch: 110}]; XLSX.utils.book_append_sheet(wb, wi, 'Instrucciones');
+  closeModal(); guardar('Layout cobro tarjetas NY ' + ms.map(function(m){ return Mes(m); }).join('-') + ' ' + Y + '.xlsx', XLSX.write(wb, {bookType: 'xlsx', type: 'array'}));
+  toast(qs.length + ' renglones en el layout');
+}
+function bkLayElegir(){ var i = document.createElement('input'); i.type = 'file'; i.accept = '.xlsx,.xls,.csv'; i.onchange = function(){ if(i.files && i.files[0]) bkLaySubir(i.files[0]); }; i.click(); }
+function bkLayNum(v){ if(typeof v === 'number') return v; var n = parseFloat(String(v || '').replace(/[^0-9.\-]/g, '')); return isFinite(n) ? n : 0; }
+function bkLayFecha(v){ if(v == null || v === '') return ''; if(typeof v === 'number'){ var d = new Date(Math.round((v - 25569) * 864e5)); return d.toISOString().slice(0, 10); } var s = String(v).trim(), m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/); if(m){ var y = +m[3]; if(y < 100) y += 2000; return y + '-' + pad(+m[2]) + '-' + pad(+m[1]); } if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10); return ''; }
+function bkLayMes(v){ if(typeof v === 'number') return v >= 1 && v <= 12 ? v : 0; var s = sinAcento(String(v || '').toLowerCase()).trim(); for(var k = 1; k <= 12; k++){ if(s.indexOf(sinAcento(Mes(k).toLowerCase()).slice(0, 3)) === 0) return k; } var n = parseInt(s, 10); return n >= 1 && n <= 12 ? n : 0; }
+function bkLaySubir(file){
+  if(!window.XLSX){ toast('No se pudo leer el archivo.'); return; }
+  var rd = new FileReader();
+  rd.onload = function(){
+    try{
+      var wb = XLSX.read(new Uint8Array(rd.result), {type: 'array'}), nm = wb.SheetNames.find(function(n){ return /cobro/i.test(n); }) || wb.SheetNames[0];
+      var aoa = XLSX.utils.sheet_to_json(wb.Sheets[nm], {header: 1, defval: '', raw: true});
+      var hi = aoa.findIndex(function(r){ return r.some(function(c){ return /^id\b/i.test(String(c).trim()); }) && r.some(function(c){ return /donante/i.test(String(c)); }); });
+      if(hi === -1){ toast('No encontré los encabezados. Usa el layout que descargaste.'); return; }
+      var H = aoa[hi].map(function(c){ return sinAcento(String(c).toLowerCase()); }), col = function(re){ return H.findIndex(function(h){ return re.test(h); }); };
+      var cI = col(/^id/), cD = col(/donante/), cM = col(/mes a cargar|^mes/), cP = col(/paga en/), cR = col(/monto recibido/), cF = col(/^forma/), cC = col(/^caja/), cFe = col(/fecha/), cA = col(/aplicar/);
+      ui.cob.bk = null; var bk = bkState(), ids = [], errs = [], fechas = {}, n = 0;
+      aoa.slice(hi + 1).forEach(function(r, i){
+        if(!r.some(function(x){ return String(x).trim() !== ''; })) return;
+        var fila = hi + i + 2, ap = cA === -1 ? 'si' : sinAcento(String(r[cA]).toLowerCase()).trim(); if(ap && !/^s/.test(ap)) return;
+        var q = cI !== -1 ? qById(String(r[cI]).trim()) : null;
+        if(!q && cD !== -1){ var dn = sinAcento(String(r[cD]).toLowerCase()).trim(), mm = bkLayMes(r[cM]); q = S.cuotas.find(function(z){ var c = comp(z.compId), d = c && don(c.donanteId); return d && c.anio === anioAct() && z.mes === mm && sinAcento(d.nombre.toLowerCase()) === dn; }); }
+        if(!q){ errs.push('Renglón ' + fila + ': no encontré la cuota'); return; }
+        var mes = cM !== -1 ? bkLayMes(r[cM]) : q.mes; if(mes && mes !== q.mes){ var q2 = cuotasDe(q.compId).find(function(z){ return z.mes === mes; }); if(!q2){ errs.push('Renglón ' + fila + ': ese compromiso no tiene cuota en ' + Mes(mes)); return; } q = q2; }
+        if(falta(q) <= 0){ errs.push('Renglón ' + fila + ': ' + Mes(q.mes) + ' ya está pagado'); return; }
+        var monto = Math.round(bkLayNum(r[cR]) * 100); if(!(monto > 0)) return;
+        var mon = cP !== -1 && /mx/i.test(String(r[cP])) ? 'MXN' : 'USD';
+        var cjN = cC !== -1 ? sinAcento(String(r[cC]).toLowerCase()).trim() : '', cj = CAJAS.find(function(k){ return k.id.toLowerCase() === cjN || sinAcento(k.nombre.toLowerCase()) === cjN; });
+        var fo = cF !== -1 ? String(r[cF]).trim() : ''; if(fo && formas().indexOf(fo) === -1){ var f2 = formas().find(function(x){ return sinAcento(x.toLowerCase()) === sinAcento(fo.toLowerCase()); }); fo = f2 || fo; }
+        var fe = cFe !== -1 ? bkLayFecha(r[cFe]) : ''; if(fe) fechas[fe] = (fechas[fe] || 0) + 1;
+        if(ids.indexOf(q.id) === -1) ids.push(q.id);
+        bk.monto[q.id] = monto; bk.mon[q.id] = mon; if(cj && (mon === 'USD' ? cj.mon === 'USD' : true)) bk.caja[q.id] = cj.id; if(fo) bk.forma[q.id] = fo; delete bk.off[q.id]; n++;
+      });
+      var fk = Object.keys(fechas).sort(function(a, b){ return fechas[b] - fechas[a]; }); if(fk.length) bk.fecha = fk[0];
+      if(!n){ ui.cob.bk = null; toast('El layout no tiene renglones para aplicar.' + (errs.length ? ' ' + errs[0] : '')); return; }
+      ui.cob.bkUp = ids; ui.cob.bkErr = errs; ui.cob.bkFechas = fk.length; ui.cob.rap = true; render();
+      toast(n + ' renglón' + (n === 1 ? '' : 'es') + ' cargado' + (n === 1 ? '' : 's') + ' del layout. Revisa y da Aplicar.');
+    }catch(e){ toast('No se pudo leer el archivo: ' + e.message); }
+  };
+  rd.readAsArrayBuffer(file);
+}
 function bkFilas(){
-  var bk = bkState(), f = ui.cob;
-  return bkBase().filter(function(q){ var x = bkEdo(q); if(f.bkDon && x.n !== f.bkDon) return false; var e = f.bkEst || 'todos'; return e === 'todos' || (e === 'noenviar' ? x.ne : e === 'sinlada' ? x.sl : x.e === e); }).map(function(q){
+  var bk = bkState(), f = ui.cob, up = Array.isArray(f.bkUp) ? f.bkUp.map(qById).filter(function(q){ return q && falta(q) > 0; }) : null;
+  return (up || bkBase()).filter(function(q){ if(up) return true; var x = bkEdo(q); if(f.bkDon && x.n !== f.bkDon) return false; var e = f.bkEst || 'todos'; return e === 'todos' || (e === 'noenviar' ? x.ne : e === 'sinlada' ? x.sl : x.e === e); }).map(function(q){
     var c = comp(q.compId), pl = planQ(q), mon = bk.mon[q.id] || pl.mon, ref = falta(q);
     var def = mon === c.moneda ? falta(q) : 0;
     var monto = q.id in bk.monto ? bk.monto[q.id] : 0;
@@ -3635,6 +3702,8 @@ function vBloque(){
     '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cob') + '</div>' +
     '<label class="f">Buscar por nombre<input id="bkQ" type="search" value="' + esc(f.q || '') + '" placeholder="Buscar"></label></div>' +
     '<div class="chips" style="margin:2px 0 10px">' + [['todos', 'Todos'], ['Al corriente', 'Al corriente'], ['Con atraso', 'Con atraso'], ['noenviar', 'No enviar avisos'], ['sinlada', 'Teléfono sin lada']].map(function(o){ return '<button type="button" class="chip' + (est === o[0] ? ' on' : '') + '" data-a="bkEst" data-e="' + o[0] + '">' + o[1] + ' <b>' + cnt(o[0]) + '</b></button>'; }).join('') + '</div>' +
+    '<div class="row" style="gap:8px;flex-wrap:wrap;margin:0 0 10px"><button type="button" class="btn ghost" data-a="bkLayAbrir">⬇ Descargar layout (tarjetas Oficina New York)</button><button type="button" class="btn ghost" data-a="bkLayElegir">⬆ Subir layout</button></div>' +
+    (Array.isArray(f.bkUp) ? '<div class="note" style="margin:0 0 10px"><b>Mostrando ' + f.bkUp.length + ' renglón' + (f.bkUp.length === 1 ? '' : 'es') + ' del layout que subiste</b>, ya llenos. Revisa y da <b>Aplicar</b>; verás el resumen antes de guardar.' + (f.bkFechas > 1 ? ' <span style="color:var(--bad)">El layout traía varias fechas; se usa la más común. Si son distintas, súbelos por separado.</span>' : '') + ((f.bkErr || []).length ? '<div style="color:var(--bad);margin-top:4px">' + f.bkErr.slice(0, 6).map(esc).join('<br>') + (f.bkErr.length > 6 ? '<br>y ' + (f.bkErr.length - 6) + ' más' : '') + '</div>' : '') + ' <button type="button" class="btn ghost sm" data-a="bkLayQuitar">✕ Quitar layout</button></div>' : '') +
     '<div class="form">' +
     '<label class="f">Fecha en que se recibieron *<input id="bkFecha" type="date" value="' + esc(bk.fecha) + '"></label>' +
     (soloBloque() ? '' : '<label class="f">Forma para todos<select id="bkFormaAll"><option value="">La de cada renglón</option>' + formas().map(function(x){ return '<option>' + x + '</option>'; }).join('') + '</select></label>') + '</div>' +
@@ -5985,7 +6054,7 @@ function bkEnviarAprob(){
       monto: p.r.monto, mon: p.r.mon, ref: p.r.montoC - p.sobra, forma: p.r.forma, caja: p.r.caja, plan: p.plan.map(function(x){ return {qid: x.q.id, ap: x.ap}; })});
   });
   log('Envió ' + plan.length + ' cobro(s) en bloque para aprobación');
-  ui.cob.bk = null; cobLimpiar(); closeModal(); render(); toast(plan.length === 1 ? 'Cobro entregado a Dirección para autorizar' : plan.length + ' cobros entregados a Dirección para autorizar');
+  ui.cob.bk = null; ui.cob.bkUp = null; ui.cob.bkErr = null; cobLimpiar(); closeModal(); render(); toast(plan.length === 1 ? 'Cobro entregado a Dirección para autorizar' : plan.length + ' cobros entregados a Dirección para autorizar');
 }
 function paAplicar(x){
   var c = comp(x.compId); if(!c) throw new Error('El compromiso ya no existe');
@@ -6241,7 +6310,11 @@ document.addEventListener('click', function(ev){
   else if(a === 'bkSave') bkSave();
   else if(a === 'bkFill'){ var fq = S.cuotas.find(function(x){ return x.id === id; }); if(fq){ bkState().monto[id] = falta(fq); render(); } }
   else if(a === 'bkFillAll'){ var fk = bkState(), nfa = 0; bkFilas().forEach(function(r){ if(r.on && r.mon === r.c.moneda && !(r.monto > 0) && bkVisible(r.q.id)){ fk.monto[r.q.id] = falta(r.q); nfa++; } }); render(); toast(nfa ? nfa + ' renglón(es) llenados con el acuerdo' : 'No hay renglones en USD vacíos'); }
-  else if(a === 'bkReset'){ ui.cob.bk = null; render(); }
+  else if(a === 'bkReset'){ ui.cob.bk = null; ui.cob.bkUp = null; render(); }
+  else if(a === 'bkLayAbrir'){ bkLayAbrir(); }
+  else if(a === 'bkLayDl'){ bkLayDescargar(); }
+  else if(a === 'bkLayElegir'){ bkLayElegir(); }
+  else if(a === 'bkLayQuitar'){ ui.cob.bk = null; ui.cob.bkUp = null; ui.cob.bkErr = null; render(); }
   else if(a === 'qpReset'){ cuotasDe(id).forEach(function(q){ q.pMon = q.pForma = q.pCaja = null; }); log('Restableció la forma de pago de cada mes de ' + don(comp(id).donanteId).nombre); render(); toast('Todos los meses quedan como el compromiso'); }
   else if(a === 'donDel') confirmarBorrar([id]);
   else if(a === 'donDelSel') confirmarBorrar(Object.keys(ui.don.sel || {}).filter(function(k){ return don(k); }));
