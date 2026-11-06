@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v223</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v224</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1339,8 +1339,13 @@ function renderNav(){
   if(false) S.usuarios.map(function(u, k){ return '<option value="' + k + '"' + (k === S.user ? ' selected' : '') + '>' + esc(u.nombre) + ' · ' + esc(u.rol) + '</option>'; }).join('');
 }
 function render(){ var gEn = gabEntrar(); try{ render0(); } finally{ if(gEn) gabSalir(); } }
+/* Arreglo de una sola vez: R-0964 de Jaime Dichy se quedó en $5,000 USD (Oficina USD) cuando su compromiso ya dice $100,000 pesos */
+function fixR0964(){ try{ S.fixes = S.fixes || {}; if(S.fixes.r0964) return; var p = S.donativos.find(function(x){ return x.recibo === 'R-0964' && x.compId === 'c2565'; }), c = comp('c2565');
+  if(p && c && p.moneda === 'USD' && c.modalidad === 'Pago directo' && c.monPago === 'MXN' && c.montoPagoC === 10000000){ if(pdSync(c)) log('Corrección: R-0964 de Jaime Dichy pasó de $5,000 USD en Oficina USD a $100,000 MXN en Oficina Pesos, como dice su compromiso'); }
+  S.fixes.r0964 = 1; }catch(e){} }
 function render0(){
   if(!LOGUEADO){ return; }
+  fixR0964();
   var pr = document.querySelector('.proto'); if(pr) pr.hidden = !!S.real;
   if(esDonante() && ui.view !== 'portal') ui.view = 'portal';
   if(ui.view === 'gabaim') ui.view = 'config';
