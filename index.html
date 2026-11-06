@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v221</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v222</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2210,6 +2210,7 @@ function ceSave(cid){
   }
   if(cambios.length) log('Corrigió compromiso ' + c.anio + ' de ' + d.nombre + ': ' + cambios.join('; '));
   var nsy = pagosSync(c); if(nsy && cambios.indexOf(nsy + ' pagos actualizados') === -1) cambios.push(nsy + ' pagos con gabai/% al día');
+  if(pdSync(c)) cambios.push('pago actualizado');
   var npd = pdRegistrar(c); if(npd) cambios.push(npd + ' pago(s) directo(s) registrados');
   if(ui.mg) delete ui.mg.ce;
   cobLimpiar();
@@ -4191,6 +4192,17 @@ function fcCalc(pref){
   $(pref + 'ComM').value = tot && pct ? money(Math.round(tot * pct / 100), mon) : '—';
 }
 /* Pago directo: nunca queda pendiente; cada cuota sin pagar se registra como pagada (fecha de inicio, caja y método del compromiso). */
+/* Pago directo: si corriges el compromiso (divisa en que pagó, monto en pesos o caja), su pago ya registrado se actualiza igual */
+function pdSync(c){
+  if(!c || c.modalidad !== 'Pago directo') return 0;
+  var ps = S.donativos.filter(function(p){ return p.compId === c.id; }), qs = cuotasDe(c.id); if(ps.length !== 1 || qs.length !== 1) return 0;
+  var p = ps[0], ref = p.montoCompC; if(!(ref > 0)) return 0;
+  var mon = c.monPago === 'MXN' && c.montoPagoC > 0 ? 'MXN' : 'USD', monto = mon === 'MXN' ? c.montoPagoC : ref, cj = caja(c.caja || '').mon === mon ? c.caja : cajaDef(mon), tc = mon === 'MXN' ? Math.round(monto / ref * 10000) / 10000 : null;
+  if(p.moneda === mon && p.montoC === monto && p.caja === cj && (p.tc || null) === tc) return 0;
+  var antes = money(p.montoC, p.moneda) + ' en ' + caja(p.caja).nombre; p.moneda = mon; p.montoC = monto; p.caja = cj; p.tc = tc;
+  log('Actualizó el pago ' + p.recibo + ' del pago directo de ' + (don(c.donanteId) || {nombre: ''}).nombre + ': ' + antes + ' → ' + money(monto, mon) + ' en ' + caja(cj).nombre);
+  return 1;
+}
 function pdRegistrar(c){
   if(!c || c.modalidad !== 'Pago directo') return 0; var n = 0, d = don(c.donanteId) || {nombre: ''};
   cuotasDe(c.id).forEach(function(q){ if(q.pausada) return; var fa = falta(q); if(!(fa > 0)) return;
