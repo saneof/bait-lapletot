@@ -7115,19 +7115,19 @@ function pcRegresar(id){
 function pcRef(c, q, mx){ if(c.moneda === 'MXN') return mx; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q && q.montoC) return Math.round(mx * q.montoC / c.montoPagoC); return Math.round(mx / (S.cfg.tc || 1)); }
 function pcEsperado(c, q){ var fa = falta(q); if(c.moneda === 'MXN') return fa; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q.montoC) return Math.round(c.montoPagoC * fa / q.montoC); return Math.round(fa * (S.cfg.tc || 1)); }
 function pcAbrir(){
-  var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, sel: [], gab: '', con: '', cta: {}};
-  if(!ui.pc.sel) ui.pc.sel = [];
-  openModal(head('Registrar depósitos en cuenta', 'Filtra por gabai, palomea los donadores y dales Agregar. Luego escribe solo los pesos de cada uno.') + '<div id="pcBody"></div>' +
+  var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, sel: [], gabs: [], cons: [], cta: {}};
+  if(!ui.pc.sel) ui.pc.sel = []; ui.pc.gabs = ui.pc.gabs || []; ui.pc.cons = ui.pc.cons || [];
+  openModal(head('Registrar depósitos en cuenta', 'Filtra por gabai, palomea los donadores y dales Agregar. Luego escribe los pesos y elige la cuenta (Albo o Mar Azul) de cada uno.') + '<div id="pcBody"></div>' +
     '<div class="err" id="pcErr" hidden></div><div class="dfoot" style="justify-content:space-between;align-items:center;position:sticky;bottom:-22px;background:var(--surface);padding:12px 0;margin-bottom:-12px;border-top:1px solid var(--line);z-index:2"><span id="pcTot" style="font-size:16px"></span><span class="row" style="gap:8px"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="pcSave" id="pcSaveB">Registrar</button></span></div>');
   $('dlg').classList.add('wide'); pcPintar();
 }
 function pcBancos(){ return CAJAS.filter(function(k){ return k.banco; }); }
 function pcRes(){
   var P = ui.pc, t = sinAcento((P.q || '').toLowerCase().trim()), out = [];
-  if(!P.gab && !P.con && t.length < 2) return null;
+  if(!P.gabs.length && !P.cons.length && t.length < 2) return null;
   S.cuotas.forEach(function(q){ if(q.pausada || q.cancelada || falta(q) <= 0 || P.sel.indexOf(q.id) !== -1) return; if(P.mes && q.mes !== P.mes) return;
     var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return;
-    if(P.gab && gabQ(q, c) !== P.gab) return; if(P.con && (c.concepto || '') !== P.con) return;
+    if(P.gabs.length && P.gabs.indexOf(gabQ(q, c)) === -1) return; if(P.cons.length && P.cons.indexOf(c.concepto || '') === -1) return;
     var d = don(c.donanteId) || {nombre: '—'}; if(t.length >= 2 && sinAcento((nomDon(d) + ' ' + (d.nombre || '')).toLowerCase()).indexOf(t) === -1) return;
     out.push({q: q, c: c, d: d}); });
   out.sort(function(a, b){ return (a.d.ape || a.d.nombre || '').localeCompare(b.d.ape || b.d.nombre || '', 'es') || a.q.mes - b.q.mes; });
@@ -7135,11 +7135,11 @@ function pcRes(){
 }
 function pcPintarRes(){
   var box = $('pcResBox'); if(!box) return; var r = pcRes();
-  if(r === null){ box.innerHTML = '<div class="empty" style="padding:14px">Elige un <b>gabai</b> (o un concepto, o escribe un nombre) para ver sus pendientes.</div>'; return; }
+  if(r === null){ box.innerHTML = '<div class="empty" style="padding:14px">Elige uno o varios <b>gabaim</b> (o conceptos, o escribe un nombre) para ver sus pendientes.</div>'; return; }
   if(!r.length){ box.innerHTML = '<div class="empty" style="padding:14px">No hay pendientes con estos filtros.</div>'; return; }
   box.innerHTML = '<div class="row" style="justify-content:space-between;align-items:center;margin:4px 0 6px"><label class="ck"><input type="checkbox" id="pcResAll"> Marcar todos (' + r.length + ')</label><button type="button" class="btn primary sm" data-a="pcAgregar" id="pcAgrB">+ Agregar seleccionados</button></div>' +
-    '<div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th></th><th>Donador</th><th>Gabai</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th></tr></thead><tbody>' +
-    r.map(function(x){ return '<tr><td><label class="ck"><input type="checkbox" data-pcsel="' + x.q.id + '"></label></td><td><b>' + esc(nomDon(x.d)) + '</b></td><td>' + gabTxt(gabQ(x.q, x.c)) + '</td><td>' + esc(x.c.concepto || '') + '</td><td>' + Mes(x.q.mes) + '</td><td class="n">' + money(falta(x.q), x.c.moneda) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    '<div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th></th><th>Donador</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th></tr></thead><tbody>' +
+    r.map(function(x){ return '<tr><td><label class="ck"><input type="checkbox" data-pcsel="' + x.q.id + '"></label></td><td><b>' + esc(nomDon(x.d)) + '</b></td><td>' + esc(x.c.concepto || '') + '</td><td>' + Mes(x.q.mes) + '</td><td class="n">' + money(falta(x.q), x.c.moneda) + '</td></tr>'; }).join('') + '</tbody></table></div>';
   var all = $('pcResAll'), upd = function(){ var n = box.querySelectorAll('[data-pcsel]:checked').length; $('pcAgrB').textContent = '+ Agregar seleccionados' + (n ? ' (' + n + ')' : ''); };
   all.addEventListener('change', function(){ box.querySelectorAll('[data-pcsel]').forEach(function(x){ x.checked = all.checked; }); upd(); });
   box.querySelectorAll('[data-pcsel]').forEach(function(x){ x.addEventListener('change', upd); });
@@ -7147,26 +7147,26 @@ function pcPintarRes(){
 function pcPintar(){
   var P = ui.pc, b = $('pcBody'); if(!b) return; var bancos = pcBancos();
   var gabs = [], cons = []; S.cuotas.forEach(function(q){ if(falta(q) <= 0 || (P.mes && q.mes !== P.mes)) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio)) return; var g = gabQ(q, c); if(g && gabs.indexOf(g) === -1) gabs.push(g); if(c.concepto && cons.indexOf(c.concepto) === -1) cons.push(c.concepto); });
-  if(P.gab && gabs.indexOf(P.gab) === -1) gabs.push(P.gab); if(P.con && cons.indexOf(P.con) === -1) cons.push(P.con);
+  P.gabs.forEach(function(g){ if(gabs.indexOf(g) === -1) gabs.push(g); }); P.cons.forEach(function(k){ if(cons.indexOf(k) === -1) cons.push(k); });
+  var msP = function(id, key, items, todos, pill){ var sl = P[key], sum = !sl.length ? '<span>' + todos + '</span>' : sl.length <= 2 ? '<span class="gsum">' + sl.map(function(v){ var it = items.find(function(x){ return x[0] === v; }); return it ? it[1] : esc(v); }).join('') + '</span>' : '<span>' + sl.length + ' elegidos</span>'; var h = msHtml(id, items, sl, sum); MS[id].set = function(a){ P[key] = a; setTimeout(pcPintar, 0); }; return h; };
   gabs.sort(function(a, b2){ return a.localeCompare(b2, 'he'); }); cons.sort(function(a, b2){ return a.localeCompare(b2, 'es'); });
   var ctaOpts = function(sel){ return bancos.map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre.replace('Cuenta ', '')) + '</option>'; }).join(''); };
   var sel = P.sel.map(function(id){ var q = qById(id), c = q && comp(q.compId); return q && c ? {q: q, c: c, d: don(c.donanteId) || {nombre: '—'}} : null; }).filter(Boolean);
-  b.innerHTML = '<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><span class="sub">Cuenta para todos:</span>' + bancos.map(function(k){ return '<button type="button" class="chip' + (P.cuenta === k.id ? ' on' : '') + '" data-a="pcCuenta" data-c="' + k.id + '">' + esc(k.nombre.replace('Cuenta ', '')) + '</button>'; }).join('') + '<span class="sub">· o elige la cuenta en cada renglón</span><span style="flex:1"></span><label class="f" style="margin:0;flex-direction:row;align-items:center;gap:6px">Fecha del depósito<input type="date" id="pcFecha" value="' + esc(P.fecha) + '" style="width:auto"></label></div>' +
-    (sel.length ? '<h3 style="margin:6px 0 6px;font-size:16px;color:var(--ok)">Por registrar (' + sel.length + ')</h3><div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th>Donador</th><th>Gabai</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th><th>Cuenta</th><th class="n">Depositó (MXN)</th><th></th></tr></thead><tbody>' +
+  b.innerHTML = '' +
+    (sel.length ? '<h3 style="margin:6px 0 6px;font-size:16px;color:var(--ok)">Por registrar (' + sel.length + ')</h3><div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th>Donador</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th><th>Cuenta</th><th class="n">Depositó (MXN)</th><th></th></tr></thead><tbody>' +
       sel.map(function(r){ var v = P.vals[r.q.id] || '', on = cents(v) > 0;
-        return '<tr' + (on ? ' style="background:color-mix(in srgb, var(--ok) 9%, var(--surface))"' : '') + '><td><b>' + esc(nomDon(r.d)) + '</b></td><td>' + gabTxt(gabQ(r.q, r.c)) + '</td><td>' + esc(r.c.concepto || '') + '</td><td>' + Mes(r.q.mes) + '</td><td class="n">' + money(falta(r.q), r.c.moneda) + '</td><td><select data-pcc="' + r.q.id + '" style="width:auto">' + ctaOpts(P.cta[r.q.id] || P.cuenta) + '</select></td>' +
+        return '<tr' + (on ? ' style="background:color-mix(in srgb, var(--ok) 9%, var(--surface))"' : '') + '><td><b>' + esc(nomDon(r.d)) + '</b></td><td>' + esc(r.c.concepto || '') + '</td><td>' + Mes(r.q.mes) + '</td><td class="n">' + money(falta(r.q), r.c.moneda) + '</td><td><select data-pcc="' + r.q.id + '" style="width:auto">' + ctaOpts(P.cta[r.q.id] || P.cuenta) + '</select></td>' +
           '<td class="n"><input data-pcv="' + r.q.id + '" inputmode="decimal" value="' + esc(v) + '" placeholder="≈ ' + mN(pcEsperado(r.c, r.q)) + '" style="width:140px;text-align:right' + (on ? ';border-color:var(--ok);font-weight:700' : '') + '"></td><td><button type="button" class="btn ghost sm" data-a="pcQuitar" data-id="' + r.q.id + '" title="Quitar de la lista" aria-label="Quitar">✕</button></td></tr>'; }).join('') + '</tbody></table></div>' : '') +
     '<h3 style="margin:16px 0 6px;font-size:16px">Buscar pendientes</h3>' +
-    '<div class="form" style="grid-template-columns:repeat(4,minmax(0,1fr))"><label class="f">Gabai<select id="pcGab"><option value="">— Elige gabai —</option>' + gabs.map(function(g){ return '<option' + (g === P.gab ? ' selected' : '') + '>' + esc(g) + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Concepto<select id="pcCon"><option value="">Todos los conceptos</option>' + cons.map(function(k){ return '<option' + (k === P.con ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label>' +
+    '<div class="form" style="grid-template-columns:repeat(5,minmax(0,1fr))"><div class="f fms">Gabai' + msP('pcgb', 'gabs', gabs.map(function(g){ return [g, r2Gab(g)]; }), 'Elige gabai', true) + '</div>' +
+    '<div class="f fms">Concepto' + msP('pccn', 'cons', cons.map(function(k){ return [k, isrPill(k)]; }), 'Todos los conceptos', true) + '</div>' +
     '<label class="f">Cuota de<select id="pcMes"><option value="0"' + (!P.mes ? ' selected' : '') + '>Todos los meses</option>' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === P.mes ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + P.anio + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Buscar donador<input id="pcQ" value="' + esc(P.q) + '" placeholder="Escribe un nombre…" autocomplete="off"></label></div>' +
+    '<label class="f">Buscar donador<input id="pcQ" value="' + esc(P.q) + '" placeholder="Escribe un nombre…" autocomplete="off"></label>' +
+    '<label class="f">Fecha del depósito<input type="date" id="pcFecha" value="' + esc(P.fecha) + '"></label></div>' +
     '<div id="pcResBox"></div>';
   pcPintarRes(); pcTotal();
   $('pcQ').addEventListener('input', function(){ P.q = this.value; pcPintarRes(); });
   $('pcMes').addEventListener('change', function(){ P.mes = +this.value; pcPintar(); });
-  $('pcGab').addEventListener('change', function(){ P.gab = this.value; pcPintar(); });
-  $('pcCon').addEventListener('change', function(){ P.con = this.value; pcPintar(); });
   $('pcFecha').addEventListener('change', function(){ P.fecha = this.value; });
   b.querySelectorAll('[data-pcc]').forEach(function(sl){ sl.addEventListener('change', function(){ P.cta[sl.getAttribute('data-pcc')] = sl.value; pcTotal(); }); });
   b.querySelectorAll('[data-pcv]').forEach(function(inp){ inp.addEventListener('input', function(){ var on = cents(inp.value) > 0; P.vals[inp.getAttribute('data-pcv')] = inp.value; var er = $('pcErr'); if(er) er.hidden = true; inp.style.borderColor = on ? 'var(--ok)' : ''; inp.style.fontWeight = on ? '700' : ''; inp.closest('tr').style.background = on ? 'color-mix(in srgb, var(--ok) 9%, var(--surface))' : ''; pcTotal(); }); });
