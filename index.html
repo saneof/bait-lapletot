@@ -5168,7 +5168,10 @@ function abrirEditar(cid){
   var c = comp(cid), qs = cuotasDe(cid), d = don(c.donanteId);
   var prim = qs.find(function(q){ return falta(q) > 0 && !q.pausada; }) || qs[qs.length - 1];
   ED = {cid: cid, desde: prim ? prim.mes : qs[0].mes};
+  var q0 = qs.slice().sort(function(a, b){ return a.mes - b.mes; }), mIni = q0.length ? q0[0].mes : c.mesIni, mFin = q0.length ? q0[q0.length - 1].mes : 12;
   openModal(head('Editar compromiso', esc(d.nombre) + ' · ' + c.anio + ' · cuota actual ' + money(c.cuotaC, c.moneda)) +
+    (c.modalidad !== 'Pago directo' ? '<div class="note" style="margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>¿Empezó en otro mes?</b><span>Mes de inicio:</span><select id="edIni" style="width:auto">' + MESES.es.map(function(nm, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === mIni ? ' selected' : '') + (k + 1 > mFin ? ' disabled' : '') + '>' + Mes(k + 1) + '</option>'; }).join('') + '</select><button type="button" class="btn primary sm" data-a="edIni">Cambiar mes de inicio</button>' +
+      '<span class="sub" style="flex-basis:100%">Termina igual en ' + Mes(mFin) + '. Si empieza después, se quitan los meses de antes; si empieza antes, se agregan con la misma cuota. Los pagos ya hechos se reacomodan solos.</span></div>' : '') +
     '<div><div class="sub" style="margin-bottom:6px">A partir de</div><div class="chips" id="edMeses">' + qs.map(function(q){
       var e = estadoQ(q);
       return '<button type="button" class="chip' + (q.mes === ED.desde ? ' on' : '') + '" data-a="edMes" data-m="' + q.mes + '" title="' + esc(EST[e][0]) + '">' + Mes(q.mes) + (e === 'pagada' || e === 'adelantada' ? ' ✓' : '') + '</button>';
@@ -5206,6 +5209,30 @@ function edPrev(){
     }).join('') + '</tbody></table></div>' +
     '<div class="row" style="margin-top:8px;gap:16px"><span>Total anual: <b>' + money(r.antes, c.moneda) + '</b> → <b>' + money(r.despues, c.moneda) + '</b></span>' +
     (r.despues !== r.antes ? '<span class="pill ' + (r.despues > r.antes ? 't-ok' : 't-bad') + '">' + (r.despues > r.antes ? 'Sube ' : 'Baja ') + money(Math.abs(r.despues - r.antes), c.moneda) + '</span>' : '') + (r.gab !== null ? '<span class="pill t-info">Gabai: ' + esc(r.gab || 'sin gabai') + '</span>' : '') + (r.com !== null ? '<span class="pill t-info">Comisión ' + r.com + '%</span>' : '') + '</div>';
+}
+function edInicio(){
+  var c = comp(ED.cid), d = don(c.donanteId) || {nombre: ''}, err = $('edErr'), m = +$('edIni').value, qs = cuotasDe(c.id).sort(function(a, b){ return a.mes - b.mes; });
+  if(!qs.length) return; var ini = qs[0].mes, fin = qs[qs.length - 1].mes, paso = pasoDe(c.periodo);
+  if(!m || m === ini){ err.textContent = 'Ya empieza en ' + Mes(ini) + '. Elige otro mes.'; err.hidden = false; return; }
+  if(m > fin){ err.textContent = 'El inicio no puede ser después del último mes (' + Mes(fin) + ').'; err.hidden = false; return; }
+  var quitar = qs.filter(function(q){ return q.mes < m; }), qIds = quitar.map(function(q){ return q.id; });
+  var reasig = S.donativos.filter(function(p){ return p.compId === c.id && p.cubre.some(function(x){ return qIds.indexOf(x.qid) !== -1 && x.ap > 0; }); });
+  reasig.forEach(function(p){ desaplicar(p); });
+  quitar.forEach(function(q){ S.cuotas.splice(S.cuotas.indexOf(q), 1); });
+  var agr = []; if(m < ini){ for(var mm = m; mm < ini; mm += paso){ S.cuotas.push({id: nid('q'), compId: c.id, num: 0, mes: mm, venc: c.anio + '-' + pad(mm) + '-01', montoC: c.cuotaC, aplicadoC: 0, pausada: false, recs: [], nota: ''}); agr.push(Mes(mm)); } }
+  var nq = cuotasDe(c.id).sort(function(a, b){ return a.mes - b.mes; }), mapa = {};
+  nq.forEach(function(q, i){ q.num = i + 1; mapa[q.id] = q.num; });
+  reasig.sort(function(a, b){ return a.fecha.localeCompare(b.fecha); }).forEach(function(p){ var r = p.montoCompC, plan2 = [];
+    nq.forEach(function(z){ if(r <= 0 || z.pausada) return; var fa2 = z.montoC - z.aplicadoC; if(fa2 <= 0) return; var ap = Math.min(fa2, r); z.aplicadoC += ap; r -= ap; plan2.push({qid: z.id, num: z.num, mes: z.mes, ap: ap}); });
+    if(r > 0 && nq.length){ var u = nq[nq.length - 1]; u.aplicadoC += r; var e2 = plan2.find(function(x){ return x.qid === u.id; }); if(e2) e2.ap += r; else plan2.push({qid: u.id, num: u.num, mes: u.mes, ap: r}); }
+    p.cubre = plan2; if(plan2.length) p.mesCorr = plan2[0].mes; });
+  S.donativos.forEach(function(p){ if(p.compId === c.id) p.cubre.forEach(function(x){ if(mapa[x.qid]) x.num = mapa[x.qid]; }); });
+  c.n = nq.length; c.mesIni = nq[0].mes; c.fechaInicio = c.anio + '-' + pad(c.mesIni) + '-' + (c.fechaInicio ? c.fechaInicio.slice(8, 10) : '01');
+  recalcAnual(c);
+  var txt = 'inicio ' + Mes(ini) + ' → ' + Mes(m) + (quitar.length ? '; quitó ' + quitar.map(function(q){ return Mes(q.mes); }).join(', ') : '') + (agr.length ? '; agregó ' + agr.join(', ') : '') + (reasig.length ? '; ' + reasig.length + ' pago(s) reacomodados' : '');
+  c.notas = c.notas || []; c.notas.push({fecha: hoy(), usuario: user().nombre, texto: 'Cambió mes de inicio: ' + txt});
+  log('Cambió mes de inicio del compromiso ' + c.anio + ' de ' + d.nombre + ': ' + txt);
+  pagosSync(c); cobLimpiar(); closeModal(); render(); toast('Ahora empieza en ' + Mes(m) + ' · ' + nq.length + ' cuotas');
 }
 function edSave(){
   var r = edCalc(), c = r.c, err = $('edErr'), mot = $('edMot').value.trim();
@@ -6280,6 +6307,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'gmTodos' || a === 'gmNinguno'){ document.querySelectorAll('[data-gmq]').forEach(function(x){ x.checked = a === 'gmTodos'; }); }
   else if(a === 'editar') abrirEditar(id);
   else if(a === 'edMes'){ ED.desde = +b.getAttribute('data-m'); document.querySelectorAll('[data-a=edMes]').forEach(function(x){ x.classList.toggle('on', x === b); }); edPrev(); }
+  else if(a === 'edIni'){ edInicio(); }
   else if(a === 'edSave') edSave();
   else if(a === 'catNew'){ ev.preventDefault(); var er = $('ed_' + b.getAttribute('data-sel')); if(er) er.hidden = true; var nr = $('nw_' + b.getAttribute('data-sel')); if(nr){ nr.hidden = false; $('nwi_' + b.getAttribute('data-sel')).focus(); } }
   else if(a === 'catMov'){ var mk = b.getAttribute('data-cat'), mi = +b.getAttribute('data-k'), md = +b.getAttribute('data-d'); if(mk === 'formas' && !S.formas) S.formas = FORMAS_BASE.slice(); var arr = S[mk], mj = mi + md; if(arr && mj >= 0 && mj < arr.length){ var tmp = arr[mi]; arr[mi] = arr[mj]; arr[mj] = tmp; render(); if(mk === 'gabaim') gabOrdRefrescar(); var nb = document.querySelector('[data-a=catMov][data-cat="' + mk + '"][data-k="' + mj + '"][data-d="' + md + '"]'); if(nb && !nb.disabled) nb.focus(); } }
