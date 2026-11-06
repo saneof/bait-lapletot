@@ -1316,7 +1316,7 @@ function abrirModOc(gid){
 function modOcSet(id, vis){ var u = user(); if(!u) return; S.cfg = S.cfg || {}; var k = 'navOc_' + u.id, oc = (S.cfg[k] || []).slice(), i = oc.indexOf(id); if(vis && i !== -1) oc.splice(i, 1); if(!vis && i === -1) oc.push(id); S.cfg[k] = oc; save(); renderNav(); }
 function renderNav(){
   var pend = porEnviar().filter(function(x){ return !x.omitir && (x.tipo === 'venc' || x.tipo === 'varias'); }).length;
-  var ocM = navOc(), todas = vistasOrden().concat(VIEWS.filter(function(v){ return v[0] === 'portal'; })).filter(function(v){ return puede(v[0]) && ocM.indexOf(v[0]) === -1; });
+  var ocM = navOc(), todas = vistasOrden().concat(VIEWS.filter(function(v){ return v[0] === 'portal'; })).filter(function(v){ return puede(v[0]) && ocM.indexOf(v[0]) === -1 && v[0] !== 'donantes'; });
   var boton = function(v){
     var ti = vistasOrden().indexOf(v), dr = ti !== -1 && !esDonante() ? ' draggable="true" data-drag="tabs" data-drop="tabs" data-axis="y" data-k="' + ti + '"' : '';
     return '<button type="button" data-a="go" data-v="' + v[0] + '"' + dr + (ui.view === v[0] || (ui.view === 'compromisos' && v[0] === 'seg2') ? ' aria-current="page"' : '') + '><span class="mico">' + ico(v[0]) + '</span><span class="mlab">' + esc(v[1]) + '</span><span class="mshort" aria-hidden="true">' + esc(CORTO[v[0]] || v[1].slice(0, 6)) + '</span>' +
@@ -1390,7 +1390,7 @@ function filtrosCargar(){ try{ var o = JSON.parse(localStorage.getItem(FILT_KEY)
   if(ui.fl && ui.fl.per && /^(mes|mesant|anio|todo)$/.test(ui.fl.per)){ var rr = flRango(ui.fl.per); ui.fl.desde = rr[0]; ui.fl.hasta = rr[1]; }
 }catch(e){} }
 /* Al cambiar de pestaña todo regresa a lo normal (filtros de arriba y de columnas) */
-function filtrosNormal(){ filtrosLimpiar(); if(ui.ccl) ui.ccl.sel = null; ui.egOpen = false; if(ui.view !== 'nuevocomp') ui.ccOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
+function filtrosNormal(){ filtrosLimpiar(); ui.ccl = null; ui.egOpen = false; if(ui.view !== 'nuevocomp'){ ui.ccOpen = false; ui.cdOpen = false; } ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
 function filtrosLimpiar(){ ui.cont = null; ui.fl = null; ui.iniF = null; ui.egL = null; ui.cjL = null; ui.cf = {}; if(ui.ccl){ ui.ccl.gab = 'todos'; ui.ccl.cons = []; ui.ccl.mes = ''; ui.ccl.don = ''; } R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; try{ localStorage.removeItem(FILT_KEY); }catch(e){} FILT_LAST = ''; }
 function xsMarcar(){
   document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
@@ -2136,12 +2136,13 @@ function vNuevoComp(){
   var dons = S.donantes.slice().sort(function(a, b){ return LANG === 'he' && a.hebreo && b.hebreo ? a.hebreo.localeCompare(b.hebreo, 'he') : (a.ape || '').localeCompare(b.ape || '', 'es') || (a.nom || '').localeCompare(b.nom || '', 'es'); });
   var Y = anioAct();
   var recAll = S.compromisos.slice().sort(function(a, b){ return (b.creado || '').localeCompare(a.creado || '') || ((parseInt(String(b.id).slice(1), 10) || 0) - (parseInt(String(a.id).slice(1), 10) || 0)); });
-  if(!ui.ccOpen) return listaComps() + '<div style="height:10px"></div>' + cdPanel() + '<div class="row" style="margin:6px 0 14px"><button type="button" class="btn primary" data-a="ccAbrir">+ Nuevo compromiso</button></div>';
-  return cdPanel() + '<section class="panel" id="ccForm"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Nuevo compromiso</h2><button type="button" class="btn ghost sm" data-a="ccCerrar">✕ Cerrar</button></div>' +
+  if(ui.cdOpen && !ui.ccOpen) return cdPanel();
+  if(!ui.ccOpen) return cdPanel() + '<div class="row" style="margin:6px 0 14px"><button type="button" class="btn primary" data-a="ccAbrir">+ Nuevo compromiso</button></div>' + listaComps();
+  return '<section class="panel" id="ccForm"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Nuevo compromiso</h2><button type="button" class="btn ghost sm" data-a="ccCerrar">✕ Cerrar</button></div>' +
     '<div class="form"><label class="f full"><span class="row lblrow"><span>Donador *</span><span class="row" style="gap:10px"><button type="button" class="back addn" data-a="ccDonEd" title="Editar los datos del donador elegido">Editar</button><button type="button" class="back addn" data-a="ccDonNuevo" title="Dar de alta un donador sin salir de aquí">+ Nuevo</button></span></span><select id="ccDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? '— בחרו —' : LANG === 'en' ? '— Select —' : '— Selecciona —') + '</option>' + dons.map(function(d){ return '<option value="' + d.id + '">' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
       formComp('cc') + '</div>' +
     '<div class="err" id="ccErr" hidden></div>' +
-    '<div class="row"><button type="button" class="btn primary" data-a="ccSave">Crear compromiso</button><button type="button" class="btn ghost" data-a="ccLimpiar">Limpiar</button><button type="button" class="btn ghost" data-a="ccCerrar">Cancelar</button></div></section>' + listaComps();
+    '<div class="row"><button type="button" class="btn primary" data-a="ccSave">Crear compromiso</button><button type="button" class="btn ghost" data-a="ccLimpiar">Limpiar</button><button type="button" class="btn ghost" data-a="ccCerrar">Cancelar</button></div></section>';
 }
 function gmForm(c, qs){
   var hay = qs.some(function(q){ return q.gabai != null || q.comPct != null; });
@@ -2258,7 +2259,8 @@ function listaComps(){
   f.meses = f.meses || []; f.mons = f.mons || []; f.cajas = f.cajas || []; f.cons = f.cons || [];
   var porComp = {}; S.cuotas.forEach(function(q){ (porComp[q.compId] = porComp[q.compId] || []).push(q); });
   var selC = f.sel ? comp(f.sel) : null; if(f.sel && !selC) f.sel = null;
-  var rows = S.compromisos.filter(function(c){
+  var hayF = !!(selC || f.don || gabArr(f.gab).length || f.cons.length);
+  var rows = !hayF ? [] : S.compromisos.filter(function(c){
     if(selC) return c.donanteId === selC.donanteId && String(c.anio) === String(selC.anio);
     if(f.anio && String(c.anio) !== f.anio) return false;
     if(f.don && c.donanteId !== f.don) return false;
@@ -2286,7 +2288,7 @@ function listaComps(){
   if(f.sel){ var cs = comp(f.sel); if(cs){ var tmp = document.createElement('div'); tmp.innerHTML = vCompDetalle(cs); var sec = tmp.querySelector('section.panel'); if(sec){ sec.classList.add('ccldet'); var acts = sec.querySelector('.acts'); if(acts) acts.insertAdjacentHTML('beforeend', '<button type="button" class="btn ghost" data-a="cclDetCerrar" title="Cerrar el detalle" aria-label="Cerrar el detalle">✕</button>'); det = sec.outerHTML; } } else f.sel = null; }
   var leyenda = porGab ? '<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">' + (S.gabaim || []).map(function(g){ return r2Gab(g); }).join('') + '<span class="sub">· tono fuerte = pagado, tono claro = falta, raya roja = vencido</span></div>'
     : '<div class="row" style="gap:14px;flex-wrap:wrap"><span class="sub"><b style="color:var(--ok)">■</b> Pagado</span><span class="sub"><b style="color:var(--bad)">■</b> Vencido</span><span class="sub"><b style="color:var(--warn)">■</b> Parcial</span><span class="sub"><b style="color:var(--muted)">■</b> Por venir</span></div>';
-  return det + '<section class="panel tint-list"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h2 style="margin:0">Compromisos ' + (selC ? '<span class="sub" style="font-weight:400">· solo ' + esc((don(selC.donanteId) || {nombre: ''}).nombre) + '</span> <button type="button" class="btn ghost sm" data-a="cclDetCerrar">✕ Ver la lista completa</button>' : '<span class="sub" style="font-weight:400">· da clic en un donador para ver su detalle arriba</span>') + '</h2>' +
+  return '<section class="panel tint-list"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h2 style="margin:0">Compromisos ' + (selC ? '<span class="sub" style="font-weight:400">· solo ' + esc((don(selC.donanteId) || {nombre: ''}).nombre) + '</span> <button type="button" class="btn ghost sm" data-a="cclDetCerrar">✕ Ver la lista completa</button>' : '<span class="sub" style="font-weight:400">· da clic en un donador para ver su detalle arriba</span>') + '</h2>' +
       '<div class="seg" role="group" aria-label="Colores"><button type="button" class="' + (porGab ? '' : 'on') + '" data-a="cclCol" data-c="estado" aria-pressed="' + !porGab + '">Colores por estado</button><button type="button" class="' + (porGab ? 'on' : '') + '" data-a="cclCol" data-c="gabai" aria-pressed="' + porGab + '">Colores por gabai</button></div></div>' +
     '<div class="form" style="margin-top:8px"><label class="f">Año<select id="cclAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (a === f.anio ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
       '<label class="f">Donador<select id="cclDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">Todos los donadores</option>' + dl.map(function(d){ return '<option value="' + d.id + '"' + (f.don === d.id ? ' selected' : '') + '>' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
@@ -2298,7 +2300,7 @@ function listaComps(){
       '<div class="f fms">Caja' + msF('cclcj', 'cajas', CAJAS.filter(function(k){ return !k.externa || true; }).map(function(k){ return [k.id, cajaPill(k.id)]; }), 'Todas las cajas', true) + '</div></div>' +
     '<div class="kpis"><div class="kpi"><span>Compromisos</span><strong>' + rows.length + '</strong></div><div class="kpi"><span>Comprometido' + (f.meses.length ? ' (meses elegidos)' : '') + '</span><strong>' + money(tot, 'USD') + '</strong></div><div class="kpi"><span>Pagado</span><strong style="color:var(--ok)">' + money(pagT, 'USD') + '</strong></div><div class="kpi"><span>Falta</span><strong style="color:var(--bad)">' + money(Math.max(0, tot - pagT), 'USD') + '</strong></div></div>' +
     '<div style="margin:6px 0 10px">' + leyenda + '</div>' +
-    (rows.length ? tbBar('comps') + '<div class="tw cards"><table data-cf="comps" data-tt="Compromisos" class="cobt cclm"><thead><tr><th>Donador</th><th>Concepto</th><th>Gabai</th>' + meses.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Pagado</th><th class="n">Falta</th></tr></thead><tbody>' +
+    (det ? '</section>' + det + '<section class="panel tint-list">' : '') + (!hayF ? '<div class="empty">Elige un <b>gabai</b> o un <b>concepto</b> arriba (o da clic en un donador) para ver la tabla.</div>' : rows.length ? tbBar('comps') + '<div class="tw cards"><table data-cf="comps" data-tt="Compromisos" class="cobt cclm"><thead><tr><th>Donador</th><th>Concepto</th><th>Gabai</th>' + meses.map(function(m){ return '<th class="n">' + Mes(m).slice(0, 3) + '</th>'; }).join('') + '<th class="n">Pagado</th><th class="n">Falta</th></tr></thead><tbody>' +
       rows.map(function(c){ var d = don(c.donanteId) || {nombre: '—'}, gc = r2Color(c.gabai), pg = pagadoMeses(c), tt = totalMeses(c), on = f.sel === c.id;
         return '<tr data-a="cclSel" data-id="' + c.id + '" class="cclr' + (on ? ' on' : '') + '" title="Ver el detalle de este compromiso"><td data-l="Donador" data-noi18n><b' + (LANG === 'he' && d.hebreo ? ' dir="rtl" lang="he"' : '') + '>' + esc(LANG === 'he' && d.hebreo ? d.hebreo : nomDon(d)) + '</b></td><td data-l="Concepto">' + isrPill(c.concepto || '—') + '</td><td data-l="Gabai">' + gabTxt(c.gabai) + '</td>' +
           meses.map(function(m){ var q = mesQ(c, m); if(!q) return '<td class="n" data-l="' + Mes(m) + '"></td>'; var e = estadoQ(q), st;
@@ -6126,7 +6128,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'ccReemplazar'){ closeModal(); ccSave('reemplazar'); }
   else if(a === 'ccAdicional'){ closeModal(); ccSave('adicional'); }
   else if(a === 'ccLimpiar'){ ui.cc = {}; if(ui.mg) delete ui.mg.cc; render(); }
-  else if(a === 'ccAbrir'){ ui.ccOpen = true; render(); var fc = $('ccForm'); if(fc){ fc.scrollIntoView({block: 'start', behavior: 'smooth'}); } }
+  else if(a === 'ccAbrir'){ ui.ccOpen = true; ui.cdOpen = false; render(); window.scrollTo(0, 0); }
   else if(a === 'ccCerrar'){ ui.ccOpen = false; ui.cc = {}; if(ui.mg) delete ui.mg.cc; render(); }
   else if(a === 'ncSave'){ var cuN = cents($('ncCuota').value) || planTot('nc'); if(cuN <= 0 || !$('ncGabai').value || !$('ncConcepto').value || !fcFecha('nc')){ var eN = $('ncErr'); eN.textContent = cuN <= 0 ? 'Escribe el monto.' : !$('ncGabai').value ? 'Elige el gabai del compromiso.' : !$('ncConcepto').value ? 'Elige el concepto del compromiso.' : 'Elige la fecha de inicio.'; eN.hidden = false; return; } var ncN = crearCompromiso({donanteId: id, anio: anioAct(), cuotaC: cuN, mesIni: +$('ncMes').value, moneda: $('ncMon').value, forma: $('ncForma').value, x: compExtra('nc')}); log('Creó compromiso ' + ncN.anio + ' para ' + don(id).nombre); closeModal(); ui.view = 'compromisos'; ui.comp.sel = ncN.id; render(); toast('Compromiso creado'); }
   else if(a === 'compF'){ ui.comp.f = b.getAttribute('data-f'); render(); }
@@ -6173,9 +6175,9 @@ document.addEventListener('click', function(ev){
   else if(a === 'qPagada' || a === 'qParcial'){ var q = S.cuotas.find(function(x){ return x.id === id; }); abrirPago(q.compId, {qid: q.id, monto: a === 'qPagada' ? falta(q) : 0}); }
   else if(a === 'pmSave') pmSave();
   else if(a === 'cfOpen'){ cfAbrir(b); }
-  else if(a === 'cclSel'){ ui.ccl = ui.ccl || {}; ui.ccl.sel = ui.ccl.sel === id ? null : id; render(); window.scrollTo({top: 0, behavior: 'smooth'}); }
+  else if(a === 'cclSel'){ ui.ccl = ui.ccl || {}; ui.ccl.sel = ui.ccl.sel === id ? null : id; render(); var dz = document.querySelector('.ccldet'); if(dz) dz.scrollIntoView({block: 'start', behavior: 'smooth'}); else window.scrollTo({top: 0, behavior: 'smooth'}); }
   else if(a === 'cclDetCerrar'){ if(ui.ccl) ui.ccl.sel = null; render(); }
-  else if(a === 'cdForm'){ ui.cdOpen = true; QD_DUP = false; render(); var qn = $('qdNom'); if(qn) qn.focus(); }
+  else if(a === 'cdForm'){ ui.cdOpen = true; QD_DUP = false; render(); window.scrollTo(0, 0); var qn = $('qdNom'); if(qn) qn.focus(); }
   else if(a === 'cdCerrar'){ ui.cdOpen = false; render(); }
   else if(a === 'cdGrp'){ ui.cdGrp = !ui.cdGrp; render(); }
   else if(a === 'cclCol'){ ui.ccl = ui.ccl || {}; ui.ccl.col = b.getAttribute('data-c'); render(); }
