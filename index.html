@@ -7148,7 +7148,7 @@ function pcRef(c, q, mx){ if(c.moneda === 'MXN') return mx; if(c.monPago === 'MX
 function pcEsperado(c, q){ var fa = falta(q); if(c.moneda === 'MXN') return fa; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q.montoC) return Math.round(c.montoPagoC * fa / q.montoC); return Math.round(fa * (S.cfg.tc || 1)); }
 function pcAbrir(){
   var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, sel: [], gabs: [], cons: [], cta: {}};
-  if(!ui.pc.sel) ui.pc.sel = []; ui.pc.gabs = ui.pc.gabs || []; ui.pc.cons = ui.pc.cons || [];
+  if(!ui.pc.sel) ui.pc.sel = []; ui.pc.gabs = ui.pc.gabs || []; ui.pc.cons = ui.pc.cons || []; if(!ui.pc.meses) ui.pc.meses = ui.pc.mes ? [String(ui.pc.mes)] : [];
   openModal(head('Registrar depósitos en cuenta', 'Filtra por gabai, elige la cuenta (Albo o Mar Azul) y escribe los pesos de cada uno (se palomea solo). Luego dale Agregar.') + '<div id="pcBody"></div>' +
     '<div class="err" id="pcErr" hidden></div><div class="dfoot" style="justify-content:space-between;align-items:center;position:sticky;bottom:-22px;background:var(--surface);padding:12px 0;margin-bottom:-12px;margin-top:auto;border-top:1px solid var(--line);z-index:2"><span id="pcTot" style="font-size:16px"></span><span class="row" style="gap:8px"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="pcSave" id="pcSaveB">Registrar</button></span></div>');
   $('dlg').classList.add('wide'); $('dlg').classList.add('tall'); pcPintar();
@@ -7157,7 +7157,7 @@ function pcBancos(){ return CAJAS.filter(function(k){ return k.banco; }); }
 function pcRes(){
   var P = ui.pc, t = sinAcento((P.q || '').toLowerCase().trim()), out = [];
   if(!P.gabs.length && !P.cons.length && t.length < 2) return null;
-  S.cuotas.forEach(function(q){ if(q.pausada || q.cancelada || falta(q) <= 0 || P.sel.indexOf(q.id) !== -1) return; if(P.mes && q.mes !== P.mes) return;
+  S.cuotas.forEach(function(q){ if(q.pausada || q.cancelada || falta(q) <= 0 || P.sel.indexOf(q.id) !== -1) return; if(P.meses.length && P.meses.indexOf(String(q.mes)) === -1) return;
     var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return;
     if(P.gabs.length && P.gabs.indexOf(gabQ(q, c)) === -1) return; if(P.cons.length && P.cons.indexOf(c.concepto || '') === -1) return;
     var d = don(c.donanteId) || {nombre: '—'}; if(t.length >= 2 && sinAcento((nomDon(d) + ' ' + (d.nombre || '')).toLowerCase()).indexOf(t) === -1) return;
@@ -7180,7 +7180,7 @@ function pcPintarRes(){
 }
 function pcPintar(){
   var P = ui.pc, b = $('pcBody'); if(!b) return; var bancos = pcBancos();
-  var gabs = [], cons = []; S.cuotas.forEach(function(q){ if(falta(q) <= 0 || (P.mes && q.mes !== P.mes)) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio)) return; var g = gabQ(q, c); if(g && gabs.indexOf(g) === -1) gabs.push(g); if(c.concepto && cons.indexOf(c.concepto) === -1) cons.push(c.concepto); });
+  var gabs = [], cons = []; S.cuotas.forEach(function(q){ if(falta(q) <= 0 || (P.meses.length && P.meses.indexOf(String(q.mes)) === -1)) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio)) return; var g = gabQ(q, c); if(g && gabs.indexOf(g) === -1) gabs.push(g); if(c.concepto && cons.indexOf(c.concepto) === -1) cons.push(c.concepto); });
   P.gabs.forEach(function(g){ if(gabs.indexOf(g) === -1) gabs.push(g); }); P.cons.forEach(function(k){ if(cons.indexOf(k) === -1) cons.push(k); });
   var msP = function(id, key, items, todos, pill){ var sl = P[key], sum = !sl.length ? '<span>' + todos + '</span>' : sl.length <= 2 ? '<span class="gsum">' + sl.map(function(v){ var it = items.find(function(x){ return x[0] === v; }); return it ? it[1] : esc(v); }).join('') + '</span>' : '<span>' + sl.length + ' elegidos</span>'; var h = msHtml(id, items, sl, sum); MS[id].set = function(a){ P[key] = a; setTimeout(pcPintar, 0); }; return h; };
   gabs.sort(function(a, b2){ return a.localeCompare(b2, 'he'); }); cons.sort(function(a, b2){ return a.localeCompare(b2, 'es'); });
@@ -7194,13 +7194,12 @@ function pcPintar(){
     '<h3 style="margin:16px 0 6px;font-size:16px">Buscar pendientes</h3>' +
     '<div class="form" style="grid-template-columns:repeat(5,minmax(0,1fr))"><div class="f fms">Gabai' + msP('pcgb', 'gabs', gabs.map(function(g){ return [g, r2Gab(g)]; }), 'Elige gabai', true) + '</div>' +
     '<div class="f fms">Concepto' + msP('pccn', 'cons', cons.map(function(k){ return [k, isrPill(k)]; }), 'Todos los conceptos', true) + '</div>' +
-    '<label class="f">Cuota de<select id="pcMes"><option value="0"' + (!P.mes ? ' selected' : '') + '>Todos los meses</option>' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === P.mes ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + P.anio + '</option>'; }).join('') + '</select></label>' +
+    '<div class="f fms">Cuota de' + msP('pcms', 'meses', MESES.es.map(function(n, k){ return [String(k + 1), '<span class="r2g" style="--c:' + MES_COL[k] + '">' + Mes(k + 1) + '</span>']; }), 'Todos los meses', true) + '</div>' +
     '<label class="f">Buscar donador<input id="pcQ" value="' + esc(P.q) + '" placeholder="Escribe un nombre…" autocomplete="off"></label>' +
     '<label class="f">Fecha del depósito<input type="date" id="pcFecha" value="' + esc(P.fecha) + '"></label></div>' +
     '<div id="pcResBox"></div>';
   pcPintarRes(); pcTotal();
   $('pcQ').addEventListener('input', function(){ P.q = this.value; pcPintarRes(); });
-  $('pcMes').addEventListener('change', function(){ P.mes = +this.value; pcPintar(); });
   $('pcFecha').addEventListener('change', function(){ P.fecha = this.value; });
   b.querySelectorAll('[data-pcc]').forEach(function(sl){ sl.addEventListener('change', function(){ P.cta[sl.getAttribute('data-pcc')] = sl.value; pcTotal(); }); });
   b.querySelectorAll('[data-pcv]').forEach(function(inp){ inp.addEventListener('input', function(){ var on = cents(inp.value) > 0; P.vals[inp.getAttribute('data-pcv')] = inp.value; var er = $('pcErr'); if(er) er.hidden = true; inp.style.borderColor = on ? 'var(--ok)' : ''; inp.style.fontWeight = on ? '700' : ''; inp.closest('tr').style.background = on ? 'color-mix(in srgb, var(--ok) 9%, var(--surface))' : ''; pcTotal(); }); });
