@@ -5186,8 +5186,12 @@ function abrirEditar(cid){
   ED = {cid: cid, desde: prim ? prim.mes : qs[0].mes};
   var q0 = qs.slice().sort(function(a, b){ return a.mes - b.mes; }), mIni = q0.length ? q0[0].mes : c.mesIni, mFin = q0.length ? q0[q0.length - 1].mes : 12;
   openModal(head('Editar compromiso', esc(d.nombre) + ' · ' + c.anio + ' · cuota actual ' + money(c.cuotaC, c.moneda)) +
-    (c.modalidad !== 'Pago directo' ? '<div class="note" style="margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>¿Empezó en otro mes?</b><span>Mes de inicio:</span><select id="edIni" style="width:auto">' + MESES.es.map(function(nm, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === mIni ? ' selected' : '') + (k + 1 > mFin ? ' disabled' : '') + '>' + Mes(k + 1) + '</option>'; }).join('') + '</select><button type="button" class="btn primary sm" data-a="edIni">Cambiar mes de inicio</button>' +
-      '<span class="sub" style="flex-basis:100%">Termina igual en ' + Mes(mFin) + '. Si empieza después, se quitan los meses de antes; si empieza antes, se agregan con la misma cuota. Los pagos ya hechos se reacomodan solos.</span></div>' : '') +
+    (c.modalidad !== 'Pago directo' ? '<div class="note" style="margin:0 0 12px"><div style="font-weight:700;margin-bottom:8px">Meses del compromiso <span class="sub" style="font-weight:400">· cambia el inicio, la parcialidad o agrega/quita meses</span></div>' +
+      '<div class="form" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0"><label class="f">Mes de inicio<select id="edIni">' + MESES.es.map(function(nm, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === mIni ? ' selected' : '') + '>' + Mes(k + 1) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Parcialidad<select id="edPer">' + [['Mensual', '1 · cada mes'], ['Bimestral', '2 · cada 2 meses'], ['Trimestral', '3 · cada 3 meses']].map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === (PASOS[c.periodo] ? c.periodo : 'Mensual') ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Cantidad de parcialidades<select id="edCant">' + [1,2,3,4,5,6,7,8,9,10,11,12].map(function(k){ return '<option value="' + k + '"' + (k === q0.length ? ' selected' : '') + '>' + k + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="row" style="justify-content:space-between;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap"><span id="edMesPrev" class="sub"></span><button type="button" class="btn primary sm" data-a="edMeses">Aplicar cambio de meses</button></div>' +
+      '<div class="sub" style="margin-top:6px">Los meses nuevos llevan la cuota actual (' + money(c.cuotaC, c.moneda) + '). Si quitas meses que ya tenían pago, ese pago se reacomoda solo en los meses que quedan. El cambio se ve en todos lados.</div></div>' : '') +
     '<div><div class="sub" style="margin-bottom:6px">A partir de</div><div class="chips" id="edMeses">' + qs.map(function(q){
       var e = estadoQ(q);
       return '<button type="button" class="chip' + (q.mes === ED.desde ? ' on' : '') + '" data-a="edMes" data-m="' + q.mes + '" title="' + esc(EST[e][0]) + '">' + Mes(q.mes) + (e === 'pagada' || e === 'adelantada' ? ' ✓' : '') + '</button>';
@@ -5199,7 +5203,7 @@ function abrirEditar(cid){
     '<div><h2 style="font-size:15px">Así queda</h2><div id="edPrev" style="margin-top:8px"></div></div>' +
     '<div class="err" id="edErr" hidden></div>' +
     '<div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="edSave">Guardar cambio</button></div>');
-  edPrev();
+  edPrev(); edMesPrev();
 }
 function edCalc(){
   var c = comp(ED.cid), qs = cuotasDe(c.id), nm = cents($('edMonto').value), mon = '', fo = '', cj = '', gab = $('edGab').value, comS = String($('edCom').value).trim(), com = comS === '' ? null : Math.max(0, Math.min(100, parseFloat(comS.replace(',', '.')) || 0));
@@ -5226,16 +5230,26 @@ function edPrev(){
     '<div class="row" style="margin-top:8px;gap:16px"><span>Total anual: <b>' + money(r.antes, c.moneda) + '</b> → <b>' + money(r.despues, c.moneda) + '</b></span>' +
     (r.despues !== r.antes ? '<span class="pill ' + (r.despues > r.antes ? 't-ok' : 't-bad') + '">' + (r.despues > r.antes ? 'Sube ' : 'Baja ') + money(Math.abs(r.despues - r.antes), c.moneda) + '</span>' : '') + (r.gab !== null ? '<span class="pill t-info">Gabai: ' + esc(r.gab || 'sin gabai') + '</span>' : '') + (r.com !== null ? '<span class="pill t-info">Comisión ' + r.com + '%</span>' : '') + '</div>';
 }
-function edInicio(){
-  var c = comp(ED.cid), d = don(c.donanteId) || {nombre: ''}, err = $('edErr'), m = +$('edIni').value, qs = cuotasDe(c.id).sort(function(a, b){ return a.mes - b.mes; });
-  if(!qs.length) return; var ini = qs[0].mes, fin = qs[qs.length - 1].mes, paso = pasoDe(c.periodo);
-  if(!m || m === ini){ err.textContent = 'Ya empieza en ' + Mes(ini) + '. Elige otro mes.'; err.hidden = false; return; }
-  if(m > fin){ err.textContent = 'El inicio no puede ser después del último mes (' + Mes(fin) + ').'; err.hidden = false; return; }
-  var quitar = qs.filter(function(q){ return q.mes < m; }), qIds = quitar.map(function(q){ return q.id; });
+function edMesesLista(m, per, n){ var paso = pasoDe(per), out = []; for(var i = 0; i < n; i++){ var x = m + i * paso; if(x > 12) return null; out.push(x); } return out; }
+function edMesPrev(){
+  var el = $('edMesPrev'); if(!el || !ED) return; var c = comp(ED.cid), m = +$('edIni').value, per = $('edPer').value, n = +$('edCant').value, L = edMesesLista(m, per, n);
+  if(!L){ var mx = Math.floor((12 - m) / pasoDe(per)) + 1; el.innerHTML = '<span style="color:var(--bad)">Empezando en ' + Mes(m) + ' caben máximo ' + mx + ' parcialidad' + (mx === 1 ? '' : 'es') + ' en ' + c.anio + '.</span>'; return; }
+  var qs = cuotasDe(c.id), tot = L.reduce(function(a, x){ var q = qs.find(function(z){ return z.mes === x; }); return a + (q ? q.montoC : c.cuotaC); }, 0);
+  var quita = qs.filter(function(q){ return L.indexOf(q.mes) === -1; }).map(function(q){ return Mes(q.mes); }), agrega = L.filter(function(x){ return !qs.some(function(q){ return q.mes === x; }); }).map(function(x){ return Mes(x); });
+  el.innerHTML = 'Quedará: <b>' + (L.length === 1 ? Mes(L[0]) : rangosMeses(L)) + '</b> · ' + L.length + ' cuota' + (L.length === 1 ? '' : 's') + ' · total anual <b>' + money(tot, c.moneda) + '</b>' + (agrega.length ? ' · <span style="color:var(--ok)">agrega ' + agrega.join(', ') + '</span>' : '') + (quita.length ? ' · <span style="color:var(--bad)">quita ' + quita.join(', ') + '</span>' : '') + (!agrega.length && !quita.length ? ' · <span class="sub">sin cambios</span>' : '');
+}
+function edMeses(){
+  var c = comp(ED.cid), d = don(c.donanteId) || {nombre: ''}, err = $('edErr'), m = +$('edIni').value, per = $('edPer').value, n = +$('edCant').value, L = edMesesLista(m, per, n);
+  var qs = cuotasDe(c.id).sort(function(a, b){ return a.mes - b.mes; }); if(!qs.length) return;
+  if(!L){ err.textContent = 'No caben ' + n + ' parcialidades empezando en ' + Mes(m) + '. Elige menos o empieza antes.'; err.hidden = false; return; }
+  var quitar = qs.filter(function(q){ return L.indexOf(q.mes) === -1; }), qIds = quitar.map(function(q){ return q.id; });
+  var agr = L.filter(function(x){ return !qs.some(function(q){ return q.mes === x; }); });
+  if(!quitar.length && !agr.length && (c.periodo || 'Mensual') === per){ err.textContent = 'Así ya está el compromiso; cambia el inicio, la parcialidad o la cantidad.'; err.hidden = false; return; }
+  var antesTxt = rangoComp(c) + ' (' + qs.length + ')';
   var reasig = S.donativos.filter(function(p){ return p.compId === c.id && p.cubre.some(function(x){ return qIds.indexOf(x.qid) !== -1 && x.ap > 0; }); });
   reasig.forEach(function(p){ desaplicar(p); });
   quitar.forEach(function(q){ S.cuotas.splice(S.cuotas.indexOf(q), 1); });
-  var agr = []; if(m < ini){ for(var mm = m; mm < ini; mm += paso){ S.cuotas.push({id: nid('q'), compId: c.id, num: 0, mes: mm, venc: c.anio + '-' + pad(mm) + '-01', montoC: c.cuotaC, aplicadoC: 0, pausada: false, recs: [], nota: ''}); agr.push(Mes(mm)); } }
+  agr.forEach(function(mm){ S.cuotas.push({id: nid('q'), compId: c.id, num: 0, mes: mm, venc: c.anio + '-' + pad(mm) + '-01', montoC: c.cuotaC, aplicadoC: 0, pausada: false, recs: [], nota: ''}); });
   var nq = cuotasDe(c.id).sort(function(a, b){ return a.mes - b.mes; }), mapa = {};
   nq.forEach(function(q, i){ q.num = i + 1; mapa[q.id] = q.num; });
   reasig.sort(function(a, b){ return a.fecha.localeCompare(b.fecha); }).forEach(function(p){ var r = p.montoCompC, plan2 = [];
@@ -5243,12 +5257,12 @@ function edInicio(){
     if(r > 0 && nq.length){ var u = nq[nq.length - 1]; u.aplicadoC += r; var e2 = plan2.find(function(x){ return x.qid === u.id; }); if(e2) e2.ap += r; else plan2.push({qid: u.id, num: u.num, mes: u.mes, ap: r}); }
     p.cubre = plan2; if(plan2.length) p.mesCorr = plan2[0].mes; });
   S.donativos.forEach(function(p){ if(p.compId === c.id) p.cubre.forEach(function(x){ if(mapa[x.qid]) x.num = mapa[x.qid]; }); });
-  c.n = nq.length; c.mesIni = nq[0].mes; c.fechaInicio = c.anio + '-' + pad(c.mesIni) + '-' + (c.fechaInicio ? c.fechaInicio.slice(8, 10) : '01');
+  c.periodo = per; c.n = nq.length; c.mesIni = nq[0].mes; c.fechaInicio = c.anio + '-' + pad(c.mesIni) + '-' + (c.fechaInicio ? c.fechaInicio.slice(8, 10) : '01');
   recalcAnual(c);
-  var txt = 'inicio ' + Mes(ini) + ' → ' + Mes(m) + (quitar.length ? '; quitó ' + quitar.map(function(q){ return Mes(q.mes); }).join(', ') : '') + (agr.length ? '; agregó ' + agr.join(', ') : '') + (reasig.length ? '; ' + reasig.length + ' pago(s) reacomodados' : '');
-  c.notas = c.notas || []; c.notas.push({fecha: hoy(), usuario: user().nombre, texto: 'Cambió mes de inicio: ' + txt});
-  log('Cambió mes de inicio del compromiso ' + c.anio + ' de ' + d.nombre + ': ' + txt);
-  pagosSync(c); cobLimpiar(); closeModal(); render(); toast('Ahora empieza en ' + Mes(m) + ' · ' + nq.length + ' cuotas');
+  var txt = antesTxt + ' → ' + rangoComp(c) + ' (' + nq.length + ')' + (agr.length ? '; agregó ' + agr.map(function(x){ return Mes(x); }).join(', ') : '') + (quitar.length ? '; quitó ' + quitar.map(function(q){ return Mes(q.mes); }).join(', ') : '') + (reasig.length ? '; ' + reasig.length + ' pago(s) reacomodados' : '');
+  c.notas = c.notas || []; c.notas.push({fecha: hoy(), usuario: user().nombre, texto: 'Cambió los meses del compromiso: ' + txt});
+  log('Cambió los meses del compromiso ' + c.anio + ' de ' + d.nombre + ': ' + txt);
+  pagosSync(c); cobLimpiar(); closeModal(); render(); toast('Compromiso: ' + rangoComp(c) + ' · ' + nq.length + ' cuotas · ' + money(c.anualC, c.moneda));
 }
 function edSave(){
   var r = edCalc(), c = r.c, err = $('edErr'), mot = $('edMot').value.trim();
@@ -6323,7 +6337,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'gmTodos' || a === 'gmNinguno'){ document.querySelectorAll('[data-gmq]').forEach(function(x){ x.checked = a === 'gmTodos'; }); }
   else if(a === 'editar') abrirEditar(id);
   else if(a === 'edMes'){ ED.desde = +b.getAttribute('data-m'); document.querySelectorAll('[data-a=edMes]').forEach(function(x){ x.classList.toggle('on', x === b); }); edPrev(); }
-  else if(a === 'edIni'){ edInicio(); }
+  else if(a === 'edMeses'){ edMeses(); }
   else if(a === 'pcGrp'){ var uu = user(); S.cfg = S.cfg || {}; var kg = 'pcGrp_' + (uu ? uu.id : ''); S.cfg[kg] = !S.cfg[kg]; save(); render(); }
   else if(a === 'pcVerPend'){ ui.pcVer = ui.pcVer === 'pend' ? '' : 'pend'; render(); }
   else if(a === 'pcVerIng'){ ui.pcVer = ui.pcVer === 'ing' ? '' : 'ing'; render(); }
@@ -6630,6 +6644,7 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'qaForma' && esTarjeta(t.value)){ $('qaMon').value = 'USD'; $('qaCaja').value = cajaUsd(GAB_MODAL); $('qaRef').disabled = true; }
   else if(t.id === 'qaAcc'){ qaCampos(); }
   else if(t.id === 'pmCaja'){ var pk = caja(t.value); $('pmMon').value = pk.mon; $('pmNY').hidden = !pk.externa || !!pk.banco; pmPrev(); }
+  else if(t.id === 'edIni' || t.id === 'edPer' || t.id === 'edCant'){ edMesPrev(); }
   else if(t.id === 'pcAll'){ document.querySelectorAll('[data-pcck]').forEach(function(x){ x.checked = t.checked; }); }
   else if(t.id === 'userSel' || t.id === 'userSel2'){ S.user = +t.value; cerrarMas(); render(); }
   else if(t.getAttribute && t.getAttribute('data-modoc')){ modOcSet(t.getAttribute('data-modoc'), t.checked); }
