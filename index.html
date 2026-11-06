@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v215</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v216</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -3567,6 +3567,8 @@ function isrDatos(Y){
 }
 function isrSum(f){ return ISR.filas.filter(f).reduce(function(a, x){ return a + x.usd; }, 0); }
 function isrCel(cat, k, m, v, cls){ return '<td class="n isrc' + (cls ? ' ' + cls : '') + '">' + (v ? '<button type="button" class="isrv" data-a="isrVer" data-c="' + cat + '" data-k="' + esc(k) + '" data-m="' + m + '">' + mN(v) + '</button>' : '<span class="isr0">–</span>') + '</td>'; }
+/* celda sin vista previa (comisiones: solo montos) */
+function isrPl(v, cls){ return '<td class="n' + (cls ? ' ' + cls : '') + '">' + (v ? mN(v) : '<span class="isr0">–</span>') + '</td>'; }
 function vIsrael(){
   ui.isr = ui.isr || {}; var f = ui.isr, Y = f.anio || anioAct(), anios = {}; anios[anioAct()] = 1;
   (S.donativos || []).forEach(function(p){ if(p.fecha) anios[+p.fecha.slice(0, 4)] = 1; }); (S.egresos || []).forEach(function(e){ if(e.fecha) anios[+e.fecha.slice(0, 4)] = 1; });
@@ -3578,15 +3580,15 @@ function vIsrael(){
   var sg = function(v){ return '<b' + (v < 0 ? ' style="color:var(--bad)"' : '') + '>' + (v < 0 ? '-' : '') + mN(Math.abs(v)) + '</b>'; };
   var cuerpo = ['ing', 'egr', 'com'].map(function(cat){ var ks = keys(cat), K = ISR_CAT[cat];
     return '<tr class="isrband" style="--cc:' + K[2] + ';--cs:' + K[3] + '"><th class="isrk" colspan="' + NC + '"><span dir="auto">' + K[0] + '</span>' + (K[0] !== K[1] ? ' <span class="sub">· ' + K[1] + '</span>' : '') + '</th></tr>' +
-      ks.map(function(k){ return '<tr class="isrrow"><td class="isrk">' + isrPill(k) + '</td>' +
+      (cat === 'com' ? [] : ks).map(function(k){ return '<tr class="isrrow"><td class="isrk">' + isrPill(k) + '</td>' +
         M12.map(function(m){ return isrCel(cat, k, m, isrSum(function(x){ return x.cat === cat && x.key === k && x.mes === m; })); }).join('') + isrCel(cat, k, 0, isrSum(function(x){ return x.cat === cat && x.key === k; }), 'isrt') + '</tr>'; }).join('') +
       (ks.length ? '' : '<tr><td class="isrk sub" colspan="' + NC + '">Sin movimientos</td></tr>') +
-      '<tr class="isrsub" style="--cs:' + K[3] + '"><td class="isrk"><b>Subtotal <span dir="auto">' + K[0] + '</span></b></td>' + M12.map(function(m){ return isrCel(cat, '', m, tot(cat, m)); }).join('') + isrCel(cat, '', 0, tot(cat), 'isrt') + '</tr>'; }).join('');
+      '<tr class="isrsub" style="--cs:' + K[3] + '"><td class="isrk"><b>' + (cat === 'com' ? 'Total' : 'Subtotal') + ' <span dir="auto">' + K[0] + '</span></b></td>' + M12.map(function(m){ return cat === 'com' ? isrPl(tot(cat, m)) : isrCel(cat, '', m, tot(cat, m)); }).join('') + (cat === 'com' ? isrPl(tot(cat), 'isrt') : isrCel(cat, '', 0, tot(cat), 'isrt')) + '</tr>'; }).join('');
   var sal = '<tr class="isrsal"><td class="isrk"><b>Saldo</b></td>' + M12.map(function(m){ var v = saldo(m); return '<td class="n">' + (v ? sg(v) : '<span class="isr0">–</span>') + '</td>'; }).join('') + '<td class="n isrt">' + sg(saldo()) + '</td></tr>';
   var vistaA = '<div class="tw isrtw"><table class="isrtab"><thead><tr><th class="isrk">Concepto / Receptor</th>' + M12.map(function(m){ return '<th class="n">' + ISR_MES[m - 1] + '</th>'; }).join('') + '<th class="n isrt">Total</th></tr></thead><tbody>' + cuerpo + sal + '</tbody></table></div>';
   var vistaB = '<div class="tw isrtw"><table class="isrtab isrb"><thead><tr><th>Mes</th><th class="n" style="--cc:' + ISR_CAT.ing[2] + '" dir="auto">' + ISR_CAT.ing[0] + '</th><th class="n" style="--cc:' + ISR_CAT.egr[2] + '" dir="auto">' + ISR_CAT.egr[0] + '</th><th class="n" style="--cc:' + ISR_CAT.com[2] + '">Comisiones</th><th class="n isrt">Saldo</th></tr></thead><tbody>' +
-    M12.map(function(m){ return '<tr><td><b>' + ISR_MES[m - 1] + '</b></td>' + isrCel('ing', '', m, tot('ing', m), 'isrg') + isrCel('egr', '', m, tot('egr', m), 'isrr') + isrCel('com', '', m, tot('com', m), 'isry') + '<td class="n isrt">' + sg(saldo(m)) + '</td></tr>'; }).join('') +
-    '<tr class="isrtot"><td><b>Total</b></td>' + isrCel('ing', '', 0, tot('ing')) + isrCel('egr', '', 0, tot('egr')) + isrCel('com', '', 0, tot('com')) + '<td class="n">' + sg(saldo()) + '</td></tr></tbody></table></div>';
+    M12.map(function(m){ return '<tr><td><b>' + ISR_MES[m - 1] + '</b></td>' + isrCel('ing', '', m, tot('ing', m), 'isrg') + isrCel('egr', '', m, tot('egr', m), 'isrr') + isrPl(tot('com', m), 'isry') + '<td class="n isrt">' + sg(saldo(m)) + '</td></tr>'; }).join('') +
+    '<tr class="isrtot"><td><b>Total</b></td>' + isrCel('ing', '', 0, tot('ing')) + isrCel('egr', '', 0, tot('egr')) + isrPl(tot('com')) + '<td class="n">' + sg(saldo()) + '</td></tr></tbody></table></div>';
   var hayF = gabArr(f.gab).length || (dir && f.pag);
   var filtros = '<div class="form isrf">' +
     '<label class="f">Año<select id="isrAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (+a === +Y ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
