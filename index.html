@@ -177,9 +177,9 @@ td.n,th.n{text-align:end;font-variant-numeric:tabular-nums;white-space:nowrap}
 .info div{display:flex;flex-direction:column;gap:2px}
 .info span{font-size:12px;color:var(--muted)}
 .info b{font-weight:500;overflow-wrap:anywhere}
-.modal{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:20;
+.modal{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:60;
   padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.dialog{width:100%;max-width:720px;max-height:100%;overflow-y:auto;background:var(--surface);border-radius:18px;box-shadow:0 24px 60px rgba(15,23,35,.25);padding:22px;display:flex;flex-direction:column;gap:16px}
+.dialog{width:100%;max-width:720px;max-height:calc((100vh - 40px) / var(--dz, 1));overflow-y:auto;background:var(--surface);border-radius:18px;box-shadow:0 24px 60px rgba(15,23,35,.25);padding:22px;display:flex;flex-direction:column;gap:16px}
 .dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .x{width:40px;height:40px;border:none;border-radius:10px;background:var(--bg);color:var(--ink);font-size:20px;flex:none}
 .dfoot{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
@@ -4847,7 +4847,7 @@ async function reciboPdf(pid, wa, est){
 }
 
 /* --- Vista rápida (como la barra espaciadora de la Mac) --- */
-function fuenteAplicar(){ var z = 1; try{ z = +(localStorage.getItem('bl-zoom') || 1) || 1; }catch(e){} ['main', 'nav.side', '#dlg'].forEach(function(sel){ var el = document.querySelector(sel); if(el) el.style.zoom = z === 1 ? '' : String(z); }); document.querySelectorAll('[data-a=fuente]').forEach(function(b){ b.classList.toggle('on', +b.getAttribute('data-z') === z); b.setAttribute('aria-pressed', +b.getAttribute('data-z') === z); }); }
+function fuenteAplicar(){ var z = 1; try{ z = +(localStorage.getItem('bl-zoom') || 1) || 1; }catch(e){} ['main', 'nav.side', '#dlg'].forEach(function(sel){ var el = document.querySelector(sel); if(el) el.style.zoom = z === 1 ? '' : String(z); }); var dgz = document.getElementById('dlg'); if(dgz) dgz.style.setProperty('--dz', String(z)); document.querySelectorAll('[data-a=fuente]').forEach(function(b){ b.classList.toggle('on', +b.getAttribute('data-z') === z); b.setAttribute('aria-pressed', +b.getAttribute('data-z') === z); }); }
 document.addEventListener('DOMContentLoaded', fuenteAplicar); setTimeout(fuenteAplicar, 0);
 var QL = null, QL_HOVER = null;
 document.addEventListener('click', function(ev){ document.querySelectorAll('details.recmenu[open]').forEach(function(m){ if(!m.contains(ev.target)) m.open = false; }); }, true);
@@ -6329,7 +6329,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'pcVerIng'){ ui.pcVer = ui.pcVer === 'ing' ? '' : 'ing'; render(); }
   else if(a === 'pcAbrir'){ pcAbrir(); }
   else if(a === 'pcCuenta'){ ui.pc.cuenta = b.getAttribute('data-c'); ui.pc.cta = {}; pcPintar(); }
-  else if(a === 'pcAdd'){ if(ui.pc.extra.indexOf(id) === -1) ui.pc.extra.unshift(id); ui.pc.q = ''; pcPintar(); var ip = document.querySelector('[data-pcv="' + id + '"]'); if(ip) ip.focus(); }
+  else if(a === 'pcAgregar'){ pcAgregar(); }
+  else if(a === 'pcQuitar'){ ui.pc.sel = ui.pc.sel.filter(function(x){ return x !== id; }); delete ui.pc.vals[id]; pcPintar(); }
   else if(a === 'pcSave'){ pcSave(); }
   else if(a === 'pcLlego'){ pcLlego(); }
   else if(a === 'pcRegresar'){ pcRegresar(id); }
@@ -7114,78 +7115,83 @@ function pcRegresar(id){
 function pcRef(c, q, mx){ if(c.moneda === 'MXN') return mx; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q && q.montoC) return Math.round(mx * q.montoC / c.montoPagoC); return Math.round(mx / (S.cfg.tc || 1)); }
 function pcEsperado(c, q){ var fa = falta(q); if(c.moneda === 'MXN') return fa; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q.montoC) return Math.round(c.montoPagoC * fa / q.montoC); return Math.round(fa * (S.cfg.tc || 1)); }
 function pcAbrir(){
-  var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, extra: [], gab: '', con: '', cta: {}};
-  ui.pc.cta = ui.pc.cta || {}; ui.pc.gab = ui.pc.gab || ''; ui.pc.con = ui.pc.con || '';
-  openModal(head('Registrar depósitos en cuenta', 'Escribe solo la cantidad en pesos que depositó cada uno. Puedes llenar varios y registrarlos juntos.') + '<div id="pcBody"></div>' +
-    '<div class="err" id="pcErr" hidden></div><div class="dfoot" style="justify-content:space-between;align-items:center"><span id="pcTot" style="font-size:16px"></span><span class="row" style="gap:8px"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="pcSave" id="pcSaveB">Registrar</button></span></div>');
+  var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, sel: [], gab: '', con: '', cta: {}};
+  if(!ui.pc.sel) ui.pc.sel = [];
+  openModal(head('Registrar depósitos en cuenta', 'Filtra por gabai, palomea los donadores y dales Agregar. Luego escribe solo los pesos de cada uno.') + '<div id="pcBody"></div>' +
+    '<div class="err" id="pcErr" hidden></div><div class="dfoot" style="justify-content:space-between;align-items:center;position:sticky;bottom:-22px;background:var(--surface);padding:12px 0;margin-bottom:-12px;border-top:1px solid var(--line);z-index:2"><span id="pcTot" style="font-size:16px"></span><span class="row" style="gap:8px"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="pcSave" id="pcSaveB">Registrar</button></span></div>');
   $('dlg').classList.add('wide'); pcPintar();
 }
-function pcFilas(){
-  var P = ui.pc, out = [], vistos = {};
-  var add = function(q, extra){ if(!q || vistos[q.id]) return; var c = comp(q.compId); if(!c) return; vistos[q.id] = 1; out.push({q: q, c: c, d: don(c.donanteId) || {nombre: '—'}, extra: extra}); };
-  Object.keys(P.vals).forEach(function(qid){ if(cents(P.vals[qid]) > 0) add(qById(qid), true); });
-  P.extra.forEach(function(qid){ add(qById(qid), true); });
-  S.cuotas.forEach(function(q){ if(q.mes !== P.mes || q.pausada || q.cancelada || falta(q) <= 0) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return; if(P.gab && gabQ(q, c) !== P.gab) return; if(P.con && (c.concepto || '') !== P.con) return; add(q, false); });
-  var fl = function(r){ return cents(P.vals[r.q.id]) > 0 ? 0 : 1; };
-  out.sort(function(a, b){ return fl(a) - fl(b) || (a.d.ape || a.d.nombre || '').localeCompare(b.d.ape || b.d.nombre || '', 'es'); });
+function pcBancos(){ return CAJAS.filter(function(k){ return k.banco; }); }
+function pcRes(){
+  var P = ui.pc, t = sinAcento((P.q || '').toLowerCase().trim()), out = [];
+  if(!P.gab && !P.con && t.length < 2) return null;
+  S.cuotas.forEach(function(q){ if(q.pausada || q.cancelada || falta(q) <= 0 || P.sel.indexOf(q.id) !== -1) return; if(P.mes && q.mes !== P.mes) return;
+    var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return;
+    if(P.gab && gabQ(q, c) !== P.gab) return; if(P.con && (c.concepto || '') !== P.con) return;
+    var d = don(c.donanteId) || {nombre: '—'}; if(t.length >= 2 && sinAcento((nomDon(d) + ' ' + (d.nombre || '')).toLowerCase()).indexOf(t) === -1) return;
+    out.push({q: q, c: c, d: d}); });
+  out.sort(function(a, b){ return (a.d.ape || a.d.nombre || '').localeCompare(b.d.ape || b.d.nombre || '', 'es') || a.q.mes - b.q.mes; });
   return out;
 }
+function pcPintarRes(){
+  var box = $('pcResBox'); if(!box) return; var r = pcRes();
+  if(r === null){ box.innerHTML = '<div class="empty" style="padding:14px">Elige un <b>gabai</b> (o un concepto, o escribe un nombre) para ver sus pendientes.</div>'; return; }
+  if(!r.length){ box.innerHTML = '<div class="empty" style="padding:14px">No hay pendientes con estos filtros.</div>'; return; }
+  box.innerHTML = '<div class="row" style="justify-content:space-between;align-items:center;margin:4px 0 6px"><label class="ck"><input type="checkbox" id="pcResAll"> Marcar todos (' + r.length + ')</label><button type="button" class="btn primary sm" data-a="pcAgregar" id="pcAgrB">+ Agregar seleccionados</button></div>' +
+    '<div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th></th><th>Donador</th><th>Gabai</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th></tr></thead><tbody>' +
+    r.map(function(x){ return '<tr><td><label class="ck"><input type="checkbox" data-pcsel="' + x.q.id + '"></label></td><td><b>' + esc(nomDon(x.d)) + '</b></td><td>' + gabTxt(gabQ(x.q, x.c)) + '</td><td>' + esc(x.c.concepto || '') + '</td><td>' + Mes(x.q.mes) + '</td><td class="n">' + money(falta(x.q), x.c.moneda) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+  var all = $('pcResAll'), upd = function(){ var n = box.querySelectorAll('[data-pcsel]:checked').length; $('pcAgrB').textContent = '+ Agregar seleccionados' + (n ? ' (' + n + ')' : ''); };
+  all.addEventListener('change', function(){ box.querySelectorAll('[data-pcsel]').forEach(function(x){ x.checked = all.checked; }); upd(); });
+  box.querySelectorAll('[data-pcsel]').forEach(function(x){ x.addEventListener('change', upd); });
+}
 function pcPintar(){
-  var P = ui.pc, b = $('pcBody'); if(!b) return;
-  var filas = pcFilas(), nLl = filas.filter(function(r){ return cents(P.vals[r.q.id]) > 0; }).length;
-  var bancos = CAJAS.filter(function(k){ return k.banco; });
-  var gabs = [], cons = []; S.cuotas.forEach(function(q){ if(q.mes !== P.mes || falta(q) <= 0) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio)) return; var g = gabQ(q, c); if(g && gabs.indexOf(g) === -1) gabs.push(g); if(c.concepto && cons.indexOf(c.concepto) === -1) cons.push(c.concepto); });
-  gabs.sort(function(a, b){ return a.localeCompare(b, 'he'); }); cons.sort(function(a, b){ return a.localeCompare(b, 'es'); });
+  var P = ui.pc, b = $('pcBody'); if(!b) return; var bancos = pcBancos();
+  var gabs = [], cons = []; S.cuotas.forEach(function(q){ if(falta(q) <= 0 || (P.mes && q.mes !== P.mes)) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio)) return; var g = gabQ(q, c); if(g && gabs.indexOf(g) === -1) gabs.push(g); if(c.concepto && cons.indexOf(c.concepto) === -1) cons.push(c.concepto); });
+  if(P.gab && gabs.indexOf(P.gab) === -1) gabs.push(P.gab); if(P.con && cons.indexOf(P.con) === -1) cons.push(P.con);
+  gabs.sort(function(a, b2){ return a.localeCompare(b2, 'he'); }); cons.sort(function(a, b2){ return a.localeCompare(b2, 'es'); });
   var ctaOpts = function(sel){ return bancos.map(function(k){ return '<option value="' + k.id + '"' + (k.id === sel ? ' selected' : '') + '>' + esc(k.nombre.replace('Cuenta ', '')) + '</option>'; }).join(''); };
-  b.innerHTML = '<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><span class="sub">Cuenta para todos:</span>' + bancos.map(function(k){ return '<button type="button" class="chip' + (P.cuenta === k.id ? ' on' : '') + '" data-a="pcCuenta" data-c="' + k.id + '">' + esc(k.nombre.replace('Cuenta ', '')) + '</button>'; }).join('') + '<span class="sub">· o elige la cuenta en cada renglón</span></div>' +
-    '<div class="form" style="grid-template-columns:2fr 1fr 1fr"><label class="f">Buscar donador<input id="pcQ" value="' + esc(P.q) + '" placeholder="Escribe un nombre…" autocomplete="off"></label>' +
-    '<label class="f">Pendientes de<select id="pcMes">' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === P.mes ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + P.anio + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Fecha del depósito<input type="date" id="pcFecha" value="' + esc(P.fecha) + '"></label>' +
-    '<label class="f">Gabai<select id="pcGab"><option value="">Todos los gabaim</option>' + gabs.map(function(g){ return '<option' + (g === P.gab ? ' selected' : '') + '>' + esc(g) + '</option>'; }).join('') + '</select></label>' +
-    '<label class="f">Concepto<select id="pcCon"><option value="">Todos los conceptos</option>' + cons.map(function(k){ return '<option' + (k === P.con ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label></div>' +
-    '<div id="pcSug"></div>' +
-    '<div class="sub" style="margin:10px 0 6px">' + (nLl ? '<b style="color:var(--ok)">Por registrar (' + nLl + ')</b> arriba · ' : '') + 'Pendientes de ' + Mes(P.mes) + '</div>' +
-    (filas.length ? '<div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th></th><th>Donador</th><th>Gabai</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th><th>Cuenta</th><th class="n">Depositó (MXN)</th></tr></thead><tbody>' +
-      filas.map(function(r){ var v = P.vals[r.q.id] || '', on = cents(v) > 0, esp = pcEsperado(r.c, r.q);
-        return '<tr data-pcrow="' + r.q.id + '"' + (on ? ' style="background:color-mix(in srgb, var(--ok) 9%, var(--surface))"' : '') + '><td style="font-size:18px" data-pcmk="' + r.q.id + '">' + (on ? '☑' : '☐') + '</td><td><b>' + esc(nomDon(r.d)) + '</b>' + (r.extra && !on ? ' <span class="pill t-info">agregado</span>' : '') + '</td><td>' + gabTxt(gabQ(r.q, r.c)) + '</td><td>' + esc(r.c.concepto || '') + '</td><td>' + Mes(r.q.mes) + '</td><td class="n">' + money(falta(r.q), r.c.moneda) + '</td><td><select data-pcc="' + r.q.id + '" style="width:auto">' + ctaOpts(P.cta[r.q.id] || P.cuenta) + '</select></td>' +
-          '<td class="n"><input data-pcv="' + r.q.id + '" inputmode="decimal" value="' + esc(v) + '" placeholder="≈ ' + mN(esp) + '" style="width:140px;text-align:right' + (on ? ';border-color:var(--ok);font-weight:700' : '') + '"></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="empty">No hay pendientes en ' + Mes(P.mes) + '. Busca al donador arriba.</div>');
-  pcTotal();
-  var q = $('pcQ'); q.addEventListener('input', function(){ P.q = q.value; pcSug(); });
+  var sel = P.sel.map(function(id){ var q = qById(id), c = q && comp(q.compId); return q && c ? {q: q, c: c, d: don(c.donanteId) || {nombre: '—'}} : null; }).filter(Boolean);
+  b.innerHTML = '<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><span class="sub">Cuenta para todos:</span>' + bancos.map(function(k){ return '<button type="button" class="chip' + (P.cuenta === k.id ? ' on' : '') + '" data-a="pcCuenta" data-c="' + k.id + '">' + esc(k.nombre.replace('Cuenta ', '')) + '</button>'; }).join('') + '<span class="sub">· o elige la cuenta en cada renglón</span><span style="flex:1"></span><label class="f" style="margin:0;flex-direction:row;align-items:center;gap:6px">Fecha del depósito<input type="date" id="pcFecha" value="' + esc(P.fecha) + '" style="width:auto"></label></div>' +
+    (sel.length ? '<h3 style="margin:6px 0 6px;font-size:16px;color:var(--ok)">Por registrar (' + sel.length + ')</h3><div class="tw cards"><table class="cobt" data-nocf style="white-space:nowrap"><thead><tr><th>Donador</th><th>Gabai</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th><th>Cuenta</th><th class="n">Depositó (MXN)</th><th></th></tr></thead><tbody>' +
+      sel.map(function(r){ var v = P.vals[r.q.id] || '', on = cents(v) > 0;
+        return '<tr' + (on ? ' style="background:color-mix(in srgb, var(--ok) 9%, var(--surface))"' : '') + '><td><b>' + esc(nomDon(r.d)) + '</b></td><td>' + gabTxt(gabQ(r.q, r.c)) + '</td><td>' + esc(r.c.concepto || '') + '</td><td>' + Mes(r.q.mes) + '</td><td class="n">' + money(falta(r.q), r.c.moneda) + '</td><td><select data-pcc="' + r.q.id + '" style="width:auto">' + ctaOpts(P.cta[r.q.id] || P.cuenta) + '</select></td>' +
+          '<td class="n"><input data-pcv="' + r.q.id + '" inputmode="decimal" value="' + esc(v) + '" placeholder="≈ ' + mN(pcEsperado(r.c, r.q)) + '" style="width:140px;text-align:right' + (on ? ';border-color:var(--ok);font-weight:700' : '') + '"></td><td><button type="button" class="btn ghost sm" data-a="pcQuitar" data-id="' + r.q.id + '" title="Quitar de la lista" aria-label="Quitar">✕</button></td></tr>'; }).join('') + '</tbody></table></div>' : '') +
+    '<h3 style="margin:16px 0 6px;font-size:16px">Buscar pendientes</h3>' +
+    '<div class="form" style="grid-template-columns:repeat(4,minmax(0,1fr))"><label class="f">Gabai<select id="pcGab"><option value="">— Elige gabai —</option>' + gabs.map(function(g){ return '<option' + (g === P.gab ? ' selected' : '') + '>' + esc(g) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Concepto<select id="pcCon"><option value="">Todos los conceptos</option>' + cons.map(function(k){ return '<option' + (k === P.con ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Cuota de<select id="pcMes"><option value="0"' + (!P.mes ? ' selected' : '') + '>Todos los meses</option>' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === P.mes ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + P.anio + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Buscar donador<input id="pcQ" value="' + esc(P.q) + '" placeholder="Escribe un nombre…" autocomplete="off"></label></div>' +
+    '<div id="pcResBox"></div>';
+  pcPintarRes(); pcTotal();
+  $('pcQ').addEventListener('input', function(){ P.q = this.value; pcPintarRes(); });
   $('pcMes').addEventListener('change', function(){ P.mes = +this.value; pcPintar(); });
-  $('pcFecha').addEventListener('change', function(){ P.fecha = this.value; });
   $('pcGab').addEventListener('change', function(){ P.gab = this.value; pcPintar(); });
   $('pcCon').addEventListener('change', function(){ P.con = this.value; pcPintar(); });
+  $('pcFecha').addEventListener('change', function(){ P.fecha = this.value; });
   b.querySelectorAll('[data-pcc]').forEach(function(sl){ sl.addEventListener('change', function(){ P.cta[sl.getAttribute('data-pcc')] = sl.value; pcTotal(); }); });
-  b.querySelectorAll('[data-pcv]').forEach(function(inp){
-    inp.addEventListener('input', function(){ var id = inp.getAttribute('data-pcv'); P.vals[id] = inp.value; var on = cents(inp.value) > 0, mk = b.querySelector('[data-pcmk="' + id + '"]'); if(mk) mk.textContent = on ? '☑' : '☐'; inp.style.borderColor = on ? 'var(--ok)' : ''; inp.style.fontWeight = on ? '700' : ''; inp.closest('tr').style.background = on ? 'color-mix(in srgb, var(--ok) 9%, var(--surface))' : ''; pcTotal(); });
-    inp.addEventListener('change', function(){ var sy = b.closest('#dlg') ? b.closest('#dlg').scrollTop : 0; pcPintar(); var nx = $('dlg'); if(nx) nx.scrollTop = sy; });
-  });
-  if(P.q) pcSug();
+  b.querySelectorAll('[data-pcv]').forEach(function(inp){ inp.addEventListener('input', function(){ var on = cents(inp.value) > 0; P.vals[inp.getAttribute('data-pcv')] = inp.value; var er = $('pcErr'); if(er) er.hidden = true; inp.style.borderColor = on ? 'var(--ok)' : ''; inp.style.fontWeight = on ? '700' : ''; inp.closest('tr').style.background = on ? 'color-mix(in srgb, var(--ok) 9%, var(--surface))' : ''; pcTotal(); }); });
 }
-function pcSug(){
-  var P = ui.pc, box = $('pcSug'); if(!box) return; var t = sinAcento((P.q || '').toLowerCase().trim());
-  if(t.length < 2){ box.innerHTML = ''; return; }
-  var res = [];
-  S.compromisos.forEach(function(c){ if(String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return; var d = don(c.donanteId); if(!d || sinAcento((nomDon(d) + ' ' + (d.nombre || '')).toLowerCase()).indexOf(t) === -1) return;
-    var qs = cuotasDe(c.id).filter(function(q){ return !q.pausada && falta(q) > 0; }).sort(function(a, b){ return a.mes - b.mes; }); if(!qs.length) return;
-    var q = qs.find(function(z){ return z.mes >= P.mes; }) || qs[0]; res.push({q: q, c: c, d: d}); });
-  box.innerHTML = res.length ? '<div class="row" style="gap:6px;flex-wrap:wrap;margin:6px 0">' + res.slice(0, 10).map(function(r){ return '<button type="button" class="btn ghost sm" data-a="pcAdd" data-id="' + r.q.id + '">+ ' + esc(nomDon(r.d)) + ' · ' + esc(r.c.concepto || '') + ' · ' + Mes(r.q.mes) + '</button>'; }).join('') + '</div>' : '<div class="sub" style="margin:6px 0">Nadie con ese nombre tiene cuotas pendientes en ' + P.anio + '.</div>';
+function pcAgregar(){
+  var ids = Array.prototype.map.call(document.querySelectorAll('[data-pcsel]:checked'), function(x){ return x.getAttribute('data-pcsel'); });
+  if(!ids.length){ toast('Palomea los donadores que quieres agregar.'); return; }
+  ids.forEach(function(id){ if(ui.pc.sel.indexOf(id) === -1) ui.pc.sel.push(id); });
+  pcPintar(); var ip = document.querySelector('[data-pcv="' + ids[0] + '"]'); if(ip) ip.focus();
 }
 function pcTotal(){
-  var P = ui.pc, n = 0, t = 0; Object.keys(P.vals).forEach(function(k){ var v = cents(P.vals[k]); if(v > 0 && qById(k)){ n++; t += v; } });
-  var el = $('pcTot'); if(el) el.innerHTML = n ? n + ' depósito' + (n === 1 ? '' : 's') + ' · Total <b style="color:var(--ok);font-size:20px">' + mN(t) + ' MXN</b>' : '<span class="sub">Escribe la cantidad en pesos de cada depósito</span>';
-  var porC = {}; Object.keys(P.vals).forEach(function(k){ var v = cents(P.vals[k]); if(v > 0 && qById(k)){ var cc = P.cta[k] || P.cuenta; porC[cc] = (porC[cc] || 0) + v; } });
-  if(el && n) el.innerHTML += '<span class="sub" style="margin-left:10px">' + Object.keys(porC).map(function(cc){ return esc(caja(cc).nombre.replace('Cuenta ', '')) + ' ' + mN(porC[cc]); }).join(' · ') + '</span>';
+  var P = ui.pc, n = 0, t = 0, porC = {};
+  P.sel.forEach(function(k){ var v = cents(P.vals[k]); if(v > 0 && qById(k)){ n++; t += v; var cc = P.cta[k] || P.cuenta; porC[cc] = (porC[cc] || 0) + v; } });
+  var el = $('pcTot'); if(el) el.innerHTML = n ? n + ' depósito' + (n === 1 ? '' : 's') + ' · Total <b style="color:var(--ok);font-size:20px">' + mN(t) + ' MXN</b><span class="sub" style="margin-left:10px">' + Object.keys(porC).map(function(cc){ return esc(caja(cc).nombre.replace('Cuenta ', '')) + ' ' + mN(porC[cc]); }).join(' · ') + '</span>' : '<span class="sub">' + (P.sel.length ? 'Escribe la cantidad en pesos de cada depósito' : 'Agrega donadores a la lista para registrar') + '</span>';
   var ks = Object.keys(porC), sb = $('pcSaveB'); if(sb) sb.textContent = 'Registrar ' + (n || '') + ' depósito' + (n === 1 ? '' : 's') + (ks.length === 1 ? ' en ' + caja(ks[0]).nombre.replace('Cuenta ', '') : '');
 }
 function pcSave(){
-  var P = ui.pc, err = $('pcErr'), u = user();
-  var lst = Object.keys(P.vals).filter(function(k){ return cents(P.vals[k]) > 0 && qById(k); });
-  if(!lst.length){ err.textContent = 'Escribe la cantidad en pesos de al menos un depósito.'; err.hidden = false; return; }
+  var P = ui.pc, err = $('pcErr');
+  if(!P.sel.length){ err.textContent = 'Primero agrega donadores a la lista (filtra por gabai, palomea y dale Agregar).'; err.hidden = false; return; }
+  var vacios = P.sel.filter(function(k){ return !(cents(P.vals[k]) > 0); });
+  if(vacios.length){ var q0 = qById(vacios[0]), c0 = q0 && comp(q0.compId), d0 = c0 && don(c0.donanteId); err.textContent = 'Falta la cantidad en pesos de ' + (d0 ? nomDon(d0) : 'un donador') + (vacios.length > 1 ? ' y ' + (vacios.length - 1) + ' más' : '') + '. Escríbela o quítalo con ✕.'; err.hidden = false; return; }
   if(!P.fecha){ err.textContent = 'Pon la fecha del depósito.'; err.hidden = false; return; }
   var n = 0, tot = 0;
-  lst.forEach(function(qid){
-    var q = qById(qid), c = comp(q.compId), mx = cents(P.vals[qid]), ref = pcRef(c, q, mx); if(!c || !(ref > 0)) return;
+  P.sel.forEach(function(qid){
+    var q = qById(qid), c = q && comp(q.compId), mx = cents(P.vals[qid]); if(!c) return; var ref = pcRef(c, q, mx); if(!(ref > 0)) return;
     var qs = cuotasDe(c.id).filter(function(z){ return !z.pausada && falta(z) > 0 && z.mes >= q.mes; }).sort(function(a, b){ return a.mes - b.mes; }), r = ref, plan = [];
     qs.forEach(function(z){ if(r <= 0) return; var ap = Math.min(falta(z), r); plan.push({q: z, ap: ap}); r -= ap; });
     if(r > 0){ var p0 = plan.find(function(x){ return x.q.id === q.id; }); if(p0) p0.ap += r; else plan.push({q: q, ap: r}); }
