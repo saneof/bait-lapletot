@@ -1655,7 +1655,7 @@ function optsCaja(sel, mon){
 var MS = {};
 function msHtml(id, items, sel, sum, extra){
   MS[id] = {items: items, sel: sel.slice(), set: null};
-  return '<details class="msel" id="ms_' + id + '"' + (ui.msOpen === id ? ' open' : '') + '><summary>' + sum + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="msAll" data-ms="' + id + '">Marcar todos</button><button type="button" class="btn ghost sm" data-a="msNone" data-ms="' + id + '">Quitar selección</button>' + (extra || '') + '</div>' +
+  return '<details class="msel" id="ms_' + id + '"' + (ui.msOpen === id ? ' open' : '') + '><summary>' + sum + '</summary><div class="mselp"><div class="mselb"><button type="button" class="btn ghost sm" data-a="msAll" data-ms="' + id + '">Marcar todos</button><button type="button" class="btn ghost sm" data-a="msNone" data-ms="' + id + '">Quitar selección</button><button type="button" class="btn primary sm" data-a="msListo" data-ms="' + id + '">✓ Listo</button>' + (extra || '') + '</div>' +
     items.map(function(it, i){ return '<label><input type="checkbox" data-ms="' + id + '" value="' + i + '"' + (sel.indexOf(it[0]) !== -1 ? ' checked' : '') + '> ' + it[1] + '</label>'; }).join('') + '</div></details>';
 }
 function gabArr(v){ return v == null || v === 'todos' ? [] : Array.isArray(v) ? v : [v]; }
@@ -1682,10 +1682,15 @@ document.addEventListener('change', function(ev){
   m.set(a); ui.msOpen = id; render();
 });
 document.addEventListener('click', function(ev){
+  var bl = ev.target.closest && ev.target.closest('[data-a="msListo"]'); if(bl){ var dl = document.getElementById('ms_' + bl.getAttribute('data-ms')); if(dl) dl.open = false; ui.msOpen = ''; return; }
   var b = ev.target.closest && ev.target.closest('[data-a="msAll"],[data-a="msNone"]');
   if(b){ var id = b.getAttribute('data-ms'), m = MS[id]; if(m && m.set){ m.set(b.getAttribute('data-a') === 'msAll' ? m.items.map(function(it){ return it[0]; }) : []); ui.msOpen = id; render(); } return; }
-  var d = ui.msOpen && document.getElementById('ms_' + ui.msOpen); if(d && d.open && !d.contains(ev.target)){ d.open = false; ui.msOpen = ''; }
+  document.querySelectorAll('details.msel[open]').forEach(function(d){ if(!d.contains(ev.target)){ d.open = false; if(ui.msOpen === d.id.slice(3)) ui.msOpen = ''; } });
 });
+/* el cuadro de selección se cierra solo cuando sacas el mouse de él */
+var MS_T = null;
+document.addEventListener('mouseout', function(ev){ var d = ev.target.closest && ev.target.closest('details.msel[open]'); if(!d) return; if(ev.relatedTarget && d.contains(ev.relatedTarget)) return; clearTimeout(MS_T); MS_T = setTimeout(function(){ var dd = document.getElementById(d.id); if(dd && dd.open && !dd.matches(':hover')){ dd.open = false; if(ui.msOpen === dd.id.slice(3)) ui.msOpen = ''; } }, 700); });
+document.addEventListener('mouseover', function(ev){ if(ev.target.closest && ev.target.closest('details.msel[open]')) clearTimeout(MS_T); });
 document.addEventListener('toggle', function(ev){ var t = ev.target; if(!t || !t.id || t.id.indexOf('ms_') !== 0) return; var id = t.id.slice(3); if(t.open) ui.msOpen = id; else if(ui.msOpen === id) ui.msOpen = ''; }, true);
 function optsGabai(sel, todos){
   return (todos ? '<option value="todos"' + (sel === 'todos' ? ' selected' : '') + '>Todos los gabaim</option>' : '') +
