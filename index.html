@@ -6520,7 +6520,7 @@ document.addEventListener('input', function(ev){
     if((t.id === 'afNom' || t.id === 'afApe') && !ui.nd.hebManual){ var sug = hebreoSugerido($('afNom').value, $('afApe').value); $('afHeb').value = sug; ui.nd.afHeb = sug; $('afHebHint').textContent = sug ? '' : ''; }
     if(t.id === 'afNom' || t.id === 'afApe') ui.nd.dupOk = false;
   }
-  else if(t.id === 'dnN' || t.id === 'dnA'){ if(!MDH){ $('dnH').value = hebreoSugerido($('dnN').value, $('dnA').value); $('dnHebHint').textContent = ''; } }
+  else if(t.id === 'dnN' || t.id === 'dnA'){ if(!MDH){ $('dnH').value = hebActualizar(DNO, $('dnN').value.trim(), $('dnA').value.trim()); $('dnHebHint').textContent = 'Se actualizó solo con el nombre; puedes corregirlo.'; } }
   else if(t.id === 'dnH'){ MDH = !!t.value.trim(); }
   else if(t.id === 'donQ'){ ui.don.q = t.value; var p3 = t.selectionStart; render(); var n3 = $('donQ'); n3.focus(); try{ n3.setSelectionRange(p3, p3); }catch(e){} }
   else if(t.id && EG_IDS.indexOf(t.id) !== -1){ ui.eg = ui.eg || {}; ui.eg[t.id] = t.value; }
@@ -6670,9 +6670,18 @@ document.addEventListener('submit', function(ev){
 });
 
 /* --- donante --- */
-var MDH = false;
+var MDH = false, DNO = null;
+/* Al cambiar el nombre, el hebreo se actualiza solo: las palabras que no cambiaron conservan su hebreo y las nuevas se escriben automáticamente */
+function hebActualizar(o, nom, ape){
+  var nw = (String(nom || '') + ' ' + String(ape || '')).split(/\s+/).filter(Boolean);
+  if(!o || !o.heb) return hebreoSugerido(nom, ape);
+  var ow = (String(o.nom || '') + ' ' + String(o.ape || '')).split(/\s+/).filter(Boolean), hw = String(o.heb).split(/\s+/).filter(Boolean);
+  if(ow.length !== hw.length) return hebreoSugerido(nom, ape);
+  var k = function(w){ return sinAcento(String(w).toLowerCase()); }, map = {}; ow.forEach(function(w, i){ map[k(w)] = hw[i]; });
+  return nw.map(function(w){ return map[k(w)] || hebreoSugerido(w, ''); }).filter(Boolean).join(' ');
+}
 function abrirDonante(did){
-  var d = don(did); MDH = !!d.hebreo;
+  var d = don(did); MDH = false; DNO = {nom: d.nom || '', ape: d.ape || '', heb: d.hebreo || ''};
   openModal(head('Datos del donador', esc(d.nombre)) +
     '<div class="form"><label class="f">Nombre(s)<input id="dnN" value="' + esc(d.nom) + '" maxlength="60"></label><label class="f">Apellidos<input id="dnA" value="' + esc(d.ape) + '" maxlength="80"></label>' +
     '<label class="f full"><span class="row" style="justify-content:space-between;gap:6px"><span>Nombre en hebreo</span><button type="button" class="back" data-a="hebClaude" data-for="dn" id="dnHebBtn"' + (SAMPLE ? '' : ' hidden') + '>Revisar con Claude</button></span><input id="dnH" dir="rtl" lang="he" value="' + esc(d.hebreo || '') + '" maxlength="80" style="text-align:right;font-size:16px"><small class="sub" id="dnHebHint"></small></label>' +
