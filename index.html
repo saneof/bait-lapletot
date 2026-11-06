@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v224</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v225</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2042,6 +2042,16 @@ function qeSave(qid){
   if(c.modalidad === 'Pago directo'){ var pdP = S.donativos.filter(function(p){ return p.compId === c.id; }), pdQ = cuotasDe(c.id);
     if(pdP.length === 1 && pdQ.length === 1 && pdP[0].fecha && +pdP[0].fecha.slice(0, 4) === c.anio){ var pdM = +pdP[0].fecha.slice(5, 7), q1 = pdQ[0];
       if(q1.mes !== pdM){ var mAnt = q1.mes; q1.mes = pdM; q1.venc = c.anio + '-' + pad(pdM) + '-01'; c.mesIni = pdM; c.fechaInicio = pdP[0].fecha; (pdP[0].cubre || []).forEach(function(k){ if(k.qid === q1.id) k.mes = pdM; }); if(pdP[0].mesCorr) pdP[0].mesCorr = pdM; cambios.push('pago directo: pasó de ' + Mes(mAnt) + ' a ' + Mes(pdM) + ' (mes en que pagó)'); } } }
+  /* Pago directo: el compromiso siempre igual a su pago (divisa, monto en pesos, caja, fecha, forma y monto en USD) */
+  if(c.modalidad === 'Pago directo'){ var pdP2 = S.donativos.filter(function(p){ return p.compId === c.id; }), pdQ2 = cuotasDe(c.id);
+    if(pdP2.length === 1 && pdQ2.length === 1){ var pp = pdP2[0], qq = pdQ2[0], chg = [];
+      if((c.monPago || 'USD') !== pp.moneda){ c.monPago = pp.moneda; chg.push('divisa'); }
+      var mxN = pp.moneda === 'MXN' ? pp.montoC : 0; if((c.montoPagoC || 0) !== mxN){ c.montoPagoC = mxN; chg.push('monto en pesos'); }
+      if(pp.caja && c.caja !== pp.caja){ c.caja = pp.caja; chg.push('caja'); }
+      if(pp.fecha && c.fechaInicio !== pp.fecha){ c.fechaInicio = pp.fecha; chg.push('fecha'); }
+      if(pp.forma && c.forma !== pp.forma){ c.forma = pp.forma; chg.push('forma'); }
+      if(pp.montoCompC > 0 && qq.montoC !== pp.montoCompC){ qq.montoC = pp.montoCompC; c.cuotaC = pp.montoCompC; recalcAnual(c); chg.push('monto USD'); }
+      if(chg.length) cambios.push('compromiso actualizado igual que su pago (' + chg.join(', ') + ')'); } }
   var acc = $('qaAcc') ? $('qaAcc').value : '';
   var qcom = $('qaCom').value.trim();
   if(acc === 'reanudar' && q.pausada){ q.pausada = false; if(q.cancelada){ q.cancelada = false; cambios.push('quitó cancelación'); } else cambios.push('reactivada'); }
@@ -7154,6 +7164,39 @@ function buscaMejorar(){
   });
 }
 (function(){ var pend = false; new MutationObserver(function(){ if(pend) return; pend = true; Promise.resolve().then(function(){ pend = false; buscaMejorar(); }); }).observe(document.body, {childList: true, subtree: true}); })();
+
+/* ================= Sugerencias en todos los cuadros de "Buscar" (como en la lista de donadores) ================= */
+var SUGQ_IDS = ['cobQ', 'donQ', 'compQ', 'egLQ', 'iniFQ', 'contQ', 'flQ', 'aprQ', 'repQ', 'bkQ', 'avQ'];
+var SUGQ = {el: null, items: [], act: -1, id: ''};
+function sugqFuente(id){
+  var m = {}, out = [];
+  var add = function(mostrar, valor){ var k = buscaNorm(valor); if(!valor || m[k]) return; m[k] = 1; out.push([mostrar, valor]); };
+  (S.donantes || []).forEach(function(d){ add(nomDon(d), d.nombre); });
+  if(['egLQ', 'iniFQ', 'contQ', 'flQ'].indexOf(id) !== -1) (S.receptoresEg || []).forEach(function(r){ add(r, r); });
+  return out.sort(function(a, b){ return a[0].localeCompare(b[0], 'es'); });
+}
+function sugqCerrar(){ if(SUGQ.el){ SUGQ.el.remove(); SUGQ.el = null; } SUGQ.items = []; SUGQ.act = -1; }
+function sugqPintar(inp){
+  var q = buscaNorm(inp.value).trim(); if(q.length < 2){ sugqCerrar(); return; }
+  var pal = q.split(/\s+/), it = sugqFuente(inp.id).filter(function(x){ var t = buscaNorm(x[0] + ' ' + x[1]); return pal.every(function(p){ return t.indexOf(p) !== -1; }); }).slice(0, 12);
+  if(!it.length || (it.length === 1 && buscaNorm(it[0][1]) === q)){ sugqCerrar(); return; }
+  if(!SUGQ.el){ SUGQ.el = document.createElement('div'); SUGQ.el.className = 'buscaLista sugqL'; SUGQ.el.setAttribute('data-noi18n', ''); document.body.appendChild(SUGQ.el);
+    SUGQ.el.addEventListener('mousedown', function(e){ e.preventDefault(); });
+    SUGQ.el.addEventListener('click', function(e){ var b = e.target.closest('button[data-k]'); if(b) sugqElegir(+b.getAttribute('data-k')); }); }
+  SUGQ.items = it; SUGQ.act = -1; SUGQ.id = inp.id;
+  SUGQ.el.innerHTML = it.map(function(x, k){ var t = x[0], n = buscaNorm(t), i = n.indexOf(pal[0]), h = i !== -1 ? esc(t.slice(0, i)) + '<b>' + esc(t.slice(i, i + pal[0].length)) + '</b>' + esc(t.slice(i + pal[0].length)) : esc(t); return '<button type="button" data-k="' + k + '">' + h + '</button>'; }).join('');
+  var r = inp.getBoundingClientRect(); SUGQ.el.style.cssText = 'position:fixed;left:' + Math.round(r.left) + 'px;top:' + Math.round(r.bottom + 4) + 'px;width:' + Math.max(240, Math.round(r.width)) + 'px;right:auto;z-index:80';
+}
+function sugqElegir(k){ var x = SUGQ.items[k], inp = $(SUGQ.id); sugqCerrar(); if(!x || !inp) return; inp.value = x[1]; inp.dispatchEvent(new Event('input', {bubbles: true})); var n = $(SUGQ.id); if(n){ n.focus(); try{ n.setSelectionRange(n.value.length, n.value.length); }catch(e){} } }
+document.addEventListener('input', function(e){ var t = e.target; if(!t || SUGQ_IDS.indexOf(t.id) === -1) return; var id = t.id; setTimeout(function(){ var n = $(id); if(n && document.activeElement === n) sugqPintar(n); else sugqCerrar(); }, 0); });
+document.addEventListener('keydown', function(e){
+  if(!SUGQ.el || SUGQ_IDS.indexOf((e.target || {}).id) === -1) return;
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); var L = SUGQ.items.length; SUGQ.act = (SUGQ.act + (e.key === 'ArrowDown' ? 1 : -1) + L) % L; Array.prototype.forEach.call(SUGQ.el.children, function(b, k){ b.classList.toggle('act', k === SUGQ.act); if(k === SUGQ.act) b.scrollIntoView({block: 'nearest'}); }); }
+  else if(e.key === 'Enter' && SUGQ.act >= 0){ e.preventDefault(); e.stopPropagation(); sugqElegir(SUGQ.act); }
+  else if(e.key === 'Escape'){ sugqCerrar(); }
+}, true);
+document.addEventListener('focusout', function(e){ if(SUGQ_IDS.indexOf((e.target || {}).id) !== -1) setTimeout(function(){ var a = document.activeElement; if(!a || SUGQ_IDS.indexOf(a.id) === -1) sugqCerrar(); }, 150); });
+window.addEventListener('scroll', function(){ if(SUGQ.el){ var n = $(SUGQ.id); if(n){ var r = n.getBoundingClientRect(); SUGQ.el.style.top = Math.round(r.bottom + 4) + 'px'; SUGQ.el.style.left = Math.round(r.left) + 'px'; } } }, true);
 
 /* ================= inicio ================= */
 S = load() || seed();
