@@ -1340,6 +1340,23 @@ function renderNav(){
 }
 function render(){ var gEn = gabEntrar(); try{ render0(); } finally{ if(gEn) gabSalir(); } }
 /* Arreglo de una sola vez: R-0964 de Jaime Dichy se quedó en $5,000 USD (Oficina USD) cuando su compromiso ya dice $100,000 pesos */
+/* Arreglo de una sola vez: depósitos en cuenta que se aplicaron con tipo de cambio (o partidos en varios registros) quedan en un solo registro con el monto exacto en pesos, cubriendo completa la cuota del mes */
+function fixDepTC(){ try{ S.fixes = S.fixes || {}; if(S.fixes.depTC1) return;
+  var es = function(p){ return /^Depósito en /.test(p.obs || ''); }, G = {}, ord = [];
+  S.donativos.forEach(function(p){ if(!es(p)) return; var c = comp(p.compId); if(!c || c.moneda === 'MXN') return; var cj = p.ingCaja ? p.ingCaja.de : p.caja, k = p.dep ? 'id|' + p.id : [p.compId, p.fecha, cj, p.obs].join('|'); if(!G[k]){ G[k] = []; ord.push(k); } G[k].push(p); });
+  var n = 0;
+  ord.forEach(function(k){ var g = G[k], c = comp(g[0].compId), tot = 0, mesMin = 99;
+    g.forEach(function(p){ tot += p.montoC; (p.cubre || []).forEach(function(x){ if(x.ap > 0) mesMin = Math.min(mesMin, x.mes); }); });
+    g.forEach(function(p){ desaplicar(p); });
+    var qs = cuotasDe(c.id).filter(function(z){ return !z.pausada; }).sort(function(a, b){ return a.mes - b.mes; });
+    var q = qs.find(function(z){ return z.mes === mesMin && falta(z) > 0; }) || qs.find(function(z){ return z.mes >= mesMin && falta(z) > 0; }) || qs.find(function(z){ return falta(z) > 0; });
+    var keep = g[0]; g.slice(1).forEach(function(p){ var i = S.donativos.indexOf(p); if(i !== -1) S.donativos.splice(i, 1); });
+    keep.montoC = tot; keep.dep = 1;
+    if(q){ var ref = falta(q); q.aplicadoC += ref; keep.montoCompC = ref; keep.tc = Math.round(tot / ref * 10000) / 10000; keep.cubre = [{qid: q.id, num: q.num, mes: q.mes, ap: ref}]; keep.mesCorr = q.mes; }
+    else { keep.montoCompC = 0; keep.cubre = []; }
+    n++; });
+  S.fixes.depTC1 = 1; if(n) log('Corrección: ' + n + ' depósito(s) en cuenta quedaron en un solo registro con el monto exacto en pesos, cubriendo completa la cuota del mes (sin tipo de cambio)');
+  }catch(e){} }
 function fixR0964(){ try{ S.fixes = S.fixes || {}; if(S.fixes.r0964) return; var p = S.donativos.find(function(x){ return x.recibo === 'R-0964' && x.compId === 'c2565'; }), c = comp('c2565');
   if(p && c && p.moneda === 'USD' && c.modalidad === 'Pago directo' && c.monPago === 'MXN' && c.montoPagoC === 10000000){ if(pdSync(c)) log('Corrección: R-0964 de Jaime Dichy pasó de $5,000 USD en Oficina USD a $100,000 MXN en Oficina Pesos, como dice su compromiso'); }
   S.fixes.r0964 = 1; }catch(e){} }
@@ -1356,7 +1373,7 @@ function fixAbrOct(){ try{ S.fixes = S.fixes || {}; if(S.fixes.abrOct3) return; 
   S.fixes.abrOct3 = 1; }catch(e){} }
 function render0(){
   if(!LOGUEADO){ return; }
-  fixR0964(); fixAbrOct();
+  fixR0964(); fixAbrOct(); fixDepTC();
   var pr = document.querySelector('.proto'); if(pr) pr.hidden = !!S.real;
   if(esDonante() && ui.view !== 'portal') ui.view = 'portal';
   if(ui.view === 'gabaim') ui.view = 'config';
@@ -7217,7 +7234,8 @@ function pcRegresar(id){
   render(); toast('Regresó a "Por ingresar en efectivo"');
 }
 /* --- ventana para registrar varios depósitos de una vez --- */
-function pcRef(c, q, mx){ if(c.moneda === 'MXN') return mx; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q && q.montoC) return Math.round(mx * q.montoC / c.montoPagoC); return Math.round(mx / (S.cfg.tc || 1)); }
+/* Sin tipo de cambio: un depósito en pesos cubre completa la cuota que elegiste (igual que Cobro en bloque); se guarda exactamente el monto en pesos que escribiste */
+function pcRef(c, q, mx){ if(c.moneda === 'MXN') return mx; return q ? falta(q) : 0; }
 function pcEsperado(c, q){ var fa = falta(q); if(c.moneda === 'MXN') return fa; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q.montoC) return Math.round(c.montoPagoC * fa / q.montoC); return Math.round(fa * (S.cfg.tc || 1)); }
 function pcAbrir(){
   var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, sel: [], gabs: [], cons: [], cta: {}};
