@@ -1390,7 +1390,7 @@ function filtrosCargar(){ try{ var o = JSON.parse(localStorage.getItem(FILT_KEY)
   if(ui.fl && ui.fl.per && /^(mes|mesant|anio|todo)$/.test(ui.fl.per)){ var rr = flRango(ui.fl.per); ui.fl.desde = rr[0]; ui.fl.hasta = rr[1]; }
 }catch(e){} }
 /* Al cambiar de pestaña todo regresa a lo normal (filtros de arriba y de columnas) */
-function filtrosNormal(){ filtrosLimpiar(); ui.ccl = null; ui.egOpen = false; if(ui.view !== 'nuevocomp'){ ui.ccOpen = false; ui.cdOpen = false; } ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
+function filtrosNormal(){ filtrosLimpiar(); ui.pc = null; ui.pcVer = ''; ui.ccl = null; ui.egOpen = false; if(ui.view !== 'nuevocomp'){ ui.ccOpen = false; ui.cdOpen = false; } ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
 function filtrosLimpiar(){ ui.cont = null; ui.fl = null; ui.iniF = null; ui.egL = null; ui.cjL = null; ui.cf = {}; if(ui.ccl){ ui.ccl.gab = 'todos'; ui.ccl.cons = []; ui.ccl.mes = ''; ui.ccl.don = ''; } R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; try{ localStorage.removeItem(FILT_KEY); }catch(e){} FILT_LAST = ''; }
 function xsMarcar(){
   document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
@@ -1640,7 +1640,9 @@ function casosAtencion(){
 var CAJAS = [
   {id: 'MXN', nombre: 'Oficina Pesos', mon: 'MXN'},
   {id: 'USD', nombre: 'Oficina USD', mon: 'USD'},
-  {id: 'NY', nombre: 'Oficina New York', mon: 'USD', externa: true}
+  {id: 'NY', nombre: 'Oficina New York', mon: 'USD', externa: true},
+  {id: 'ALBO', nombre: 'Cuenta Albo', mon: 'MXN', externa: true, banco: true},
+  {id: 'MARAZUL', nombre: 'Cuenta Mar Azul', mon: 'MXN', externa: true, banco: true}
 ];
 var NOTA_NY = 'No mueve caja física: entra a la cuenta en USD de Estados Unidos.';
 function caja(id){ return CAJAS.find(function(k){ return k.id === id; }) || CAJAS[0]; }
@@ -2828,7 +2830,7 @@ function movimientos(){
   var out = [];
   S.donativos.forEach(function(p){
     var c = comp(p.compId), d = c ? don(c.donanteId) : null;
-    out.push({tipo: 'ing', fecha: p.fecha, folio: p.recibo, concepto: c ? (c.concepto || 'Donativo') : 'Donativo', nombre: d ? d.nombre : '—', gabai: gabPago(p, c), corr: corrTxt(p, c), corrM: (p.cubre || []).reduce(function(m, k){ return k.ap > 0 ? Math.min(m, k.mes) : m; }, 99), cuotaC: c && c.modalidad !== 'Pago directo' ? c.cuotaC : null, cuotaMon: c ? c.moneda : 'USD', gabaiTxt: '', donId: d ? d.id : '', eqC: c && c.moneda === 'USD' ? p.montoCompC : (p.moneda === 'USD' ? p.montoC : Math.round(p.montoC / (p.tc || S.cfg.tc || 1))), modalidad: c ? (c.modalidad || 'Recurrente') : '', forma: p.forma, caja: p.caja || cajaDef(p.moneda), moneda: p.moneda, montoC: p.montoC, tc: p.tc, obs: p.obs || '', compId: p.compId});
+    out.push({tipo: 'ing', fecha: p.ingCaja && p.ingCaja.fecha || p.fecha, folio: p.recibo, concepto: c ? (c.concepto || 'Donativo') : 'Donativo', nombre: d ? d.nombre : '—', gabai: gabPago(p, c), corr: corrTxt(p, c), corrM: (p.cubre || []).reduce(function(m, k){ return k.ap > 0 ? Math.min(m, k.mes) : m; }, 99), cuotaC: c && c.modalidad !== 'Pago directo' ? c.cuotaC : null, cuotaMon: c ? c.moneda : 'USD', gabaiTxt: '', donId: d ? d.id : '', eqC: c && c.moneda === 'USD' ? p.montoCompC : (p.moneda === 'USD' ? p.montoC : Math.round(p.montoC / (p.tc || S.cfg.tc || 1))), modalidad: c ? (c.modalidad || 'Recurrente') : '', forma: p.forma, caja: p.caja || cajaDef(p.moneda), moneda: p.moneda, montoC: p.montoC, tc: p.tc, obs: p.obs || '', compId: p.compId});
   });
   (S.egresos || []).filter(egActivo).forEach(function(e){
     out.push({tipo: 'egr', fecha: e.fecha, folio: e.folio, concepto: e.concepto, nombre: e.benef, gabai: e.gabai || '', donId: '', eqC: e.moneda === 'USD' ? e.montoC : Math.round(e.montoC / (e.tc || S.cfg.tc || 1)), modalidad: e.modalidad || '', forma: e.forma, caja: e.caja, moneda: e.moneda, montoC: e.montoC, tc: e.tc, obs: [e.desc, e.coment, e.factura ? 'Factura ' + e.factura : ''].filter(Boolean).join(' · '), id: e.id});
@@ -5111,7 +5113,7 @@ function abrirPago(cid, preset){
     '<div><div class="sub" style="margin-bottom:6px">¿A qué cuotas se aplica?</div><div class="radio">' +
       [['siguientes', 'Las siguientes pendientes'], ['ultimas', 'Las últimas'], ['elegir', 'Elegir cuotas']].map(function(x){ return '<label><input type="radio" name="pmModo" value="' + x[0] + '"' + (PM.modo === x[0] ? ' checked' : '') + '>' + x[1] + '</label>'; }).join('') + '</div></div>' +
     '<div id="pmElegir"' + (PM.modo === 'elegir' ? '' : ' hidden') + '>' + pend.map(function(q){ return '<label class="ck"><input type="checkbox" data-pmq="' + q.id + '"' + (PM.sel.indexOf(q.id) !== -1 ? ' checked' : '') + '>' + Mes(q.mes) + ' · falta ' + money(falta(q), c.moneda) + '</label>'; }).join('') + '</div>' +
-    '<div class="note" id="pmNY"' + (caja(pl0.caja).externa ? '' : ' hidden') + '>' + NOTA_NY + '</div>' +
+    '<div class="note" id="pmNY"' + (caja(pl0.caja).externa && !caja(pl0.caja).banco ? '' : ' hidden') + '>' + NOTA_NY + '</div>' +
     '<label class="f">Observaciones<input id="pmObs" maxlength="200"></label>' +
     '<div><h2 style="font-size:15px">Así quedará cada cuota</h2><div id="pmPrev" style="margin-top:8px"></div></div>' +
     '<div class="err" id="pmErr" hidden></div>' +
@@ -6322,6 +6324,15 @@ document.addEventListener('click', function(ev){
   else if(a === 'editar') abrirEditar(id);
   else if(a === 'edMes'){ ED.desde = +b.getAttribute('data-m'); document.querySelectorAll('[data-a=edMes]').forEach(function(x){ x.classList.toggle('on', x === b); }); edPrev(); }
   else if(a === 'edIni'){ edInicio(); }
+  else if(a === 'pcGrp'){ var uu = user(); S.cfg = S.cfg || {}; var kg = 'pcGrp_' + (uu ? uu.id : ''); S.cfg[kg] = !S.cfg[kg]; save(); render(); }
+  else if(a === 'pcVerPend'){ ui.pcVer = ui.pcVer === 'pend' ? '' : 'pend'; render(); }
+  else if(a === 'pcVerIng'){ ui.pcVer = ui.pcVer === 'ing' ? '' : 'ing'; render(); }
+  else if(a === 'pcAbrir'){ pcAbrir(); }
+  else if(a === 'pcCuenta'){ ui.pc.cuenta = b.getAttribute('data-c'); pcPintar(); }
+  else if(a === 'pcAdd'){ if(ui.pc.extra.indexOf(id) === -1) ui.pc.extra.unshift(id); ui.pc.q = ''; pcPintar(); var ip = document.querySelector('[data-pcv="' + id + '"]'); if(ip) ip.focus(); }
+  else if(a === 'pcSave'){ pcSave(); }
+  else if(a === 'pcLlego'){ pcLlego(); }
+  else if(a === 'pcRegresar'){ pcRegresar(id); }
   else if(a === 'edSave') edSave();
   else if(a === 'catNew'){ ev.preventDefault(); var er = $('ed_' + b.getAttribute('data-sel')); if(er) er.hidden = true; var nr = $('nw_' + b.getAttribute('data-sel')); if(nr){ nr.hidden = false; $('nwi_' + b.getAttribute('data-sel')).focus(); } }
   else if(a === 'catMov'){ var mk = b.getAttribute('data-cat'), mi = +b.getAttribute('data-k'), md = +b.getAttribute('data-d'); if(mk === 'formas' && !S.formas) S.formas = FORMAS_BASE.slice(); var arr = S[mk], mj = mi + md; if(arr && mj >= 0 && mj < arr.length){ var tmp = arr[mi]; arr[mi] = arr[mj]; arr[mj] = tmp; render(); if(mk === 'gabaim') gabOrdRefrescar(); var nb = document.querySelector('[data-a=catMov][data-cat="' + mk + '"][data-k="' + mj + '"][data-d="' + md + '"]'); if(nb && !nb.disabled) nb.focus(); } }
@@ -6617,7 +6628,8 @@ document.addEventListener('change', function(ev){
   else if(t.id === 'qaMon'){ var qr = $('qaRef'); qr.disabled = t.value === 'USD'; $('qaCaja').value = t.value === 'MXN' ? 'MXN' : ($('qaCaja').value === 'MXN' ? cajaUsd(GAB_MODAL) : $('qaCaja').value); }
   else if(t.id === 'qaForma' && esTarjeta(t.value)){ $('qaMon').value = 'USD'; $('qaCaja').value = cajaUsd(GAB_MODAL); $('qaRef').disabled = true; }
   else if(t.id === 'qaAcc'){ qaCampos(); }
-  else if(t.id === 'pmCaja'){ var pk = caja(t.value); $('pmMon').value = pk.mon; $('pmNY').hidden = !pk.externa; pmPrev(); }
+  else if(t.id === 'pmCaja'){ var pk = caja(t.value); $('pmMon').value = pk.mon; $('pmNY').hidden = !pk.externa || !!pk.banco; pmPrev(); }
+  else if(t.id === 'pcAll'){ document.querySelectorAll('[data-pcck]').forEach(function(x){ x.checked = t.checked; }); }
   else if(t.id === 'userSel' || t.id === 'userSel2'){ S.user = +t.value; cerrarMas(); render(); }
   else if(t.getAttribute && t.getAttribute('data-modoc')){ modOcSet(t.getAttribute('data-modoc'), t.checked); }
   else if(t.getAttribute && t.getAttribute('data-rgfecha') && t.value){ rgAccion(t.getAttribute('data-r'), t.getAttribute('data-k'), 'pos', t.value); var fl2 = t.closest('.rgit'); if(fl2) fl2.remove(); toast('Te lo recuerdo el ' + fFecha(t.value)); rgCampana(); if(ui.view === 'recordat' && $('modal').hidden) render(); }
@@ -7042,6 +7054,128 @@ document.addEventListener('click', function(ev){
 });
 document.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' && (ev.target.id === 'nbPw' || ev.target.id === 'nbMail')){ ev.preventDefault(); nbEntrar(); } else if(ev.key === 'Enter' && ev.target.id === 'nbN2' && !$('login').hidden){ ev.preventDefault(); nbGuardaPw(); } });
 
+/* ================= Pagos con tarjeta / depósitos en cuenta: por ingresar en efectivo ================= */
+function pcBanco(p){ return !!caja(p.caja).banco; }
+function pcPend(){ return S.donativos.filter(function(p){ return pcBanco(p) && p.caja === (CAJAS.find(function(k){ return k.id === p.caja; }) || {}).id; }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha); }); }
+function pcIngresados(mesK){ return S.donativos.filter(function(p){ return p.ingCaja && (!mesK || (p.ingCaja.fecha || '').slice(0, 7) === mesK); }).sort(function(a, b){ return (b.ingCaja.fecha || '').localeCompare(a.ingCaja.fecha || ''); }); }
+function pcHtml(mesK, M){
+  if(!(puede('cobranza') || puede('conta') || puede('rep2'))) return '';
+  var u = user(), grp = !!(S.cfg && S.cfg['pcGrp_' + (u ? u.id : '')]);
+  var bar = '<div class="ini-cjbar"><div class="row" style="gap:10px;align-items:center"><div class="ini-sec">Pagos con tarjeta · por ingresar en efectivo</div><button type="button" class="btn ghost sm" data-a="pcGrp">' + (grp ? '▸ Desagrupar' : '▾ Agrupar') + '</button></div></div>';
+  if(grp) return bar;
+  var pend = pcPend(), tot = 0, porC = {}; pend.forEach(function(p){ tot += p.montoC; porC[p.caja] = (porC[p.caja] || 0) + p.montoC; });
+  var ing = pcIngresados(mesK), totI = ing.reduce(function(a, p){ return a + p.montoC; }, 0);
+  var bancos = CAJAS.filter(function(k){ return k.banco; });
+  var kp = function(a, lbl, val, sub, color, on, extra){ return '<button type="button" class="ini-kpi' + (on ? ' on' : '') + '" data-a="' + a + '"' + (extra || '') + '><span>' + lbl + '</span><strong style="color:' + color + '">' + val + '</strong><small>' + sub + '</small></button>'; };
+  var ver = ui.pcVer || '';
+  var h = bar + '<div class="ini-kpis" style="margin-top:10px">' +
+    kp('pcVerPend', 'Por ingresar en efectivo', mN(tot), pend.length + ' pago' + (pend.length === 1 ? '' : 's') + ' pendiente' + (pend.length === 1 ? '' : 's') + ' · ' + (ver === 'pend' ? 'ocultar' : 'ver'), '#a16207', ver === 'pend', ' style="' + (tot ? 'outline:2px solid #e9c46a;' : '') + '"') +
+    kp('pcAbrir', 'En cuentas', bancos.map(function(k){ return '<span style="display:block;font-size:17px;line-height:1.35">' + esc(k.nombre.replace('Cuenta ', '')) + ' ' + mN(porC[k.id] || 0) + '</span>'; }).join(''), '+ registrar depósitos', '#12324F', false) +
+    kp('pcVerIng', 'Ya ingresado en efectivo', mN(totI), mesNom(M) + ' · ' + ing.length + ' pago' + (ing.length === 1 ? '' : 's') + ' · ' + (ver === 'ing' ? 'ocultar' : 'ver'), '#1f7a4d', ver === 'ing') + '</div>';
+  var dn = function(p){ var c = comp(p.compId), d = c ? don(c.donanteId) : null; return {c: c, n: d ? nomDon(d) : '—'}; };
+  if(ver === 'pend'){
+    h += '<section class="panel" style="margin-top:14px"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h2 style="margin:0">Por ingresar en efectivo</h2><span class="row" style="gap:8px;align-items:center"><label class="f" style="margin:0;flex-direction:row;align-items:center;gap:6px">Llegó el<input type="date" id="pcFechaIng" value="' + hoy() + '" style="width:auto"></label><button type="button" class="btn primary" data-a="pcLlego">✓ Ya llegó el efectivo</button></span></div>' +
+      (pend.length ? '<div class="tw cards" style="margin-top:10px"><table class="cobt" data-nocf><thead><tr><th><label class="ck"><input type="checkbox" id="pcAll" aria-label="Marcar todos"></label></th><th>Fecha</th><th>Donador</th><th>Concepto</th><th>Cuenta</th><th class="n">Monto</th></tr></thead><tbody>' +
+        pend.map(function(p){ var x = dn(p); return '<tr><td><label class="ck"><input type="checkbox" data-pcck="' + p.id + '"></label></td><td>' + fFecha(p.fecha) + '</td><td><b>' + esc(x.n) + '</b></td><td>' + esc(x.c ? x.c.concepto || '' : '') + '</td><td>' + cajaPill(p.caja) + '</td><td class="n"><b>' + money(p.montoC, p.moneda) + '</b></td></tr>'; }).join('') +
+        '</tbody><tfoot><tr><td colspan="5"><b>Total · ' + pend.length + '</b></td><td class="n"><b>' + mN(tot) + '</b></td></tr></tfoot></table></div>' : '<div class="empty">No hay pagos pendientes de ingresar.</div>') + '</section>';
+  }
+  if(ver === 'ing'){
+    h += '<section class="panel" style="margin-top:14px"><h2 style="margin:0">Ya ingresado en efectivo · ' + esc(mesNom(M)) + '</h2>' +
+      (ing.length ? '<div class="tw cards" style="margin-top:10px"><table class="cobt" data-nocf><thead><tr><th>Llegó el</th><th>Donador</th><th>Concepto</th><th>Venía de</th><th class="n">Monto</th><th></th></tr></thead><tbody>' +
+        ing.map(function(p){ var x = dn(p); return '<tr><td>' + fFecha(p.ingCaja.fecha) + '<div class="sub">' + esc(p.ingCaja.usuario || '') + '</div></td><td><b>' + esc(x.n) + '</b></td><td>' + esc(x.c ? x.c.concepto || '' : '') + '</td><td>' + cajaPill(p.ingCaja.de) + '<div class="sub">depositó ' + fFecha(p.fecha) + '</div></td><td class="n"><b>' + money(p.montoC, p.moneda) + '</b></td><td><button type="button" class="btn ghost sm" data-a="pcRegresar" data-id="' + p.id + '">↩ Regresar a pendientes</button></td></tr>'; }).join('') +
+        '</tbody></table></div>' : '<div class="empty">Nada ingresado en ' + esc(mesNom(M)) + ' todavía.</div>') + '</section>';
+  }
+  return h;
+}
+function pcLlego(){
+  var ids = Array.prototype.map.call(document.querySelectorAll('[data-pcck]:checked'), function(x){ return x.getAttribute('data-pcck'); });
+  if(!ids.length){ toast('Marca con palomita los pagos que ya llegaron.'); return; }
+  var fe = ($('pcFechaIng') || {}).value || hoy(), tot = 0, u = user();
+  ids.forEach(function(id){ var p = S.donativos.find(function(z){ return z.id === id; }); if(!p || !pcBanco(p)) return; p.ingCaja = {fecha: fe, de: p.caja, usuario: u ? u.nombre : ''}; p.caja = cajaDef(p.moneda); tot += p.montoC; });
+  log('Ingresó a caja ' + ids.length + ' pago(s) que estaban en cuenta: ' + mN(tot) + ' (' + fFecha(fe) + ')');
+  render(); toast(ids.length + ' pago' + (ids.length === 1 ? '' : 's') + ' ingresado' + (ids.length === 1 ? '' : 's') + ' a caja · ' + mN(tot));
+}
+function pcRegresar(id){
+  var p = S.donativos.find(function(z){ return z.id === id; }); if(!p || !p.ingCaja) return;
+  var de = p.ingCaja.de || 'ALBO'; p.caja = de; delete p.ingCaja;
+  log('Regresó a pendientes de ingresar el pago ' + p.recibo + ' (' + money(p.montoC, p.moneda) + ', ' + caja(de).nombre + ')');
+  render(); toast('Regresó a "Por ingresar en efectivo"');
+}
+/* --- ventana para registrar varios depósitos de una vez --- */
+function pcRef(c, q, mx){ if(c.moneda === 'MXN') return mx; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q && q.montoC) return Math.round(mx * q.montoC / c.montoPagoC); return Math.round(mx / (S.cfg.tc || 1)); }
+function pcEsperado(c, q){ var fa = falta(q); if(c.moneda === 'MXN') return fa; if(c.monPago === 'MXN' && c.montoPagoC > 0 && q.montoC) return Math.round(c.montoPagoC * fa / q.montoC); return Math.round(fa * (S.cfg.tc || 1)); }
+function pcAbrir(){
+  var h = hoy(); ui.pc = ui.pc || {cuenta: (CAJAS.find(function(k){ return k.banco; }) || {}).id, mes: +h.slice(5, 7), anio: +h.slice(0, 4), fecha: h, q: '', vals: {}, extra: []};
+  openModal(head('Registrar depósitos en cuenta', 'Escribe solo la cantidad en pesos que depositó cada uno. Puedes llenar varios y registrarlos juntos.') + '<div id="pcBody"></div>' +
+    '<div class="err" id="pcErr" hidden></div><div class="dfoot" style="justify-content:space-between;align-items:center"><span id="pcTot" style="font-size:16px"></span><span class="row" style="gap:8px"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn primary" data-a="pcSave" id="pcSaveB">Registrar</button></span></div>');
+  $('dlg').classList.add('wide'); pcPintar();
+}
+function pcFilas(){
+  var P = ui.pc, out = [], vistos = {};
+  var add = function(q, extra){ if(!q || vistos[q.id]) return; var c = comp(q.compId); if(!c) return; vistos[q.id] = 1; out.push({q: q, c: c, d: don(c.donanteId) || {nombre: '—'}, extra: extra}); };
+  Object.keys(P.vals).forEach(function(qid){ if(cents(P.vals[qid]) > 0) add(qById(qid), true); });
+  P.extra.forEach(function(qid){ add(qById(qid), true); });
+  S.cuotas.forEach(function(q){ if(q.mes !== P.mes || q.pausada || q.cancelada || falta(q) <= 0) return; var c = comp(q.compId); if(!c || String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return; add(q, false); });
+  var fl = function(r){ return cents(P.vals[r.q.id]) > 0 ? 0 : 1; };
+  out.sort(function(a, b){ return fl(a) - fl(b) || (a.d.ape || a.d.nombre || '').localeCompare(b.d.ape || b.d.nombre || '', 'es'); });
+  return out;
+}
+function pcPintar(){
+  var P = ui.pc, b = $('pcBody'); if(!b) return;
+  var filas = pcFilas(), nLl = filas.filter(function(r){ return cents(P.vals[r.q.id]) > 0; }).length;
+  var bancos = CAJAS.filter(function(k){ return k.banco; });
+  b.innerHTML = '<div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px"><span class="sub">Cuenta:</span>' + bancos.map(function(k){ return '<button type="button" class="chip' + (P.cuenta === k.id ? ' on' : '') + '" data-a="pcCuenta" data-c="' + k.id + '">' + esc(k.nombre.replace('Cuenta ', '')) + '</button>'; }).join('') + '</div>' +
+    '<div class="form" style="grid-template-columns:2fr 1fr 1fr"><label class="f">Buscar donador<input id="pcQ" value="' + esc(P.q) + '" placeholder="Escribe un nombre…" autocomplete="off"></label>' +
+    '<label class="f">Pendientes de<select id="pcMes">' + MESES.es.map(function(n, k){ return '<option value="' + (k + 1) + '"' + (k + 1 === P.mes ? ' selected' : '') + '>' + Mes(k + 1) + ' ' + P.anio + '</option>'; }).join('') + '</select></label>' +
+    '<label class="f">Fecha del depósito<input type="date" id="pcFecha" value="' + esc(P.fecha) + '"></label></div>' +
+    '<div id="pcSug"></div>' +
+    '<div class="sub" style="margin:10px 0 6px">' + (nLl ? '<b style="color:var(--ok)">Por registrar (' + nLl + ')</b> arriba · ' : '') + 'Pendientes de ' + Mes(P.mes) + '</div>' +
+    (filas.length ? '<div class="tw cards"><table class="cobt" data-nocf><thead><tr><th></th><th>Donador</th><th>Concepto</th><th>Cuota de</th><th class="n">Falta</th><th class="n">Depositó (MXN)</th></tr></thead><tbody>' +
+      filas.map(function(r){ var v = P.vals[r.q.id] || '', on = cents(v) > 0, esp = pcEsperado(r.c, r.q);
+        return '<tr data-pcrow="' + r.q.id + '"' + (on ? ' style="background:color-mix(in srgb, var(--ok) 9%, var(--surface))"' : '') + '><td style="font-size:18px" data-pcmk="' + r.q.id + '">' + (on ? '☑' : '☐') + '</td><td><b>' + esc(nomDon(r.d)) + '</b>' + (r.extra && !on ? ' <span class="pill t-info">agregado</span>' : '') + '</td><td>' + esc(r.c.concepto || '') + '</td><td>' + Mes(r.q.mes) + ' ' + r.c.anio + '</td><td class="n">' + money(falta(r.q), r.c.moneda) + '</td>' +
+          '<td class="n"><input data-pcv="' + r.q.id + '" inputmode="decimal" value="' + esc(v) + '" placeholder="≈ ' + mN(esp) + '" style="width:140px;text-align:right' + (on ? ';border-color:var(--ok);font-weight:700' : '') + '"></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="empty">No hay pendientes en ' + Mes(P.mes) + '. Busca al donador arriba.</div>');
+  pcTotal();
+  var q = $('pcQ'); q.addEventListener('input', function(){ P.q = q.value; pcSug(); });
+  $('pcMes').addEventListener('change', function(){ P.mes = +this.value; pcPintar(); });
+  $('pcFecha').addEventListener('change', function(){ P.fecha = this.value; });
+  b.querySelectorAll('[data-pcv]').forEach(function(inp){
+    inp.addEventListener('input', function(){ var id = inp.getAttribute('data-pcv'); P.vals[id] = inp.value; var on = cents(inp.value) > 0, mk = b.querySelector('[data-pcmk="' + id + '"]'); if(mk) mk.textContent = on ? '☑' : '☐'; inp.style.borderColor = on ? 'var(--ok)' : ''; inp.style.fontWeight = on ? '700' : ''; inp.closest('tr').style.background = on ? 'color-mix(in srgb, var(--ok) 9%, var(--surface))' : ''; pcTotal(); });
+    inp.addEventListener('change', function(){ var sy = b.closest('#dlg') ? b.closest('#dlg').scrollTop : 0; pcPintar(); var nx = $('dlg'); if(nx) nx.scrollTop = sy; });
+  });
+  if(P.q) pcSug();
+}
+function pcSug(){
+  var P = ui.pc, box = $('pcSug'); if(!box) return; var t = sinAcento((P.q || '').toLowerCase().trim());
+  if(t.length < 2){ box.innerHTML = ''; return; }
+  var res = [];
+  S.compromisos.forEach(function(c){ if(String(c.anio) !== String(P.anio) || c.estatus === 'por confirmar') return; var d = don(c.donanteId); if(!d || sinAcento((nomDon(d) + ' ' + (d.nombre || '')).toLowerCase()).indexOf(t) === -1) return;
+    var qs = cuotasDe(c.id).filter(function(q){ return !q.pausada && falta(q) > 0; }).sort(function(a, b){ return a.mes - b.mes; }); if(!qs.length) return;
+    var q = qs.find(function(z){ return z.mes >= P.mes; }) || qs[0]; res.push({q: q, c: c, d: d}); });
+  box.innerHTML = res.length ? '<div class="row" style="gap:6px;flex-wrap:wrap;margin:6px 0">' + res.slice(0, 10).map(function(r){ return '<button type="button" class="btn ghost sm" data-a="pcAdd" data-id="' + r.q.id + '">+ ' + esc(nomDon(r.d)) + ' · ' + esc(r.c.concepto || '') + ' · ' + Mes(r.q.mes) + '</button>'; }).join('') + '</div>' : '<div class="sub" style="margin:6px 0">Nadie con ese nombre tiene cuotas pendientes en ' + P.anio + '.</div>';
+}
+function pcTotal(){
+  var P = ui.pc, n = 0, t = 0; Object.keys(P.vals).forEach(function(k){ var v = cents(P.vals[k]); if(v > 0 && qById(k)){ n++; t += v; } });
+  var el = $('pcTot'); if(el) el.innerHTML = n ? n + ' depósito' + (n === 1 ? '' : 's') + ' · Total <b style="color:var(--ok);font-size:20px">' + mN(t) + ' MXN</b>' : '<span class="sub">Escribe la cantidad en pesos de cada depósito</span>';
+  var sb = $('pcSaveB'); if(sb) sb.textContent = 'Registrar ' + (n || '') + ' depósito' + (n === 1 ? '' : 's') + ' en ' + caja(P.cuenta).nombre.replace('Cuenta ', '');
+}
+function pcSave(){
+  var P = ui.pc, err = $('pcErr'), u = user();
+  var lst = Object.keys(P.vals).filter(function(k){ return cents(P.vals[k]) > 0 && qById(k); });
+  if(!lst.length){ err.textContent = 'Escribe la cantidad en pesos de al menos un depósito.'; err.hidden = false; return; }
+  if(!P.fecha){ err.textContent = 'Pon la fecha del depósito.'; err.hidden = false; return; }
+  var n = 0, tot = 0;
+  lst.forEach(function(qid){
+    var q = qById(qid), c = comp(q.compId), mx = cents(P.vals[qid]), ref = pcRef(c, q, mx); if(!c || !(ref > 0)) return;
+    var qs = cuotasDe(c.id).filter(function(z){ return !z.pausada && falta(z) > 0 && z.mes >= q.mes; }).sort(function(a, b){ return a.mes - b.mes; }), r = ref, plan = [];
+    qs.forEach(function(z){ if(r <= 0) return; var ap = Math.min(falta(z), r); plan.push({q: z, ap: ap}); r -= ap; });
+    if(r > 0){ var p0 = plan.find(function(x){ return x.q.id === q.id; }); if(p0) p0.ap += r; else plan.push({q: q, ap: r}); }
+    var dv = registrarDonativo(c, {fecha: P.fecha, montoC: mx, moneda: 'MXN', montoCompC: ref, tc: c.moneda === 'MXN' ? null : Math.round(mx / ref * 10000) / 10000, forma: 'Transferencia', caja: P.cuenta, plan: plan, obs: 'Depósito en ' + caja(P.cuenta).nombre});
+    n++; tot += mx;
+    log('Registró depósito en ' + caja(P.cuenta).nombre + ' de ' + (don(c.donanteId) || {nombre: ''}).nombre + ': ' + money(mx, 'MXN') + ' (' + (dv && dv.recibo || '') + ') · por ingresar en efectivo');
+  });
+  ui.pc = null; cobLimpiar(); closeModal(); ui.pcVer = 'pend'; render(); toast(n + ' depósito' + (n === 1 ? '' : 's') + ' registrado' + (n === 1 ? '' : 's') + ' · ' + mN(tot) + ' MXN por ingresar en efectivo');
+}
+
 /* ================= Inicio (bienvenida) ================= */
 var INI_FRASES = ['“Quien sostiene a una niña, sostiene un mundo entero.”', '“Cada aportación es un hogar que sigue en pie.”', '“Hacer el bien, todos los días, un poco más.”', '“Juntos construimos un futuro para nuestras niñas.”'];
 function vInicio(){
@@ -7085,7 +7219,7 @@ function vInicio(){
   var tiles = vistasOrden().concat(VIEWS.filter(function(v){ return v[0] === 'portal'; })).filter(function(v){ return v[0] !== 'inicio' && v[0] !== 'grp' && puede(v[0]) && oc.indexOf(v[0]) === -1; });
   var cnt = function(k){ if(k === 'avisos'){ try{ var n = porEnviar().filter(function(x){ return !x.omitir && (x.tipo === 'venc' || x.tipo === 'varias'); }).length; return n ? '<span class="cnt">' + n + '</span>' : ''; }catch(e){ return ''; } } if(k === 'aprobar'){ try{ var a = porAprobar().length; return a ? '<span class="cnt">' + a + '</span>' : ''; }catch(e){ return ''; } } return ''; };
   return '<section class="ini-hero"><div class="ini-top"><div class="ini-logo">' + logo + '</div><div><div class="ini-he" dir="rtl">ברוכים הבאים · בית לפליטות</div><h2 class="ini-h1">Bienvenido a <b>Bait Lapletot</b></h2><div class="ini-sub">' + saludo + ', <b>' + esc(u.nombre) + '</b> · ' + esc(fechaTxt) + '</div></div></div><div class="ini-gold"></div><div class="ini-frase">' + esc(frase) + '</div></section>' +
-    kpis + cajasHtml;
+    kpis + cajasHtml + pcHtml(mesK, M);
 }
 
 /* ================= Reporte contable (estilo tablero) ================= */
