@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v225</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v226</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1343,9 +1343,20 @@ function render(){ var gEn = gabEntrar(); try{ render0(); } finally{ if(gEn) gab
 function fixR0964(){ try{ S.fixes = S.fixes || {}; if(S.fixes.r0964) return; var p = S.donativos.find(function(x){ return x.recibo === 'R-0964' && x.compId === 'c2565'; }), c = comp('c2565');
   if(p && c && p.moneda === 'USD' && c.modalidad === 'Pago directo' && c.monPago === 'MXN' && c.montoPagoC === 10000000){ if(pdSync(c)) log('Corrección: R-0964 de Jaime Dichy pasó de $5,000 USD en Oficina USD a $100,000 MXN en Oficina Pesos, como dice su compromiso'); }
   S.fixes.r0964 = 1; }catch(e){} }
+/* Arreglo de una sola vez: a Abraham Dichy le falta el tercer pago de $20,000 del 30/10/2026 (su compromiso ya tenía feb-dic llenos; se agrega enero) */
+function fixAbrOct(){ try{ S.fixes = S.fixes || {}; if(S.fixes.abrOct3) return; var c = comp('c1785');
+  if(c){ var oct = S.donativos.filter(function(p){ return p.compId === c.id && p.fecha === '2026-10-30' && p.moneda === 'MXN' && p.montoC === 2000000; });
+    if(oct.length === 2 && !cuotasDe(c.id).some(function(q){ return q.mes === 1; })){
+      var q = {id: nid('q'), compId: c.id, num: 0, mes: 1, venc: c.anio + '-01-01', montoC: 100000, aplicadoC: 0, pausada: false, recs: [], nota: ''}; S.cuotas.push(q);
+      var nq = cuotasDe(c.id).sort(function(a, b){ return a.mes - b.mes; }), mapa = {}; nq.forEach(function(z, i){ z.num = i + 1; mapa[z.id] = z.num; });
+      S.donativos.forEach(function(p){ if(p.compId === c.id) (p.cubre || []).forEach(function(x){ if(mapa[x.qid]) x.num = mapa[x.qid]; }); });
+      c.n = nq.length; c.mesIni = 1; recalcAnual(c);
+      var dv = registrarDonativo(c, {fecha: '2026-10-30', montoC: 2000000, moneda: 'MXN', montoCompC: 100000, tc: 20, forma: oct[0].forma || 'Efectivo', caja: oct[0].caja || 'MXN', plan: [{q: q, ap: 100000}], obs: 'Tercer pago de octubre'});
+      if(dv) log('Corrección: se agregó el tercer pago de octubre de Abraham Dichy ' + dv.recibo + ' por $20,000.00 MXN (30/10/2026), aplicado a enero de su compromiso'); } }
+  S.fixes.abrOct3 = 1; }catch(e){} }
 function render0(){
   if(!LOGUEADO){ return; }
-  fixR0964();
+  fixR0964(); fixAbrOct();
   var pr = document.querySelector('.proto'); if(pr) pr.hidden = !!S.real;
   if(esDonante() && ui.view !== 'portal') ui.view = 'portal';
   if(ui.view === 'gabaim') ui.view = 'config';
@@ -1379,7 +1390,7 @@ function filtrosCargar(){ try{ var o = JSON.parse(localStorage.getItem(FILT_KEY)
   if(ui.fl && ui.fl.per && /^(mes|mesant|anio|todo)$/.test(ui.fl.per)){ var rr = flRango(ui.fl.per); ui.fl.desde = rr[0]; ui.fl.hasta = rr[1]; }
 }catch(e){} }
 /* Al cambiar de pestaña todo regresa a lo normal (filtros de arriba y de columnas) */
-function filtrosNormal(){ filtrosLimpiar(); ui.egOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
+function filtrosNormal(){ filtrosLimpiar(); ui.egOpen = false; if(ui.view !== 'nuevocomp') ui.ccOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
 function filtrosLimpiar(){ ui.cont = null; ui.fl = null; ui.iniF = null; ui.egL = null; ui.cjL = null; ui.cf = {}; if(ui.ccl){ ui.ccl.gab = 'todos'; ui.ccl.cons = []; ui.ccl.mes = ''; ui.ccl.don = ''; } R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; try{ localStorage.removeItem(FILT_KEY); }catch(e){} FILT_LAST = ''; }
 function xsMarcar(){
   document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
@@ -2116,11 +2127,12 @@ function vNuevoComp(){
   var dons = S.donantes.slice().sort(function(a, b){ return LANG === 'he' && a.hebreo && b.hebreo ? a.hebreo.localeCompare(b.hebreo, 'he') : (a.ape || '').localeCompare(b.ape || '', 'es') || (a.nom || '').localeCompare(b.nom || '', 'es'); });
   var Y = anioAct();
   var recAll = S.compromisos.slice().sort(function(a, b){ return (b.creado || '').localeCompare(a.creado || '') || ((parseInt(String(b.id).slice(1), 10) || 0) - (parseInt(String(a.id).slice(1), 10) || 0)); });
-  return '<section class="panel"><h2>Nuevo compromiso</h2>' +
+  if(!ui.ccOpen) return '<div class="row" style="margin:0 0 14px"><button type="button" class="btn primary" data-a="ccAbrir">+ Nuevo compromiso</button></div>' + listaComps();
+  return '<section class="panel" id="ccForm"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Nuevo compromiso</h2><button type="button" class="btn ghost sm" data-a="ccCerrar">✕ Cerrar</button></div>' +
     '<div class="form"><label class="f full"><span class="row lblrow"><span>Donador *</span><span class="row" style="gap:10px"><button type="button" class="back addn" data-a="ccDonEd" title="Editar los datos del donador elegido">Editar</button><button type="button" class="back addn" data-a="ccDonNuevo" title="Dar de alta un donador sin salir de aquí">+ Nuevo</button></span></span><select id="ccDon" data-noi18n' + (LANG === 'he' ? ' dir="rtl"' : '') + '><option value="">' + (LANG === 'he' ? '— בחרו —' : LANG === 'en' ? '— Select —' : '— Selecciona —') + '</option>' + dons.map(function(d){ return '<option value="' + d.id + '">' + esc(nomDon(d)) + '</option>'; }).join('') + '</select></label>' +
       formComp('cc') + '</div>' +
     '<div class="err" id="ccErr" hidden></div>' +
-    '<div class="row"><button type="button" class="btn primary" data-a="ccSave">Crear compromiso</button><button type="button" class="btn ghost" data-a="ccLimpiar">Limpiar</button></div></section>' + listaComps();
+    '<div class="row"><button type="button" class="btn primary" data-a="ccSave">Crear compromiso</button><button type="button" class="btn ghost" data-a="ccLimpiar">Limpiar</button><button type="button" class="btn ghost" data-a="ccCerrar">Cancelar</button></div></section>' + listaComps();
 }
 function gmForm(c, qs){
   var hay = qs.some(function(q){ return q.gabai != null || q.comPct != null; });
@@ -2261,7 +2273,7 @@ function listaComps(){
     }).join('') + '</tbody></table></div>' : '<div class="empty">Sin compromisos con estos filtros.</div>') + '</section>';
 }
 function restoreCc(){
-  ui.cc = ui.cc || {};
+  ui.cc = ui.cc || {}; if(!$('ccDon')) return;
   CC_IDS.forEach(function(k){ var el = $(k); if(!el || !(k in ui.cc)) return; el.value = ui.cc[k]; });
   if(ui.cc.ccCantUser && $('ccCant')) $('ccCant').dataset.user = '1';
   fcCalc('cc');
@@ -2299,7 +2311,7 @@ function ccSave(modo){
   if(yaPago) pdRegistrar(c);
   if(modo === 'reemplazar' && prev.length){ var mov = moverPagos(prev, c); log('Reemplazó ' + prev.length + ' compromiso(s) anteriores de ' + don(did).nombre + ' (' + mov + ' pagos movidos al nuevo)'); }
   log('Creó compromiso ' + c.anio + ' de ' + money(c.anualC, c.moneda) + ' para ' + don(did).nombre + ' (' + (c.concepto || '') + ')');
-  ui.cc = {}; if(ui.mg) delete ui.mg.cc; render(); toast('Compromiso creado para ' + don(did).nombre);
+  ui.cc = {}; ui.ccOpen = false; if(ui.mg) delete ui.mg.cc; render(); toast('Compromiso creado para ' + don(did).nombre);
 }
 
 /* ================= Seguimientos 2 ================= */
@@ -6073,11 +6085,13 @@ document.addEventListener('click', function(ev){
   else if(a === 'donF'){ ui.don.f = b.getAttribute('data-f'); render(); }
   else if(a === 'nuevoDon') abrirNuevoDonante();
   else if(a === 'ndSave') ndSave();
-  else if(a === 'nuevoComp'){ ui.cc = {ccDon: id}; ui.view = 'nuevocomp'; render(); window.scrollTo(0, 0); }
+  else if(a === 'nuevoComp'){ ui.cc = {ccDon: id}; ui.ccOpen = true; ui.view = 'nuevocomp'; render(); window.scrollTo(0, 0); }
   else if(a === 'ccSave') ccSave();
   else if(a === 'ccReemplazar'){ closeModal(); ccSave('reemplazar'); }
   else if(a === 'ccAdicional'){ closeModal(); ccSave('adicional'); }
   else if(a === 'ccLimpiar'){ ui.cc = {}; if(ui.mg) delete ui.mg.cc; render(); }
+  else if(a === 'ccAbrir'){ ui.ccOpen = true; render(); var fc = $('ccForm'); if(fc){ fc.scrollIntoView({block: 'start', behavior: 'smooth'}); } }
+  else if(a === 'ccCerrar'){ ui.ccOpen = false; ui.cc = {}; if(ui.mg) delete ui.mg.cc; render(); }
   else if(a === 'ncSave'){ var cuN = cents($('ncCuota').value) || planTot('nc'); if(cuN <= 0 || !$('ncGabai').value || !$('ncConcepto').value || !fcFecha('nc')){ var eN = $('ncErr'); eN.textContent = cuN <= 0 ? 'Escribe el monto.' : !$('ncGabai').value ? 'Elige el gabai del compromiso.' : !$('ncConcepto').value ? 'Elige el concepto del compromiso.' : 'Elige la fecha de inicio.'; eN.hidden = false; return; } var ncN = crearCompromiso({donanteId: id, anio: anioAct(), cuotaC: cuN, mesIni: +$('ncMes').value, moneda: $('ncMon').value, forma: $('ncForma').value, x: compExtra('nc')}); log('Creó compromiso ' + ncN.anio + ' para ' + don(id).nombre); closeModal(); ui.view = 'compromisos'; ui.comp.sel = ncN.id; render(); toast('Compromiso creado'); }
   else if(a === 'compF'){ ui.comp.f = b.getAttribute('data-f'); render(); }
   else if(a === 'cobDia'){ ui.cob.dia = b.getAttribute('data-d'); render(); }
@@ -6237,8 +6251,8 @@ document.addEventListener('click', function(ev){
   else if(a === 'masOpen') abrirMas();
   else if(a === 'masClose') cerrarMas();
   else if(a === 'nuevoDonFoco'){ var fn = $('afNom'); if(fn){ fn.scrollIntoView({block: 'center'}); fn.focus(); } }
-  else if(a === 'goNuevo'){ ui.view = 'nuevocomp'; render(); window.scrollTo(0, 0); }
-  else if(a === 'goEgreso'){ ui.view = 'egresos'; render(); window.scrollTo(0, 0); }
+  else if(a === 'goNuevo'){ ui.view = 'nuevocomp'; ui.ccOpen = true; render(); window.scrollTo(0, 0); }
+  else if(a === 'goEgreso'){ ui.view = 'egresos'; ui.egOpen = true; render(); window.scrollTo(0, 0); }
   else if(a === 'invAbrir'){ abrirInvita(+b.getAttribute('data-k')); }
   else if(a === 'invOtra'){ $('invPw').value = claveNueva(); invPrev(+$('dlg').querySelector('[data-a=invWa]').getAttribute('data-k')); }
   else if(a === 'invWa' || a === 'invCopiar'){ var ik = +b.getAttribute('data-k'), msg = invGuardar(ik); if(!msg) return; var tel = (S.usuarios[ik].tel || '').replace(/\D/g, '');
