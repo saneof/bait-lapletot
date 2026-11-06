@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v222</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v223</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -1148,7 +1148,7 @@ function seed(){
 }
 
 /* ================= navegación ================= */
-var ui = {don: {q: '', f: 'todos', open: null}, nd: {}, view: 'donantes', cob: {mes: String(mesAct()), dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}, comp: {f: 'activos', q: '', sel: null, gab: 'todos'}, portal: {d: null}, link: {done: null}};
+var ui = {don: {q: '', f: 'todos', open: null}, nd: {}, view: 'donantes', cob: {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}, comp: {f: 'activos', q: '', sel: null, gab: 'todos'}, portal: {d: null}, link: {done: null}};
 ui.view = 'inicio';
 var VIEWS = [
   ['inicio', 'Inicio'], ['donantes', 'Donadores'], ['nuevocomp', 'Compromisos'], ['seg2', 'Seguimientos'], ['cobranza', 'Cobranza'], ['aprobar', 'Autorizaciones'], ['comis', '% Comisiones'], ['conta', 'Contabilidad'], ['rep2', 'Reporte contable'], ['egresos', 'Egresos'], ['direccion', 'Dirección'], ['israel', 'Reporte Israel'], ['avisos', 'Avisos'], ['recordat', 'Recordatorios'], ['exportar', 'Exportar'], ['config', 'Configuración'], ['permisos', 'Permisos'],
@@ -1277,7 +1277,7 @@ function kicker(){
   switch(ui.view){
     case 'donantes': return S.donantes.length + ' donadores';
     case 'nuevocomp': case 'seg2': case 'compromisos': return cs + ' compromisos ' + Y;
-    case 'cobranza': return ui.cob.mes === 'previas' ? 'Vencidas' : cobMesTxt();
+    case 'cobranza': return cobMesTxt();
     case 'comis': return (ui.com && ui.com.mes !== 'todos' ? Mes(+ui.com.mes) + ' ' : '') + Y;
     case 'conta': return movimientos().filter(function(x){ return x.fecha.slice(0, 4) === String(Y); }).length + ' movimientos ' + Y;
     case 'egresos': return (S.egresos || []).length + ' egresos';
@@ -1374,7 +1374,7 @@ function filtrosCargar(){ try{ var o = JSON.parse(localStorage.getItem(FILT_KEY)
   if(ui.fl && ui.fl.per && /^(mes|mesant|anio|todo)$/.test(ui.fl.per)){ var rr = flRango(ui.fl.per); ui.fl.desde = rr[0]; ui.fl.hasta = rr[1]; }
 }catch(e){} }
 /* Al cambiar de pestaña todo regresa a lo normal (filtros de arriba y de columnas) */
-function filtrosNormal(){ filtrosLimpiar(); ui.egOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: String(mesAct()), dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
+function filtrosNormal(){ filtrosLimpiar(); ui.egOpen = false; ui.srt = {}; ui.iniPer = null; ui.iniCaja = null; ui.isr = null; ui.cob = {mes: 'todo', meses: [], dia: 'todos', q: '', gab: 'todos', caja: 'todos', rap: false, bk: null}; ui.comp = {f: 'activos', q: '', sel: null, gab: 'todos'}; if(ui.don){ ui.don.q = ''; ui.don.f = 'todos'; } }
 function filtrosLimpiar(){ ui.cont = null; ui.fl = null; ui.iniF = null; ui.egL = null; ui.cjL = null; ui.cf = {}; if(ui.ccl){ ui.ccl.gab = 'todos'; ui.ccl.cons = []; ui.ccl.mes = ''; ui.ccl.don = ''; } R2 = {tipo: 'todos', gab: '', con: '', don: '', cajas: [], mod: '', rec: '', per: 'anio', desde: '', hasta: '', com: '', mesSel: '', meses: []}; try{ localStorage.removeItem(FILT_KEY); }catch(e){} FILT_LAST = ''; }
 function xsMarcar(){
   document.querySelectorAll('main .tw, main .tablewrap, #dlg .tw, #dlg .tablewrap').forEach(function(w){
@@ -2210,7 +2210,7 @@ function ceSave(cid){
   }
   if(cambios.length) log('Corrigió compromiso ' + c.anio + ' de ' + d.nombre + ': ' + cambios.join('; '));
   var nsy = pagosSync(c); if(nsy && cambios.indexOf(nsy + ' pagos actualizados') === -1) cambios.push(nsy + ' pagos con gabai/% al día');
-  if(pdSync(c)) cambios.push('pago actualizado');
+  if($('cePagos').checked && pdSync(c)) cambios.push('pago actualizado al momento');
   var npd = pdRegistrar(c); if(npd) cambios.push(npd + ' pago(s) directo(s) registrados');
   if(ui.mg) delete ui.mg.ce;
   cobLimpiar();
@@ -3417,7 +3417,10 @@ function pwSave(k){
 
 /* ================= Cobranza ================= */
 function cobLimpiar(){ /* Los filtros que eligió el usuario se conservan siempre (solo los borra 'Quitar filtros'). */ }
-function cobMesTxt(){ var f = ui.cob, Y = f.anio || anioAct(); return f.mes === 'previas' ? 'Vencidas de meses anteriores' : f.mes === 'vencidas' ? 'Todas las vencidas hasta hoy' : f.mes === 'todo' ? 'Todo el año ' + Y : Mes(+f.mes) + ' ' + Y; }
+/* Mes de Cobranza: selección múltiple (vacío = todo el año) */
+function cobMeses(f){ f = f || ui.cob; return Array.isArray(f.meses) ? f.meses : (!f.mes || f.mes === 'todo' ? [] : [String(f.mes)]); }
+function cobMesNom(m, Y){ return m === 'previas' ? 'Vencidas de meses anteriores' : m === 'vencidas' ? 'Todas las vencidas hasta hoy' : Mes(+m) + ' ' + Y; }
+function cobMesTxt(){ var f = ui.cob, Y = f.anio || anioAct(), ms = cobMeses(f); if(!ms.length) return 'Todo el año ' + Y; if(ms.length <= 3) return ms.map(function(m){ return cobMesNom(m, Y); }).join(', '); return ms.length + ' meses elegidos · ' + Y; }
 function cobEdoGrupo(q){ var e = estadoQ(q); return e === 'pagada' || e === 'adelantada' ? 'liq' : e === 'cancelada' || e === 'pausada' ? 'otra' : 'pend'; }
 var conDia2Skip = false;
 function cobEdoConteo(){ conDia2Skip = true; try{ var b = cobFiltradas(true); }finally{ conDia2Skip = false; } var r = {todas: b.length, pend: 0, liq: 0}; b.forEach(function(q){ var g = cobEdoGrupo(q); if(r[g] != null) r[g]++; }); return r; }
@@ -3431,9 +3434,8 @@ function cobFiltradas(conDia){
     var c = comp(q.compId);
     if(!c || c.estatus === 'por confirmar') return false;
     if(recIds) return !!recIds[q.id];
-    if(f.mes === 'previas') return estadoQ(q) === 'vencida' && q.venc.slice(0, 7) < t.slice(0, 7);
-    if(f.mes === 'vencidas') return estadoQ(q) === 'vencida';
-    return c.anio === Y && (f.mes === 'todo' || q.mes === +f.mes);
+    var ms = cobMeses(f); if(!ms.length) return c.anio === Y;
+    return ms.some(function(m){ if(m === 'previas') return estadoQ(q) === 'vencida' && q.venc.slice(0, 7) < t.slice(0, 7); if(m === 'vencidas') return estadoQ(q) === 'vencida'; return c.anio === Y && q.mes === +m; });
   });
   if(f.q && !recQ){ var s = sinAcento(f.q.trim()); qs = qs.filter(function(q){ var c = comp(q.compId), d = don(c.donanteId) || {}; return sinAcento([d.nombre, d.hebreo].join(' ')).indexOf(s) !== -1 || pagosQ(q).some(function(p){ return String(p.recibo || '').toLowerCase().indexOf(s) !== -1; }); }); }
   if(gabArr(f.gab).length) qs = qs.filter(function(q){ return gabOk(f.gab, gabQ(q)); });
@@ -3719,7 +3721,10 @@ function vCobranza(){
   var selAnio = '<label class="f">Año<select id="cobAnio">' + Object.keys(anios).sort().reverse().map(function(a){ return '<option' + (+a === YY ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>';
   return '<section class="panel">' + (soloBloque() ? '' : sueltosHtml()) +
     (soloBloque() ? (requiereAprob() ? '<div class="note">Marca con palomita los cobros que vas a entregar, pon el monto (pesos o dólares) y la caja. Dirección los autoriza antes de registrarse.</div>' : '') : '<div class="row" style="justify-content:space-between"><div class="seg" role="group" aria-label="Modo"><button type="button" class="' + (f.rap ? '' : 'on') + '" data-a="cobModo" data-m="lista">Lista de cuotas</button><button type="button" class="' + (f.rap ? 'on' : '') + '" data-a="cobModo" data-m="bloque">Cobro en bloque</button></div></div>') +
-    '<div class="form">' + selAnio + '<label class="f">Mes<select id="cobMes">' + opts + '</select></label>' + (f.rap ? '' : '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cob') + '</div>') +
+    '<div class="form">' + selAnio + '<div class="f fms">Mes <span class="sub">(puedes elegir varios)</span>' + (function(){ var ms = cobMeses(f), pill = function(k){ return '<span class="r2g" style="--c:' + MES_COL[k - 1] + '">' + Mes(k) + ' ' + YY + '</span>' + (k === mesAct() && YY === anioAct() ? ' <span class="sub">(mes actual)</span>' : ''); };
+      var items = [['previas', 'Vencidas de meses anteriores'], ['vencidas', 'Todas las vencidas hasta hoy']].concat(MESES.es.map(function(n, k){ return [String(k + 1), pill(k + 1)]; }));
+      var sum = !ms.length ? '<span>Todo el año ' + YY + '</span>' : ms.length <= 3 ? '<span class="gsum">' + ms.map(function(m){ return /^\d+$/.test(m) ? '<span class="r2g" style="--c:' + MES_COL[+m - 1] + '">' + Mes(+m).slice(0, 3) + '</span>' : esc(cobMesNom(m, YY)); }).join('') + '</span>' : '<span>' + ms.length + ' meses elegidos</span>';
+      var h = msHtml('cobms', items, ms, sum); MS.cobms.set = function(a){ f.meses = a; f.mes = !a.length ? 'todo' : a.length === 1 ? a[0] : 'multi'; f.dia = 'todos'; }; return h; })() + '</div>' + (f.rap ? '' : '<div class="f fms"><span class="lrow">Gabai<span role="button" tabindex="0" class="lord" data-a="gabOrd" title="Ordenar gabaim">⋮⋮ Ordenar</span></span>' + gabMs('cob') + '</div>') +
     '<label class="f">Buscar donante o recibo<input id="cobQ" type="search" value="' + esc(f.q) + '" placeholder="Nombre o recibo (ej. R-0880 o 880)">' + (cobRecQ(f.q) ? '<small class="sub">Buscando el recibo <b>' + esc(cobRecQ(f.q)) + '</b> en todos los meses</small>' : '') + '</label></div>' +
     '<div class="rgf"><div class="sub">Estado</div><div class="chips rgch">' + (function(){ var ce = cobEdoConteo(), ed = f.edo || 'todas'; return [['todas', 'Todas'], ['pend', 'Pendientes y vencidas'], ['liq', 'Liquidadas']].map(function(o){ return '<button type="button" class="chip' + (ed === o[0] ? ' on' : '') + (o[0] === 'pend' ? ' chpend' : o[0] === 'liq' ? ' chliq' : '') + '" data-a="cobEdo" data-e="' + o[0] + '" aria-pressed="' + (ed === o[0]) + '">' + o[1] + ' <b>' + ce[o[0]] + '</b></button>'; }).join(''); })() + '</div>' +
     '<div class="sub">Moneda</div><div class="chips rgch"><button type="button" class="chip' + (!(f.mons || []).length ? ' on' : '') + '" data-a="cobMonAll">Todas</button>' + ['MXN', 'USD'].map(function(m){ var on = (f.mons || []).indexOf(m) !== -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-a="cobMon" data-m="' + m + '" aria-pressed="' + on + '">' + m + '</button>'; }).join('') + '</div>' +
@@ -4196,11 +4201,14 @@ function fcCalc(pref){
 function pdSync(c){
   if(!c || c.modalidad !== 'Pago directo') return 0;
   var ps = S.donativos.filter(function(p){ return p.compId === c.id; }), qs = cuotasDe(c.id); if(ps.length !== 1 || qs.length !== 1) return 0;
-  var p = ps[0], ref = p.montoCompC; if(!(ref > 0)) return 0;
+  var p = ps[0], q = qs[0], ref = q.montoC; if(!(ref > 0)) return 0;
   var mon = c.monPago === 'MXN' && c.montoPagoC > 0 ? 'MXN' : 'USD', monto = mon === 'MXN' ? c.montoPagoC : ref, cj = caja(c.caja || '').mon === mon ? c.caja : cajaDef(mon), tc = mon === 'MXN' ? Math.round(monto / ref * 10000) / 10000 : null;
-  if(p.moneda === mon && p.montoC === monto && p.caja === cj && (p.tc || null) === tc) return 0;
-  var antes = money(p.montoC, p.moneda) + ' en ' + caja(p.caja).nombre; p.moneda = mon; p.montoC = monto; p.caja = cj; p.tc = tc;
-  log('Actualizó el pago ' + p.recibo + ' del pago directo de ' + (don(c.donanteId) || {nombre: ''}).nombre + ': ' + antes + ' → ' + money(monto, mon) + ' en ' + caja(cj).nombre);
+  var fe = /^\d{4}-\d{2}-\d{2}$/.test(c.fechaInicio || '') ? c.fechaInicio : p.fecha, fo = c.forma || p.forma, cub = (p.cubre || []).length === 1 && p.cubre[0].qid === q.id && p.cubre[0].ap === ref;
+  if(p.moneda === mon && p.montoC === monto && p.caja === cj && (p.tc || null) === tc && p.montoCompC === ref && cub && p.fecha === fe && p.forma === fo) return 0;
+  var antes = money(p.montoC, p.moneda) + ' ' + fFecha(p.fecha) + ' en ' + caja(p.caja).nombre;
+  if(!cub || p.montoCompC !== ref){ desaplicar(p); p.montoCompC = ref; q.aplicadoC += ref; p.cubre = [{qid: q.id, num: q.num, mes: q.mes, ap: ref}]; p.mesCorr = q.mes; }
+  p.moneda = mon; p.montoC = monto; p.caja = cj; p.tc = tc; p.fecha = fe; p.forma = fo;
+  log('Actualizó el pago ' + p.recibo + ' del pago directo de ' + (don(c.donanteId) || {nombre: ''}).nombre + ': ' + antes + ' → ' + money(monto, mon) + ' ' + fFecha(fe) + ' en ' + caja(cj).nombre);
   return 1;
 }
 function pdRegistrar(c){
@@ -6030,7 +6038,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'rgDel'){ var rd = reglas().find(function(z){ return z.id === id; }); if(!rd) return; openModal(head('Quitar regla', esc(rd.nombre)) + '<div>¿Quitar la regla <b>' + esc(rd.nombre) + '</b>? Ya no te avisará.</div><div class="dfoot"><button type="button" class="btn ghost" data-a="close">Cancelar</button><button type="button" class="btn danger" data-a="rgDelOk" data-id="' + id + '">Quitar</button></div>'); }
   else if(a === 'rgDelOk'){ S.reglas = reglas().filter(function(z){ return z.id !== id; }); save(); closeModal(); render(); rgCampana(); toast('Regla quitada'); }
   else if(a === 'rgRes' || a === 'rgPos'){ var rr4 = b.getAttribute('data-r'), kk4 = b.getAttribute('data-k'); rgAccion(rr4, kk4, a === 'rgRes' ? 'res' : 'pos', addDias(hoy(), +(b.getAttribute('data-d') || 1))); var fil = b.closest('.rgit'); if(fil) fil.remove(); toast(a === 'rgRes' ? 'Marcado como resuelto' : 'Te lo recuerdo el ' + fFecha(addDias(hoy(), +b.getAttribute('data-d')))); if(ui.view === 'recordat' && $('modal').hidden) render(); rgCampana(); }
-  else if(a === 'rgIr'){ var ri = reglas().find(function(z){ return z.id === id; }) || {tipo: 'sueltos'}, mv = RG_MOD[ri.tipo] || 'cobranza'; closeModal(); if(mv === 'cobranza'){ ui.cob.gab = (ri.gabs || []).length === 1 ? ri.gabs[0] : 'todos'; ui.cob.edo = 'pend'; ui.cob.con = ri.concepto || ''; if(ri.tipo === 'vencidas') ui.cob.mes = 'vencidas'; } ui.view = mv; render(); }
+  else if(a === 'rgIr'){ var ri = reglas().find(function(z){ return z.id === id; }) || {tipo: 'sueltos'}, mv = RG_MOD[ri.tipo] || 'cobranza'; closeModal(); if(mv === 'cobranza'){ ui.cob.gab = (ri.gabs || []).length === 1 ? ri.gabs[0] : 'todos'; ui.cob.edo = 'pend'; ui.cob.con = ri.concepto || ''; if(ri.tipo === 'vencidas'){ ui.cob.mes = 'vencidas'; ui.cob.meses = null; } } ui.view = mv; render(); }
   else if(a === 'rgIrModulo'){ closeModal(); ui.view = 'recordat'; render(); }
   else if(a === 'rgBell'){ rgPopup(true); }
   else if(a === 'rgIcs'){ var ri2 = reglas().find(function(z){ return z.id === id; }); if(ri2) icsDescargar([ri2], 'Recordatorio ' + ri2.nombre); }
@@ -6071,7 +6079,7 @@ document.addEventListener('click', function(ev){
   else if(a === 'donDelOk') borrarDonantes(BORRAR || []);
   else if(a === 'gbAdd'){ var gn2 = $('gbNuevo').value.trim(), ge = $('gbErr'); if(!gn2){ ge.textContent = 'Escribe el nombre del gabai.'; ge.hidden = false; return; } if(S.gabaim.indexOf(gn2) !== -1){ ge.textContent = 'Ese gabai ya está en la lista.'; ge.hidden = false; return; } S.gabaim.push(gn2); log('Agregó al gabai ' + gn2); render(); toast('Gabai agregado'); }
   else if(a === 'gbSave'){ var gk2 = +b.getAttribute('data-k'), gi = document.querySelector('[data-gbn="' + gk2 + '"]'); if(gi && gbRename(gk2, gi.value)){ render(); toast('Nombre actualizado en sus compromisos'); } }
-  else if(a === 'gbCob'){ ui.cob.gab = S.gabaim[+b.getAttribute('data-k')]; ui.cob.rap = true; ui.cob.mes = String(mesAct()); ui.view = 'cobranza'; render(); window.scrollTo(0, 0); }
+  else if(a === 'gbCob'){ ui.cob.gab = S.gabaim[+b.getAttribute('data-k')]; ui.cob.rap = true; ui.cob.mes = String(mesAct()); ui.cob.meses = null; ui.view = 'cobranza'; render(); window.scrollTo(0, 0); }
   else if(a === 'impPlantilla') plantillaXls();
   else if(a === 'egiPlantilla') egiPlantilla();
   else if(a === 'iniPer'){ ui.iniPer = b.getAttribute('data-p'); if(ui.iniF){ ui.iniF.desde = ''; ui.iniF.hasta = ''; ui.iniF.meses = []; } render(); }
