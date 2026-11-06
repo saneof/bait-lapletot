@@ -567,7 +567,7 @@ nav.side .ngitems{display:flex;flex-direction:column;gap:2px}
       <div class="ttl"><div class="kick" id="vkick" data-noi18n></div><h1 id="vtitle">Dirección</h1></div><div id="vact"></div>
       <div class="row"><button type="button" class="btn ghost sm btnact" data-a="sugAbrir" title="Sugerencias y cambios">💡 Sugerencias</button><button type="button" class="btn ghost sm btnact btnpr" data-a="pruebaOn" title="Modo prueba">🧪 Prueba</button><button type="button" class="btn ghost sm btnact" data-a="actualizar" title="Actualizar">⟳ Actualizar</button><button type="button" class="btn ghost sm btnact nbest" id="nbEst" data-a="nbInfo" title="Nube" aria-label="Nube" hidden>☁️<span class="nbdot"></span><span class="nbtx" hidden>Nube</span></button><button type="button" class="btn ghost sm btnact rgbell" id="rgBell" data-a="rgBell" aria-label="Pendientes de hoy" hidden>🔔 Pendientes <span class="cnt" hidden>0</span></button><div class="fuente" role="group" aria-label="Tamaño de letra" data-noi18n><button type="button" class="f1" data-a="fuente" data-z="0.9" aria-label="Letra chica">A</button><button type="button" class="f2" data-a="fuente" data-z="1" aria-label="Letra normal">A</button><button type="button" class="f3" data-a="fuente" data-z="1.1" aria-label="Letra grande">A</button><button type="button" class="f4" data-a="fuente" data-z="1.22" aria-label="Letra muy grande">A</button></div><div class="langs" role="group" aria-label="Idioma del sistema" data-noi18n><button type="button" data-a="lang" data-l="es">Español</button><button type="button" data-a="lang" data-l="en">English</button><button type="button" data-a="lang" data-l="he" lang="he">עברית</button></div><div class="who" id="whoBox"></div></div>
     </div>
-    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v220</span></div>
+    <div class="proto">Prototipo con datos de ejemplo. Los cambios se guardan solo en este navegador. <button type="button" data-a="reset">Restablecer datos de ejemplo</button> <span data-noi18n style="margin-left:auto;opacity:.75">v221</span></div>
     <div class="prbar" id="pruebaBar" hidden>🧪 <b>Modo prueba</b> · Lo que cambies aquí se puede descartar. <button type="button" class="btn ghost sm" data-a="pruebaNo">Descartar todo y salir</button><button type="button" class="btn ghost sm" data-a="pruebaSi">Conservar cambios y salir</button></div>
     <div id="view"></div>
   </main>
@@ -2866,7 +2866,13 @@ function iniDet(per, mesK, Y){
     if(q && sinAcento([x.folio, x.nombre, x.gabai, x.concepto, x.forma, x.obs].join(' ')).indexOf(q) === -1) return false;
     return true; };
   var rows = base.filter(function(x){ return pasa(x); }).sort(function(a, b){ return a.fecha.localeCompare(b.fecha) || String(a.folio).localeCompare(String(b.folio), 'es', {numeric: true}); });
-  var paraRes = base.filter(function(x){ return pasa(x, true); });
+  /* filtros de columna de la tabla de abajo: también cambian los cuadros, las tablas por gabai/concepto y el resumen por mes */
+  var cfI = (ui.cf || {}).inidet || {}, ksI = Object.keys(cfI).filter(function(k){ return Array.isArray(cfI[k]) ? cfI[k].length : cfI[k]; });
+  var iniTx = function(x){ var ing = x.tipo === 'ing', gc = x.cambio ? (ing ? 'De ' : 'A ') + caja(x.otra).nombre : ing ? (x.gabai || 'Sin gabai') : conDe(x), am = mixed ? money(x.montoC, x.moneda) : mN(x.montoC);
+    return [fFecha(x.fecha), x.folio || '', x.cambio ? '⇄ Cambio ' + (ing ? 'entra' : 'sale') : (ing ? 'Ingreso' : 'Egreso'), x.nombre || '—', x.concepto || '—', gc, x.forma || '', ing ? am : '', ing ? '' : am, x.obs || ''].map(function(v){ return String(v).replace(/\s+/g, ' ').trim(); }); };
+  var cfPasa = function(x){ if(!ksI.length) return true; var tx = iniTx(x); return ksI.every(function(k){ var v = tx[+k] || '', fv = cfI[k]; return Array.isArray(fv) ? fv.indexOf(v) !== -1 : v.toLowerCase().indexOf(String(fv).toLowerCase()) !== -1; }); };
+  var rowsF = rows.filter(cfPasa);
+  var paraRes = base.filter(function(x){ return pasa(x, true) && cfPasa(x); });
   var grp = function(fn, fl){ var o = {}; paraRes.forEach(function(x){ if(!fl(x)) return; var g = fn(x); o[g] = o[g] || {n: 0, m: 0}; o[g].n++; o[g].m += V(x); }); return Object.keys(o).map(function(g){ return [g, o[g].n, o[g].m]; }).sort(function(a, b){ return b[2] - a[2]; }); };
   var cjKey = function(x){ return x.cambio ? '⇄ Cambio · ' + (x.tipo === 'ing' ? 'Entró de ' : 'Salió a ') + caja(x.otra).nombre : conDe(x); };
   var gI = grp(gabDe, function(x){ return x.tipo === 'ing' && !x.cambio; }), gE = grp(cjKey, function(x){ return x.tipo === 'egr'; }), gIC = grp(cjKey, function(x){ return x.tipo === 'ing' && (!gabArr(f.gab || 'todos').length || (!x.cambio && gabOk(f.gab, x.gabai))); });
@@ -2878,8 +2884,8 @@ function iniDet(per, mesK, Y){
       '<tr class="r2tot"><td>' + (sg ? 'Neto' : 'Total') + '</td><td class="n">' + tn + '</td><td class="n">' + (sg ? sgn(tt) : '<b>' + mN(tt) + '</b>') + '</td><td class="n">100%</td></tr></tbody></table></div>' : '<div class="empty">' + vacio + '</div>') + '</div>'; };
   var sel = function(id, v, opts){ return '<select id="' + id + '">' + opts.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (String(v) === String(o[0]) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
   var uniq = function(fn, fl){ var m = {}; base.forEach(function(x){ if(fl(x)) m[fn(x)] = 1; }); return Object.keys(m).sort(function(a, b){ return a.localeCompare(b, 'es'); }).map(function(g){ return [g, g]; }); };
-  var ab = 0, ca = 0; rows.forEach(function(x){ if(x.tipo === 'ing') ab += V(x); else ca += V(x); });
-  var filt = f.tipo !== 'todos' || f.gab || f.con.length || f.coni.length || (f.q || '').trim() || f.desde || f.hasta || f.meses.length;
+  var ab = 0, ca = 0; rowsF.forEach(function(x){ if(x.tipo === 'ing') ab += V(x); else ca += V(x); });
+  var filt = ksI.length || f.tipo !== 'todos' || f.gab || f.con.length || f.coni.length || (f.q || '').trim() || f.desde || f.hasta || f.meses.length;
   var mesPill = function(ym){ return '<span class="r2g" style="--c:' + MES_COL[+ym.slice(5, 7) - 1] + '">' + esc(Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4)) + '</span>'; };
   var perTxt = f.meses.length ? f.meses.slice().sort().map(function(ym){ return Mes(+ym.slice(5, 7)).slice(0, 3) + ' ' + ym.slice(0, 4); }).join(', ') : (d0 ? fFecha(d0) : 'el inicio') + ' a ' + (h0 ? fFecha(h0) : 'hoy');
   return '<section class="panel ini-det"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h2 style="margin:0">' + esc(k.nombre) + ' · movimientos <span class="sub">(' + esc(perTxt) + ')</span></h2>' +
@@ -2898,12 +2904,12 @@ function iniDet(per, mesK, Y){
         return '<div class="f fms">Concepto (ingresos)' + hI + '</div><div class="f fms">Concepto (egresos)' + hE + '</div>'; })() +
       '<label class="f">Buscar<input id="iniFQ" type="search" value="' + esc(f.q || '') + '" placeholder="Nombre, folio, comentario…"></label></div>' +
     '<div class="fl-kpis" style="margin-top:12px">' +
-      '<div class="fl-kpi"><span>Ingresos</span><strong style="color:var(--ok)">' + mN(ab) + '</strong><small>' + rows.filter(function(x){ return x.tipo === 'ing'; }).length + ' movs. · ' + mon + '</small></div>' +
-      '<div class="fl-kpi"><span>Egresos</span><strong style="color:var(--bad)">' + mN(ca) + '</strong><small>' + rows.filter(function(x){ return x.tipo === 'egr'; }).length + ' movs. · ' + mon + '</small></div>' +
+      '<div class="fl-kpi"><span>Ingresos</span><strong style="color:var(--ok)">' + mN(ab) + '</strong><small>' + rowsF.filter(function(x){ return x.tipo === 'ing'; }).length + ' movs. · ' + mon + '</small></div>' +
+      '<div class="fl-kpi"><span>Egresos</span><strong style="color:var(--bad)">' + mN(ca) + '</strong><small>' + rowsF.filter(function(x){ return x.tipo === 'egr'; }).length + ' movs. · ' + mon + '</small></div>' +
       '<div class="fl-kpi"><span>Neto</span><strong' + (ab - ca < 0 ? ' style="color:var(--bad)"' : '') + '>' + (ab - ca < 0 ? '−' : '') + mN(Math.abs(ab - ca)) + '</strong><small>' + (filt ? 'con los filtros' : 'del periodo') + '</small></div>' +
-      '<div class="fl-kpi"><span>Movimientos</span><strong>' + rows.length + '</strong><small>en el detalle</small></div></div>' +
+      '<div class="fl-kpi"><span>Movimientos</span><strong>' + rowsF.length + '</strong><small>en el detalle</small></div></div>' +
     '<div class="idg">' + tabla('Ingresos por gabai', gI, 'iniGab', gabArr(f.gab || 'todos'), 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Ingresos por concepto' + (gabArr(f.gab || 'todos').length ? ' <span class="sub" style="font-weight:400">· solo ' + esc(gabSelTxt(f.gab)) + '</span>' : ''), gIC, 'iniConI', f.coni, 'var(--ok)', 'Sin ingresos en este periodo.') + tabla('Egresos por concepto', gE, 'iniCon', f.con, 'var(--bad)', 'Sin egresos en este periodo.') + (gX.length ? tabla('Cambios de caja', gX, '', '', 'signo', '') : '') + '</div>' +
-    (function(){ var pm = {}, gu = {}; rows.forEach(function(x){ var m = x.fecha.slice(0, 7), o = pm[m] = pm[m] || {i: 0, e: 0, ni: 0, ne: 0, ci: 0, ce: 0, g: {}}; if(x.tipo === 'ing'){ o.i += V(x); o.ni++; if(x.cambio) o.ci += V(x); else { var gg = x.gabai || ''; o.g[gg] = (o.g[gg] || 0) + V(x); gu[gg] = 1; } } else { o.e += V(x); o.ne++; if(x.cambio) o.ce += V(x); } });
+    (function(){ var pm = {}, gu = {}; rowsF.forEach(function(x){ var m = x.fecha.slice(0, 7), o = pm[m] = pm[m] || {i: 0, e: 0, ni: 0, ne: 0, ci: 0, ce: 0, g: {}}; if(x.tipo === 'ing'){ o.i += V(x); o.ni++; if(x.cambio) o.ci += V(x); else { var gg = x.gabai || ''; o.g[gg] = (o.g[gg] || 0) + V(x); gu[gg] = 1; } } else { o.e += V(x); o.ne++; if(x.cambio) o.ce += V(x); } });
       var gcols = (S.gabaim || []).filter(function(g){ return gu[g]; }).concat(Object.keys(gu).filter(function(g){ return g && (S.gabaim || []).indexOf(g) === -1; })).concat(gu[''] ? [''] : []), gT = {};
       var ks = Object.keys(pm).sort(); if(!ks.length) return '';
       var acc = 0, tI = 0, tE = 0, tN = 0, hayCj = ks.some(function(m){ return pm[m].ci || pm[m].ce; });
